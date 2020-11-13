@@ -3,40 +3,64 @@ package GIFhourLogger.dataprocessing;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-//import com.google.gson.Gson;
-//import com.google.gson.GsonBuilder;
+import java.util.List;
+import GIFhourLogger.Constants.dataProcessing;
+
+import GIFhourLogger.dataprocessing.CSVthing;
 
 /**  this class is for the processing of data**/
 
 public class logging {
 
-    ArrayList<String[]> logs = null;
+    ArrayList<List<String>> logs = null;
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    SimpleDateFormat timeFormat = new SimpleDateFormat(" HH:mm:ss");
+
+    String savePath= "";
+    String backupPath = "";
     //Gson gson = null;
 
     public logging(){
-        //GsonBuilder gsonbuilder = new GsonBuilder();
-        //gsonbuilder.setPrettyPrinting();
-        //gsonbuilder.serializeNulls();
-        //gson = gsonbuilder.create();
-        logs = new ArrayList<String[]>();
+        logs = new ArrayList<List<String>>();
+        Date date = new Date();
+
+        savePath = dataProcessing.Save + "GIFlogs-"+ dateFormat.format(date) +".csv";
+        backupPath = dataProcessing.Save + "GIFlogs-"+ dateFormat.format(date) + "BACKUP" +".csv";
+
+        List<String> labels = new ArrayList<String>();
+        labels.add("ID");
+        labels.add("time");
+
+        System.out.println(savePath);
+        CSVthing.appendCSV(savePath, labels);
+
     }
 
     public void log(String studentID){
         Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        System.out.println(studentID+" :: "+formatter.format(date));
-        //["ID","time"]
-        String thing[] = new String[2];
-        thing[0] = studentID;
-        thing[1] = formatter.format(date);
-        logs.add(thing);
-        System.out.println("logs \n\n");
-        this.printlog();
+
+        System.out.println(studentID+" :: "+timeFormat.format(date));
+
+        List<String> individual_Log = new ArrayList<String>();
+
+        individual_Log.add(studentID);
+        individual_Log.add(timeFormat.format(date));
+
+        CSVthing.appendCSV(savePath,individual_Log);
+
+        CSVthing.backupCSV(savePath,backupPath);
+
+        logs.add(individual_Log);
+
+        /**data format
+         * ID time
+         * **/
     }
 
     public void printlog(){
-        for (String[] i : logs) {
-            System.out.println(i[0]+" :: "+i[1]);
+        for (List<String> individualLog : logs) {
+            System.out.println(individualLog.get(0)+" :: "+individualLog.get(1));
         }
     }
 

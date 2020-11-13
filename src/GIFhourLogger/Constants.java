@@ -50,6 +50,7 @@ public class Constants {
     }
 
     public static class dataProcessing{
+        public static String Save = "C:\\Users\\haide\\IdeaProjects\\gearbox_ID_scanner\\save\\";
 
     }
 }

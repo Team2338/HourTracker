@@ -23,9 +23,10 @@ import GIFhourLogger.vision.Decoder;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.*;
-
 
 /**
  * <p>Simple GIFhourLogger.GUI frontend to the library. Right now, only decodes a local file.
@@ -33,6 +34,7 @@ import javax.swing.*;
  *
  * @author Sean Owen
  */
+
 public final class GUIRunner{
 
     public static JFrame frame = null;
@@ -49,6 +51,8 @@ public final class GUIRunner{
 
     public static String errorImagePath= "C:\\Users\\haide\\IdeaProjects\\gearbox_ID_scanner\\Pictures\\cropped error.jpg";
     public static String logoImagePath = "C:\\Users\\haide\\IdeaProjects\\gearbox_ID_scanner\\Pictures\\logo blue.png";
+
+
 
     public GUIRunner() {
         camera = new Camera();
@@ -100,6 +104,7 @@ public final class GUIRunner{
     }
 
     public static void run(){
+
         while (true) {
 
             try {
@@ -120,6 +125,14 @@ public final class GUIRunner{
             }catch (Exception e){
                 img = decoder.imageFromPath(errorImagePath);
                 g.drawImage(img, GUI.IMAGE_X,GUI.IMAGE_Y, img.getWidth(), img.getHeight(),image_View);
+
+            }
+
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("HH");
+
+            if (Integer.parseInt(formatter.format(date)) >= 21 ) {
+                System.exit(0);
 
             }
         }

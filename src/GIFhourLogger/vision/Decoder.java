@@ -53,7 +53,6 @@ public class Decoder {
         }else{
             return null;
         }
-
     }
 
     public String decodeFilepath(String path){
@@ -64,7 +63,6 @@ public class Decoder {
         } catch (IOException e) {
             return null;
         }
-
     }
 
     public BufferedImage imageFromPath(String path){
