@@ -1,8 +1,31 @@
+<!doctype html>
 <html>
-	<meta>
-	</meta>
-	<body>
-		test
-	</body>
 	
+	<head>
+		<title>Check In</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="js/index.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/index.css">
+	</head>
+
+	<div id = "vidStream">
+	
+		<video autoplay="true" id = "videoElement"></video>
+		<script>
+			var video = document.querySelector("#videoElement");
+
+			if (navigator.mediaDevices.getUserMedia) {
+				navigator.mediaDevices.getUserMedia(
+					{ video: true })
+					.then(function (stream) {
+						video.srcObject = stream;
+					}).catch(function (err0r) {
+						console.log("Something went wrong!");
+					}
+				);
+			}
+		</script>
+	
+	</div>
+
 </html>
