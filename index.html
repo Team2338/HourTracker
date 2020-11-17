@@ -4,14 +4,16 @@
 	<head>
 		<title>Check In</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!--
 		<script type = "module" src="js/index.js"></script>
+		-->
 		<link rel="stylesheet" type="text/css" href="css/index.css">
 	</head>
 
 	<div id = "vidStream">
 	
 		<video autoplay="true" id = "videoElement"></video>
-		<script>
+		<script type = "module">
 			var video = document.querySelector("#videoElement");
 
 			if (navigator.mediaDevices.getUserMedia) {
@@ -27,5 +29,27 @@
 		</script>
 	
 	</div>
+
+	<body id = "log"></body>
+	<!--
+	<img src="Pictures/barcodes/12.jpg" id = "barcodeimg">
+-->
+	<script type = "module">
+		import { BrowserQRCodeReader } from 'node_modules/@zxing/library';
+
+		var codeReader = new BrowserQRCodeReader();
+		var img = document.getElementById('barcodeimg');
+
+		try {
+			var result = codeReader.decodeFromImage(img);
+		} catch (err) {
+			console.log(err);
+			console.error(err);
+			document.getElementById('log').innerHTML = err;
+		}
+
+		console.log(result);
+		document.getElementById('log').innerHTML = result;
+	</script>
 
 </html>
