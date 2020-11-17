@@ -30,11 +30,14 @@
 	
 	</div>
 
-	<body id = "log"></body>
+	<body id = "log">
+		ting
+	</body>
 	<!--
 	<img src="Pictures/barcodes/12.jpg" id = "barcodeimg">
 -->
 	<script type = "module">
+		document.getElementById('log').innerHTML = "jyunkus";
 		import { BrowserQRCodeReader } from 'node_modules/@zxing/library';
 
 		var codeReader = new BrowserQRCodeReader();
@@ -50,6 +53,7 @@
 
 		console.log(result);
 		document.getElementById('log').innerHTML = result;
+		document.getElementById('log').innerHTML = "jyunkus";
 	</script>
 
 </html>
