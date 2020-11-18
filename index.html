@@ -28,58 +28,43 @@
 		</label>
 	</div>
 
-	<img src = "Pictures/barcodes/13.jpg" id = "img">
-
-	<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
-
-
-	<script type="module">
-  import { BrowserQRCodeReader } from '@zxing/library';
-
-  const codeReader = new BrowserQRCodeReader();
-  const img = document.getElementById('img');
-
-  try {
-      const result = await codeReader.decodeFromImage(img);
-  } catch (err) {
-      console.error(err);
-  }
-
-  console.log(result);
-</script>
-
-
-<!--
-	<script>
-		const codeReader = new ZXing.BrowserBarcodeReader()
-
-		codeReader
-			.listVideoInputDevices()
-			.then(videoInputDevices => {
-				videoInputDevices.forEach(device =>
-					console.log(`${device.label}, ${device.deviceId}`)
-				);
-			})
-			.catch(err => console.error(err));
-
-		var deviceId = undefined;
-		
-		/*
-		try{
-			deviceId = videoInputDevices[1].deviceId;
-		} catch(err){
-			deviceId = videoInputDevices[0].deviceId;
-		}
-		*/
-		
-		codeReader
-			.decodeOnceFromVideoDevice(DeviceId, 'video')
-			.then(result => console.log(result.text))
-			.catch(err => console.error(err));
+	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
 
 
 
+	<script type="text/javascript">
+		window.addEventListener('load', function(){
+			const codeReader = new ZXing.BrowserBarcodeReader();
+
+			let deviceId;
+	
+			codeReader
+				.listVideoInputDevices()
+				.then((videoInputDevices) => {
+					deviceId = videoInputDevices[0].deviceId;
+					if (videoInputDevices.length > 1) {
+						videoInputDevices.forEach((element) => {
+							deviceId = [1].deviceId;
+							console.log(element.label);
+							console.log(element.deviceId);
+						})
+					}
+				})
+				.catch(err => {
+					console.log("err");
+					console.error(err);
+	
+				});
+			
+			codeReader
+				.decodeOnceFromVideoDevice(deviceId, 'videoStream')
+				.then(result => {
+					console.log(result.text)
+					document.getElementById('result').innerHTML = result.text;
+				})
+				.catch(err => console.error(err));
+		});
 
 	</script>
--->
+
 </html>
