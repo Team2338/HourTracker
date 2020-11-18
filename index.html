@@ -3,61 +3,83 @@
 	
 	<head>
 		<title>Check In</title>
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!--
-		<script type = "module" src="js/index.js"></script>
-		-->
-		<link rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/normalize.css@8.0.0/normalize.css">
-    	<link rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet';this.onload=null" href="https://unpkg.com/milligram@1.3.0/dist/milligram.min.css">
-		<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+		
+		<!--<script type = "module" src="js/index.js"></script>-->
+		
 		<link rel="stylesheet" type="text/css" href="css/index.css">
+
 	</head>
 
-	<div id = "vidStream">
-	
-		<video autoplay="true" id = "videoElement"></video>
-		<script type = "module">
-			var video = document.querySelector("#videoElement");
-
-			if (navigator.mediaDevices.getUserMedia) {
-				navigator.mediaDevices.getUserMedia(
-					{ video: true })
-					.then(function (stream) {
-						video.srcObject = stream;
-					}).catch(function (err0r) {
-						console.log("Something went wrong!");
-					}
-				);
-			}
-		</script>
-	
+	<div id ="top">
+		<body>
+			Scan the barcode on your Student ID<br>
+			... <i>hopefully</i> 
+		</body>
 	</div>
 
-	<body id = "log">
-		ting
-	</body>
-	<!--
-	<img src="Pictures/barcodes/12.jpg" id = "barcodeimg">
--->
-	<script type = "module">
-		document.getElementById('log').innerHTML = "jyunkus";
+	<div id = "middle">
+		
+		<video id="videoStream"></video>
 
-		import { BrowserQRCodeReader } from '@zxing/library';
+		<label id = "result">
+			<em>Nothing Yet!!!</em>
+		</label>
+	</div>
 
-		var codeReader = new BrowserQRCodeReader();
-		var img = document.getElementById('barcodeimg');
+	<img src = "Pictures/barcodes/13.jpg" id = "img">
 
-		try {
-			var result = codeReader.decodeFromImage(img);
-		} catch (err) {
-			console.log(err);
-			console.error(err);
-			document.getElementById('log').innerHTML = err;
+	<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+
+
+	<script type="module">
+  import { BrowserQRCodeReader } from '@zxing/library';
+
+  const codeReader = new BrowserQRCodeReader();
+  const img = document.getElementById('img');
+
+  try {
+      const result = await codeReader.decodeFromImage(img);
+  } catch (err) {
+      console.error(err);
+  }
+
+  console.log(result);
+</script>
+
+
+<!--
+	<script>
+		const codeReader = new ZXing.BrowserBarcodeReader()
+
+		codeReader
+			.listVideoInputDevices()
+			.then(videoInputDevices => {
+				videoInputDevices.forEach(device =>
+					console.log(`${device.label}, ${device.deviceId}`)
+				);
+			})
+			.catch(err => console.error(err));
+
+		var deviceId = undefined;
+		
+		/*
+		try{
+			deviceId = videoInputDevices[1].deviceId;
+		} catch(err){
+			deviceId = videoInputDevices[0].deviceId;
 		}
+		*/
+		
+		codeReader
+			.decodeOnceFromVideoDevice(DeviceId, 'video')
+			.then(result => console.log(result.text))
+			.catch(err => console.error(err));
 
-		console.log(result);
-		document.getElementById('log').innerHTML = result;
-		document.getElementById('log').innerHTML = "jyunkus";
+
+
+
 	</script>
-
+-->
 </html>
