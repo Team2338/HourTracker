@@ -56,13 +56,15 @@
 	
 				});
 			
-			codeReader
-				.decodeOnceFromVideoDevice(deviceId, 'videoStream')
-				.then(result => {
-					console.log(result.text)
-					document.getElementById('result').innerHTML = result.text;
-				})
-				.catch(err => console.error(err));
+				codeReader
+					.decodeOnceFromVideoDevice(deviceId, 'videoStream')
+					.then(result => {
+						console.log(result.text)
+						document.getElementById('result').innerHTML = result.text;
+					})
+					.catch(err => console.error(err));
+			
+
 		});
 
 	</script>
