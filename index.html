@@ -3,20 +3,19 @@
 	
 	<head>
 		<title>Check In</title>
-
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
+		<link rel = "stylesheet" type = "text/css" href = "css/index.css">
 		<!--<script type = "module" src="js/index.js"></script>-->
 		
-		<link rel="stylesheet" type="text/css" href="css/index.css">
-
 	</head>
 
 	<div id ="top">
 		<body>
 			Scan the barcode on your Student ID<br>
+            ... <i>hopefully</i> <br>
 			add link here
-			... <i>hopefully</i> 
+			
 		</body>
 	</div>
 
@@ -31,14 +30,13 @@
 
 	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
 
-
-
 	<script type="text/javascript">
-		window.addEventListener('load', function(){
-			const codeReader = new ZXing.BrowserBarcodeReader();
-
-			let deviceId;
-	
+        
+        const codeReader = new ZXing.BrowserBarcodeReader();
+        let deviceId;
+		
+        window.addEventListener('load', function(){
+	        
 			codeReader
 				.listVideoInputDevices()
 				.then((videoInputDevices) => {
@@ -56,17 +54,43 @@
 					console.error(err);
 	
 				});
-			
-				codeReader
-					.decodeOnceFromVideoDevice(deviceId, 'videoStream')
-					.then(result => {
-						console.log(result.text)
-						document.getElementById('result').innerHTML = result.text;
-					})
-					.catch(err => console.error(err));
-			
-
+            decodeContinuously();
 		});
+        
+        function decodeContinuously() {
+            codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream', (result, err) => {
+            if (result) {
+              // properly decoded qr code
+              console.log('Found QR code!', result)
+              document.getElementById('result').textContent = result.text
+            }
+
+            if (err) {
+              // As long as this error belongs into one of the following categories
+              // the code reader is going to continue as excepted. Any other error
+              // will stop the decoding loop.
+              //
+              // Excepted Exceptions:
+              //
+              //  - NotFoundException
+              //  - ChecksumException
+              //  - FormatException
+
+              if (err instanceof ZXing.NotFoundException) {
+                console.log('No QR code found.')
+              }
+
+              if (err instanceof ZXing.ChecksumException) {
+                console.log('A code was found, but it\'s read value was not valid.')
+              }
+
+              if (err instanceof ZXing.FormatException) {
+                console.log('A code was found, but it was in a invalid format.')
+              }
+            }
+          })
+    }
+        
 
 	</script>
 
