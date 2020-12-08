@@ -50,11 +50,9 @@ function onFoundBarcode(result){
     resultAtribute.textContent = result;
     console.log(result);
     
-    
     //sleep(3000);
-    
     //resultAtribute.textContent = 'Searching';
-    console.log('reset');
+    //console.log('reset');
 }
 
 function sleep(ms){
