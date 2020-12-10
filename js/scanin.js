@@ -1,6 +1,22 @@
 //js for scan in
+var firebaseConfig = {
+	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
+	authDomain: "hourtracker-2b6f8.firebaseapp.com",
+	projectId: "hourtracker-2b6f8",
+	storageBucket: "hourtracker-2b6f8.appspot.com",
+	messagingSenderId: "82969866110",
+	appId: "1:82969866110:web:5a089299065444cbea0d2f",
+	measurementId: "G-DS4GRL509N"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
+
 let deviceId;
 const codeReader = new ZXing.BrowserBarcodeReader();
+
+var db = firebase.firestore();
+const docRefStudentPointer = db.collection("Data").doc("studentPointer");
 
 window.addEventListener('load', function(){
     codeReader
@@ -50,19 +66,18 @@ function onFoundBarcode(result){
     var resultAtribute = document.getElementById('result');
     resultAtribute.textContent = result;
     console.log(result);
-    
+    logFirebase(result);
     //sleep(3000);
     //resultAtribute.textContent = 'Searching';
     //console.log('reset');
 }
 
-function sleep(ms){
-    
-    const date = Date.now();
-    let currentDate = null;
-    
-    do {
-        currentDate = Date.now();
-    }while(currentDate -date<ms);
-    
+function logFirebase(result){
+	db.collection("Data").doc(result).set({
+		test:result
+	}).then(function () {
+		console.log("firebase data successful");
+	}).catch(function (error) {
+		console.log("error: "+error);
+	});
 }

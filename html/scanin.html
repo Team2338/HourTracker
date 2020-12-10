@@ -6,13 +6,18 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<link rel = "stylesheet" type = "text/css" href = "../css/scanin.css">
+		
 	   	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
-        
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-firestore.js"></script>
+
 		<script type = "module" src="../js/scanin.js"></script>
 		
 	</head>
 
     <body id = "background">
+		
         <div class ="topnav">
           <a href = "../index.html" id = "indexlink">
             <img src = "/Pictures/logo_clear.png" id = "logo" >
@@ -27,7 +32,6 @@
             </tr>
           </table>
         </div>
-    
     
         <div id ="top">
             <h1>Scan In</h1>
