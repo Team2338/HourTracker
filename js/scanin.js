@@ -14,6 +14,7 @@ firebase.analytics();
 
 let deviceId;
 const codeReader = new ZXing.BrowserBarcodeReader();
+const studentIDMax = 8;
 
 var db = firebase.firestore();
 const docRefStudentPointer = db.collection("Data").doc("studentPointer");
@@ -34,7 +35,6 @@ window.addEventListener('load', function(){
         .catch(err => {
             console.log("err");
             console.error(err);
-
         });
     decodeContinuously();
 });
@@ -63,13 +63,23 @@ function decodeContinuously() {
 }
 
 function onFoundBarcode(result){
-    var resultAtribute = document.getElementById('result');
-    resultAtribute.textContent = result;
-    console.log(result);
-    logFirebase(result);
-    //sleep(3000);
-    //resultAtribute.textContent = 'Searching';
-    //console.log('reset');
+	
+	if (result.length == 8){
+		db.collection("Data").doc(result).get().then((docSnapshot) =>{
+			
+			if(docSnapshot.exists){
+				var resultAtribute = document.getElementById('result');
+				resultAtribute.textContent = result;
+				console.log(result);
+				logFirebase(result);
+			} else{
+				console.log("nonecistant student: "+result);
+			}
+		});
+	} else {
+		console.log("Faulty scan: "+result);
+	}
+	
 }
 
 function logFirebase(result){

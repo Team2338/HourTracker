@@ -1,4 +1,4 @@
-// css for Snapshot page
+//css for Students.html
 
 /* our colors
     grey = #BABFB7
@@ -43,10 +43,35 @@
   width: auto;
 }
 
+#peopleData{
+	border: 5px;
+	border-color: #BABFB7;
+}
+
+#peopleData th{
+	border: 2px;
+	border-color: #BABFB7;
+}
+
+#newButton {
+	color: #BABFB7;
+	border:none;
+	background-color:white;
+	padding:0px;
+	border-radius: 50%;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+}
+
+#newButton :hover{
+	background-color: green;
+}
+
 body {
     color: #BABFB7;
 }
 
 #background {
     background-color: #02243E;
-}//css for Students
+}
