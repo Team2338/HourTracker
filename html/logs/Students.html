@@ -5,34 +5,59 @@
 		<title>HourLogger | Students</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<link rel = "stylesheet" type = "text/css" href = "../../css/logs/Students.css">       
+		<link rel = "stylesheet" type = "text/css" href = "../../css/logs/Students.css">
+		
+	   	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-firestore.js"></script>
+
 		<script type = "module" src="../../js/logs/Students.js"></script>
 		
 	</head>
 
     <body id = "background">
         <div class ="topnav">
-          <a href = "../../index.html" id = "indexlink">
-            <img src = "/Pictures/logo_clear.png" id = "logo" >
-          </a>
-          <table>
-            <tr>
-              <th><a href = "../../html/checkin.html">Check In</a></th>
-              <th><a href = "../../html/scanin.html">Scan In</a></th>
-              <th><a href = "../../html/logs/Snapshot.html">Snapshots</a></th>
-              <th><a href = "../../html/logs/Students.html">Students</a></th>
-              <th><a href = "../../html/logs/biglogs.html">Data</a></th>
-            </tr>
-          </table>
+			<a href = "../../index.html" id = "indexlink">
+				<img src = "/Pictures/logo_clear.png" id = "logo" >
+			</a>
+
+			<table>
+				<tr>
+					<th><a href = "../../html/checkin.html">Check In</a></th>
+					<th><a href = "../../html/scanin.html">Scan In</a></th>
+					<th><a href = "../../html/logs/Snapshot.html">Snapshots</a></th>
+					<th><a href = "../../html/logs/Students.html">Students</a></th>
+					<th><a href = "../../html/logs/biglogs.html">Data</a></th>
+				</tr>
+			</table>
         </div>
         
         <div id ="top">
             <h1>Students</h1>
-            <body>
-                stuff
-            </body>
+			<body>
+				Page for people creation, veiwing, and deletion
+			</body>
+		</div>
+		
+		<div id = "middle">
+			<table id = "peopleData">
+				<tr>
+					<th>Student ID</th>
+					<th>Last name</th>
+					<th>First name</th>
+					<th>Team</th>
+					<th>Role</th>
+					<th>main Subteam</th>
+					<!--
+					<th>Service Hours</th>
+					<th>Shop Hours</th>
+					-->
+					<th id = "newButton"><button>New +</button></th>
+				</tr>
+				
+			</table>
         </div>
-        
+		
     </body>
-
 </html>

@@ -55,12 +55,13 @@
 
 #newButton {
 	color: #BABFB7;
+	background-color:green;
 	border:none;
-	background-color:white;
-	padding:0px;
-	border-radius: 50%;
+	
+	color: green;
+	padding:6px;
+	border-radius: 12px;
 	text-align: center;
-	text-decoration: none;
 	display: inline-block;
 }
 
