@@ -7,16 +7,19 @@
 		
 		<link rel = "stylesheet" type = "text/css" href = "../../css/logs/Students.css">
 		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 	   	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 
 		<script type = "module" src="../../js/logs/Students.js"></script>
 		
 	</head>
 
     <body id = "background">
+		
         <div class ="topnav">
 			<a href = "../../index.html" id = "indexlink">
 				<img src = "/Pictures/logo_clear.png" id = "logo" >
@@ -41,21 +44,103 @@
 		</div>
 		
 		<div id = "middle">
+
 			<table id = "peopleData">
-				<tr>
-					<th>Student ID</th>
-					<th>Last name</th>
-					<th>First name</th>
-					<th>Team</th>
-					<th>Role</th>
-					<th>main Subteam</th>
-					<!--
-					<th>Service Hours</th>
-					<th>Shop Hours</th>
-					-->
-					<th id = "newButton"><button>New +</button></th>
-				</tr>
+				<thead id= "tableHead">
+					<tr>
+						<th>Student ID</th>
+						<th>Last name</th>
+						<th>First name</th>
+						<th>Team</th>
+						<th>Role</th>
+						<th>main Subteam</th>
+						<!--
+						<th>Service Hours</th>
+						<th>Shop Hours</th>
+
+						<th id = "newButton"><button>New +</button></th>
+						-->
+					</tr>
+					<tr>
+						<th><input type = "text" id = "student-id-box" placeholder= "studend ID"></th>
+						<th><input type = "text" id = "last-name-box" placeholder = "Last Name"></th>
+						<th><input type = "text" id = "first-name-box" placeholder = "First Name"></th>
+						<th>
+							<select id = "team-select">
+								<option value = "none">
+									N/A
+								</option>
+								<option value = "2338">
+									2338
+								</option>						
+								<option value = "16565">
+									16565
+								</option>
+							</select>
+						</th>
+						<th>
+							<select id = "role-select">
+								<!--
+								<option value = "Alum">
+									Alum
+								</option>
+								-->
+								<option value = "none">
+									N/A
+								</option>
+								<option value = "captain">
+									Captain
+								</option>
+								<option value = "subTeamCaptain">
+									subteam Captain
+								</option>
+								<option value = "veteran">
+									Veteran
+								</option>
+								<option value = "member">
+									Member
+								</option>
+							</select>
+						</th>
+						<th>
+							<select id = "subteam-select">
+								<option value = "none">
+									N/A
+								</option>
+								<option value = "webDev">
+									Web/App Dev
+								</option>
+								<option value = "mech">
+									Mechanical engineering
+								</option>
+								<option value = "software">
+									Software Engineering(Robot)
+								</option>
+								<option value = "electrical">
+									Electrical Engineering
+								</option>
+								<option value = "chairmans">
+									Chairmans and Outreach
+								</option>
+							</select>
+						</th>
+						<!--
+						<th>Service Hours</th>
+						<th>Shop Hours</th>
+						-->
+						<th id = "search">
+							<button type = "button" >
+								Search
+							</button>
+						</th>
+						<th id = "newButton"><button>reset</button></th>
+					</tr>				
+				</thead>
 				
+				<tbody id = "tableBody">
+					
+				</tbody>
+
 			</table>
         </div>
 		
