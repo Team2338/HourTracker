@@ -1,7 +1,7 @@
 // !!Warning!! read this
 /*
 !!Warning!!
-you are about to use javascript yo u may end up throwing your device out the window
+you are about to use javascript you may end up throwing your device out the window
 */
 
 var firebaseConfig = {
@@ -20,8 +20,6 @@ firebase.analytics();
 var db = firebase.firestore();
 
 var dataTableBody = document.querySelector('#tableBody');
-var teamSelect = document.querySelector('#team-select');
-var searchButton = document.querySelector('#search button');
 
 var IDBox = document.querySelector('#student-id-box');
 var firstNameBox = document.querySelector('#first-name-box');
@@ -29,6 +27,10 @@ var lastNameBox = document.querySelector('#last-name-box');
 var teamSelect = document.querySelector('#team-select');
 var roleSelect = document.querySelector('#role-select');
 var subteamSelect = document.querySelector('#subteam-select');
+
+var searchButton = document.querySelector('#search-button');
+var newButton = document.querySelector('#new-button');
+var editButton = document.querySelector('#edit-button');
 
 const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
@@ -55,7 +57,7 @@ function newStudent() {
 		(selectedRole != "none")
 	   ){
 				
-		var docRef = db.collection("Users").doc(STUDENT_ID);
+		var docRef = db.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
@@ -71,7 +73,7 @@ function newStudent() {
 					serviceHours: 0
 				});
 				// TODO:
-				//
+				// add individual hour logs here
 			}
 				
 		});
@@ -79,64 +81,76 @@ function newStudent() {
 
 	} else {
 		alert('new student parameters invalid');
-
 	}
 	
-	// create a new collection/doc for hours that are logged
 }
 
 function editStudent() {
 	
 	console.log('edit');
 	resetTable();
+
 	var selectedID = IDBox.value;
 	var selectedFirstName = firstNameBox.value
-	var selectedLastName = lastNameBox.value;e;
-	var selectedTeam = teamSelect.value;
+	var selectedLastName = lastNameBox.value;
+	var selectedTeamNumber = teamSelect.value;
 	var selectedRole = roleSelect.value;
 	var selectedSubteam = subteamSelect.value;
 	
-	var people = db.collection("Users");
-	
 	if (selectedID.length == 8){
 		
-		var docRef = db.collection("Users").doc(STUDENT_ID);
+		var docRef = db.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
 				
+				var newFirstName;
+				var newLastName;
+				var newTeamNumber;
+				var newRole;
+				var newSubteam;
+
 				if(selectedFirstName.length >0){
-					console.log('Fname');
-					filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
+					newFirstName = selectedFirstName;				
+				} else {
+					newFirstName = doc.data().firstName;
 				}
+
 				if(selectedLastName.length > 0){
-					console.log('Lname');
-					filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
+					newLastName = selectedLastName;
+				} else {
+					newLastName = doc.data().lastName;
 				}
-				if(selectedTeam != "none"){
-					console.log('Team');
-					filteredPeople = filteredPeople.where("teamNumber","==", parseInt(selectedTeam));		
+
+				if(selectedTeamNumber != "none"){
+					newTeamNumber = selectedTeamNumber;					
+				} else {
+					newTeamNumber = doc.data().teamNumber;
 				}
 				if(selectedRole != "none"){
-					console.log('Role');
-					filteredPeople = filteredPeople.where("role","==",selectedRole);
+					newRole = selectedRole;
+				} else {
+					newRole = doc.data().role;
 				}
+				console.log(selectedSubteam);
 				if(selectedSubteam != "none"){
-					console.log('subteam');
-					filteredPeople = filteredPeople.where("subteam","==",selectedSubteam);	
+					newSubteam = selectedSubteam;
+				} else {
+					newSubteam = doc.data().subteam;
 				}
 				
 				docRef.set({
-					firstName: selectedFirstName,
-					lastName: selectedLastName,
-					teamNumber: selectedTeam,
-					subteam: selectedSubteam,
-					role: selectedRole,
-					shopHours: 0,
-					serviceHours: 0
+					firstName: newFirstName,
+					lastName: newLastName,
+					teamNumber: newTeamNumber,
+					role: newRole,
+					subteam: newSubteam,
+					shopHours: doc.data().shopHours,
+					serviceHours: doc.data().serviceHours
 				});
-			}else{
 
+			}else{
+				alert('Student with ID'+selectedID+'not found');
 			}
 				
 		});
@@ -178,15 +192,16 @@ function renderRowHTML(doc) {
 
 function resetTable(){
 	dataTableBody.innerHTML = originalTableHTML;
-};
+}
 
 function search(){
 	
 	console.log('search');
 	resetTable();
+
 	var selectedID = IDBox.value;
 	var selectedFirstName = firstNameBox.value
-	var selectedLastName = lastNameBox.value;e;
+	var selectedLastName = lastNameBox.value;
 	var selectedTeam = teamSelect.value;
 	var selectedRole = roleSelect.value;
 	var selectedSubteam = subteamSelect.value;
@@ -211,23 +226,18 @@ function search(){
 	} else {
 		filteredPeople = people;
 		if(selectedFirstName.length >0){
-			console.log('Fname');
 			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
 		}
 		if(selectedLastName.length > 0){
-			console.log('Lname');
 			filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
 		}
 		if(selectedTeam != "none"){
-			console.log('Team');
 			filteredPeople = filteredPeople.where("teamNumber","==", parseInt(selectedTeam));		
 		}
 		if(selectedRole != "none"){
-			console.log('Role');
 			filteredPeople = filteredPeople.where("role","==",selectedRole);
 		}
 		if(selectedSubteam != "none"){
-			console.log('subteam');
 			filteredPeople = filteredPeople.where("subteam","==",selectedSubteam);	
 		}
 		
@@ -235,7 +245,6 @@ function search(){
 		.then(function(querySnapshot) {
 			dataTableHTML = '';
 			querySnapshot.forEach(function(doc) {
-				// doc.data() is never undefined for query doc snapshots
 				console.log(doc.id, " => ", doc.data());
 				dataTableHTML = dataTableHTML + renderRowHTML(doc);
 			});
@@ -245,44 +254,13 @@ function search(){
 			console.log("Error getting documents: ", error);
 		});
 	}
-	/*
-	console.log('search Parameters');
-	console.log(selectedID);
-	console.log(selectedFirstName);
-	console.log(selectedLastName);
-	console.log(selectedRole);
-	console.log(selectedTeam);
-	console.log(selectedSubteam);*/
-	/*
-	filteredPeople.get().then((snapshot) => {
-		dataTableHTML = '';
-		snapshot.docs.forEach((doc) => {
-			dataTableHTML = dataTableHTML + renderRowHTML(doc);
-			//console.log(dataTableHTML);
-		});
-		//console.log(dataTableHTML);
-		dataTableBody.innerHTML = dataTableHTML;
-	});
-	*/
 
 }
 
 function setup(){
-	
-	/*
-	//finds all teams from firebase and adds them to the dropdown
-	db.collection("Teams").get().then(querySnapshot =>{
-		querySnapshot.forEach( doc =>{
-			var option = document.createElement("option");
-			option.value = doc.id;
-			option.text = doc.id;
-			teamSelect.add(option);
-		});
-
-	});*/
-
-	searchButton.addEventListener("click", () => { search();});
-	console.log('test2');
+	searchButton.addEventListener("click", search);
+	newButton.addEventListener("click",newStudent);
+	editButton.addEventListener("click",editStudent);
 }
 
 setup();
