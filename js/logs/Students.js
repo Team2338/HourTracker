@@ -1,6 +1,10 @@
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  var firebaseConfig = {
+// !!Warning!! read this
+/*
+!!Warning!!
+you are about to use javascript yo u may end up throwing your device out the window
+*/
+
+var firebaseConfig = {
     apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
     authDomain: "hourtracker-2b6f8.firebaseapp.com",
     projectId: "hourtracker-2b6f8",
@@ -8,42 +12,142 @@
     messagingSenderId: "82969866110",
     appId: "1:82969866110:web:5a089299065444cbea0d2f",
     measurementId: "G-DS4GRL509N"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  firebase.analytics();
-
-// !!Warning!! read this
-/*
-!!Warning!!
-you are about to use javascript you may end up throwing your device out the window
-*/
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+firebase.analytics();
 
 var db = firebase.firestore();
 
 var dataTableBody = document.querySelector('#tableBody');
-const originalTableHTML = dataTableBody.innerHTML;
-var dataTableHTML = '';
-
 var teamSelect = document.querySelector('#team-select');
 var searchButton = document.querySelector('#search button');
 
-// thing that creates or edits a student
-function editStudent(STUDENT_ID, FIRST_NAME, LAST_NAME, TEAM, SUBTEAM, ROLE) {
+var IDBox = document.querySelector('#student-id-box');
+var firstNameBox = document.querySelector('#first-name-box');
+var lastNameBox = document.querySelector('#last-name-box');
+var teamSelect = document.querySelector('#team-select');
+var roleSelect = document.querySelector('#role-select');
+var subteamSelect = document.querySelector('#subteam-select');
+
+const originalTableHTML = dataTableBody.innerHTML;
+var dataTableHTML = '';
+
+//creation of a new student
+function newStudent() {
 	
-	db.collection("Teams").doc("2338").collection("People").doc(STUDENT_ID).set({
-		firstNamme: FIRST_NAME,
-		lastName: LAST_NAME,
-		
-		//studentID: STUDENT_ID,
-		//access student ID through doc.id
-		
-		teamNumber: TEAM_NUMBER,
-		subteam: SUBTEAM,
-		role: ROLE
-	});
+	console.log('newStudent');
+	resetTable();
+	
+	var selectedID = IDBox.value;
+	var selectedFirstName = firstNameBox.value;
+	var selectedLastName = lastNameBox.value;
+	var selectedTeam = teamSelect.value;
+	var selectedRole = roleSelect.value;
+	var selectedSubteam = subteamSelect.value;
+	
+	var people = db.collection("Users");
+	
+	if ((selectedID.length == 8) &&
+		(selectedFirstName.length > 0) &&
+		(selectedLastName.length > 0) &&
+		(selectedTeam != "none") &&
+		(selectedRole != "none")
+	   ){
+				
+		var docRef = db.collection("Users").doc(STUDENT_ID);
+		docRef.get().then(function(doc){
+
+			if(doc.exists){
+				alert('Cannot create new student, Student exists');
+			}else{
+				docRef.set({
+					firstName: selectedFirstName,
+					lastName: selectedLastName,
+					teamNumber: selectedTeam,
+					subteam: selectedSubteam,
+					role: selectedRole,
+					shopHours: 0,
+					serviceHours: 0
+				});
+				// TODO:
+				//
+			}
+				
+		});
+
+
+	} else {
+		alert('new student parameters invalid');
+
+	}
+	
 	// create a new collection/doc for hours that are logged
+}
+
+function editStudent() {
 	
+	console.log('edit');
+	resetTable();
+	var selectedID = IDBox.value;
+	var selectedFirstName = firstNameBox.value
+	var selectedLastName = lastNameBox.value;e;
+	var selectedTeam = teamSelect.value;
+	var selectedRole = roleSelect.value;
+	var selectedSubteam = subteamSelect.value;
+	
+	var people = db.collection("Users");
+	
+	if (selectedID.length == 8){
+		
+		var docRef = db.collection("Users").doc(STUDENT_ID);
+		docRef.get().then(function(doc){
+
+			if(doc.exists){
+				
+				if(selectedFirstName.length >0){
+					console.log('Fname');
+					filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
+				}
+				if(selectedLastName.length > 0){
+					console.log('Lname');
+					filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
+				}
+				if(selectedTeam != "none"){
+					console.log('Team');
+					filteredPeople = filteredPeople.where("teamNumber","==", parseInt(selectedTeam));		
+				}
+				if(selectedRole != "none"){
+					console.log('Role');
+					filteredPeople = filteredPeople.where("role","==",selectedRole);
+				}
+				if(selectedSubteam != "none"){
+					console.log('subteam');
+					filteredPeople = filteredPeople.where("subteam","==",selectedSubteam);	
+				}
+				
+				docRef.set({
+					firstName: selectedFirstName,
+					lastName: selectedLastName,
+					teamNumber: selectedTeam,
+					subteam: selectedSubteam,
+					role: selectedRole,
+					shopHours: 0,
+					serviceHours: 0
+				});
+			}else{
+
+			}
+				
+		});
+
+
+	} else {
+		alert('fields invalid');
+
+	}
+	
+	// create a new collection/doc for hours that are logged
 }
 
 function renderRowHTML(doc) {
@@ -80,12 +184,12 @@ function search(){
 	
 	console.log('search');
 	resetTable();
-	var selectedID = document.querySelector('#student-id-box').value;
-	var selectedTeam = document.querySelector('#team-select').value;
-	var selectedFirstName = document.querySelector('#first-name-box').value;
-	var selectedLastName = document.querySelector('#last-name-box').value;
-	var selectedRole = document.querySelector('#role-select').value;
-	var selectedSubteam = document.querySelector('#subteam-select').value;
+	var selectedID = IDBox.value;
+	var selectedFirstName = firstNameBox.value
+	var selectedLastName = lastNameBox.value;e;
+	var selectedTeam = teamSelect.value;
+	var selectedRole = roleSelect.value;
+	var selectedSubteam = subteamSelect.value;
 	
 	var people = db.collection("Users");
 	var filteredPeople;
@@ -126,6 +230,7 @@ function search(){
 			console.log('subteam');
 			filteredPeople = filteredPeople.where("subteam","==",selectedSubteam);	
 		}
+		
 		filteredPeople.get()
 		.then(function(querySnapshot) {
 			dataTableHTML = '';

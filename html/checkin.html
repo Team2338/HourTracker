@@ -5,13 +5,19 @@
 		<title>HourLogger | Check In</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<link rel = "stylesheet" type = "text/css" href = "../css/checkin.css">       
+		<link rel = "stylesheet" type = "text/css" href = "../css/checkin.css">
+		
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
+		
 		<script type = "module" src="../js/checkin.js"></script>
 		
 	</head>
 
     <body id = "background">
-        <div class ="topnav">
+        
+		<div class ="topnav">
           <a href = "../index.html" id = "indexlink">
             <img src = "/Pictures/logo_clear.png" id = "logo" >
           </a>
@@ -29,9 +35,80 @@
         <div id ="top">
             <h1>Check In</h1>
             <body>
-                stuff
+                Scan Alternative
             </body>
         </div>
+		
+		<div id = "middle">
+			
+			<span>
+				the check in time will be recorded at:<br>
+			</span>
+			
+			<span id = "recorded-time-display">
+				
+			</span>
+		
+			<form id = "form" >
+				
+				<input type = "text" id = "student-id-box" placeholder= "studend ID" required>
+				
+				<label for = "time-select" >
+					Clock Out Time
+				</label>
+				
+				<select id = "time-select" required>
+					
+					<option value = "01">
+						1:00 h
+					</option>
+					<option value = "02">
+						2:00 h
+					</option>
+					<option value = "03" selected>
+						3:00 h
+					</option>
+					<option value = "04">
+						4:00 h
+					</option>
+					<option value = "05">
+						5:00 h
+					</option>
+					<option value = "06">
+						6:00 h
+					</option>
+					<option value = "07">
+						7:00 h
+					</option>
+					<option value = "08">
+						8:00 h
+					</option>
+					<option value = "09">
+						9:00 h
+					</option>
+					<option value = "10">
+						10:00 h
+					</option>
+				</select>
+				
+				<label for = "hour-type">
+					type of hours
+				</label>
+				
+				<select id ="hour-type" required>
+					<option value = "shop" selected>
+						Shop
+					</option>
+					<option value="service">
+						Service
+					</option>
+				</select>
+				
+				<input type = "submit" value = "Submit" >
+				
+			</form>
+		
+		</div>
         
     </body>
 
