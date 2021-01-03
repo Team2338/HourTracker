@@ -17,27 +17,27 @@
 
     <body id = "background">
         
-		<div class ="topnav">
-          <a href = "../index.html" id = "indexlink">
-            <img src = "/Pictures/logo_clear.png" id = "logo" >
-          </a>
-          <table>
-            <tr>
-              <th><a href = "../html/checkin.html">Check In</a></th>
-              <th><a href = "../html/scanin.html">Scan In</a></th>
-              <th><a href = "../html/logs/Snapshot.html">Snapshots</a></th>
-              <th><a href = "../html/logs/Students.html">Students</a></th>
-              <th><a href = "../html/logs/biglogs.html">Data</a></th>
-            </tr>
-          </table>
-        </div>
+	<div class ="topnav">
+		<a href = "../index.html" id = "indexlink">
+			<img src = "/Pictures/logo_clear.png" id = "logo" >
+		</a>
+		<table>
+			<tr>
+				<th><a href = "../html/checkin.html">Check In</a></th>
+				<th><a href = "../html/scanin.html">Scan In</a></th>
+				<th><a href = "../html/logs/Snapshot.html">Snapshots</a></th>
+				<th><a href = "../html/logs/Students.html">Students</a></th>
+				<th><a href = "../html/logs/biglogs.html">Data</a></th>
+			</tr>
+		</table>
+	</div>
         
-        <div id ="top">
-            <h1>Check In</h1>
-            <body>
-                Scan Alternative
-            </body>
-        </div>
+	<div id ="top">
+		<h1>Check In</h1>
+		<body>
+			Scan Alternative
+		</body>
+	</div>
 		
 		<div id = "middle">
 			
@@ -51,46 +51,96 @@
 		
 			<form id = "form" >
 				
-				<input type = "text" id = "student-id-box" placeholder= "studend ID" required>
+				<input type = "text" id = "student-id-box" placeholder = "studend ID" required>
 				
-				<label for = "time-select" >
+				<label for = "select-time">
 					Clock Out Time
 				</label>
 				
-				<select id = "time-select" required>
-					
+				<select id = "select-hour" required>
+					<!--
 					<option value = "01">
-						1:00 h
+						1 am
 					</option>
 					<option value = "02">
-						2:00 h
+						2 am
 					</option>
-					<option value = "03" selected>
-						3:00 h
+					<option value = "03">
+						3 am
 					</option>
 					<option value = "04">
-						4:00 h
+						4 am
 					</option>
 					<option value = "05">
-						5:00 h
+						5 am
 					</option>
 					<option value = "06">
-						6:00 h
+						6 am	
 					</option>
 					<option value = "07">
-						7:00 h
+						7 am
 					</option>
 					<option value = "08">
-						8:00 h
+						8 am
 					</option>
 					<option value = "09">
-						9:00 h
+						9 am
 					</option>
 					<option value = "10">
-						10:00 h
+						10 am
 					</option>
+					<option value = "11">
+						11 am
+					</option>
+					<option value = "12">
+						12 am
+					</option>
+					<option value = "13">
+						1 pm
+					</option>
+					<option value = "14">
+						2 pm
+					</option>
+					<option value = "15" selected>
+						3 pm
+					</option>
+					<option value = "16">
+						4 pm
+					</option>
+					<option value = "17">
+						5 pm
+					</option>
+					<option value = "18">
+						6 pm
+					</option>
+					<option value = "19">
+						7 pm
+					</option>
+					<option value = "20">
+						8 pm
+					</option>
+					<option value = "21">
+						9 pm
+					</option>
+					<option value = "22">
+						10 pm
+					</option>
+					<option value = "23">
+						11 pm
+					</option>
+					<option value = "24">
+						12 pm
+					</option>
+					-->				
 				</select>
 				
+				<select id = "select-minute" required>
+					<option value = "00" selected> 00 </option>
+					<option value = "15"> 15 </option>
+					<option value = "30"> 30 </option>
+					<option value = "45"> 45 </option>
+				</select>
+
 				<label for = "hour-type">
 					type of hours
 				</label>
@@ -104,7 +154,7 @@
 					</option>
 				</select>
 				
-				<input type = "submit" value = "Submit" >
+				<input type = "submit" value = "Submit">
 				
 			</form>
 		
