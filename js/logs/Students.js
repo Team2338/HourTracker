@@ -31,6 +31,8 @@ var subteamSelect = document.querySelector('#subteam-select');
 var searchButton = document.querySelector('#search-button');
 var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
+var hourTable = document.createElement('table');
+var rowTemp;
 
 const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
@@ -165,42 +167,73 @@ function editStudent() {
 }
 
 function renderRowHTML(doc) {
-	
-	let rowHTML = '<tr id = "'+ doc.id+'">' +
-						'<td>' +
-							doc.id+
-						'</td>' +
-						'<td>' +
-							doc.data().lastName +
-						'</td>' +
-						'<td>' +
-							doc.data().firstName +
-						'</td>' +
-						'<td>' +
-							doc.data().teamNumber +
-						'</td>'+
-						'<td>'+
-							doc.data().role +
-						'</td>' +
-						'<td>' +
-							doc.data().subteam +
-						'</td>' +
-					'</tr>'
-	;
-	return rowHTML;
+
+	var row = document.createElement('tr');
+	row.id = doc.id;
+	//row.onclick = expandRow(doc.id);
+
+	var tableID = document.createElement('td');
+	tableID.innerHTML = doc.id;
+	row.appendChild(tableID);
+
+	var tableLastName = document.createElement('td');  
+	tableLastName.innerHTML = doc.data().lastName;
+	row.appendChild(tableLastName);
+
+	var tableFirstName = document.createElement('td'); 
+	tableFirstName.innerHTML = doc.data().firstName;
+	row.appendChild(tableFirstName);
+
+	var tableTeamNumber = document.createElement('td');
+	tableTeamNumber.innerHTML = doc.data().teamNumber;
+	row.appendChild(tableTeamNumber);
+
+	var tableRole = document.createElement('td');
+	tableRole.innerHTML = doc.data().role;
+	row.appendChild(tableRole);
+
+	var tableSubteam = document.createElement('td');
+	tableSubteam.innerHTML = doc.data().subteam;
+	row.appendChild(tableSubteam);
+
+	var tableButton = document.createElement('button');
+	var tableButtonData = document.createElement('td');
+	/*
+	tableButton.onclick = () => {
+		expandRow(row);
+	};
+	*/
+	tableButton.id = doc.id + "Button";
+	tableButton.className = "expandButton"; 
+	// for the arrow css later
+	tableButtonData.appendChild(tableButton);
+	row.appendChild(tableButtonData);
+
+	dataTableBody.appendChild(row);
+
 }
 
 function resetTable(){
-	dataTableBody.innerHTML = originalTableHTML;
+	//dataTableBody.innerHTML = originalTableHTML;
+	while(dataTableBody.firstChild){
+		dataTableBody.removeChild(dataTableBody.firstChild);
+	}
+	
 }
-
+/*
+function removeAllChildren(thing){
+	while(thing.firstChild){
+		thing.removeChild(thing.firstChild);
+	}
+}
+*/
 function search(){
 	
 	console.log('search');
 	resetTable();
 
 	var selectedID = IDBox.value;
-	var selectedFirstName = firstNameBox.value
+	var selectedFirstName = firstNameBox.value;
 	var selectedLastName = lastNameBox.value;
 	var selectedTeam = teamSelect.value;
 	var selectedRole = roleSelect.value;
@@ -214,8 +247,7 @@ function search(){
 		filteredPeople = people.doc(selectedID).get().then(
 			function(doc){
 				if(doc.exists){
-					dataTableHTML = renderRowHTML(doc);
-					dataTableBody.innerHTML = dataTableHTML;
+					renderRowHTML(doc);
 				} else {
 					dataTableHTML = '<tr><td>not found</td></tr>';
 					dataTableBody.innerHTML = dataTableHTML;
@@ -223,7 +255,7 @@ function search(){
 			}
 		);
 
-	} else {
+	} else if(selectedID.length == 0){
 		filteredPeople = people;
 		if(selectedFirstName.length >0){
 			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
@@ -232,7 +264,7 @@ function search(){
 			filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
 		}
 		if(selectedTeam != "none"){
-			filteredPeople = filteredPeople.where("teamNumber","==", parseInt(selectedTeam));		
+			filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);		
 		}
 		if(selectedRole != "none"){
 			filteredPeople = filteredPeople.where("role","==",selectedRole);
@@ -243,19 +275,93 @@ function search(){
 		
 		filteredPeople.get()
 		.then(function(querySnapshot) {
-			dataTableHTML = '';
+			//dataTableHTML = '';
 			querySnapshot.forEach(function(doc) {
 				console.log(doc.id, " => ", doc.data());
-				dataTableHTML = dataTableHTML + renderRowHTML(doc);
+				renderRowHTML(doc);
 			});
-			dataTableBody.innerHTML = dataTableHTML;
+			//dataTableBody.innerHTML = dataTableHTML;
 		})
 		.catch(function(error) {
 			console.log("Error getting documents: ", error);
 		});
+	} else {
+		alert('invalid ID');
 	}
 
 }
+/*
+function expandRow(row){
+
+	console.log('expandRow'+row.id);
+
+	try{
+		rowTemp.removeChild(hourTable);
+	}catch(err){
+		console.log(err);
+	}
+
+	rowTemp = row;
+
+	hourTable.setAttribute('class','hourTable');
+
+	var studentLogRef = db.collection("Users").doc(row.id).collection('logs');
+	
+	var titleRow = document.createElement('tr');
+
+	var titleDate = document.createElement('th');
+	var titleClockIn = document.createElement('th');
+	var titleClockOut = document.createElement('th');
+	var titleType = document.createElement('th');
+
+	titleDate.innerHTML = 'Date';
+	titleClockIn.innerHTML = 'Clock In';
+	titleClockOut.innerHTML = 'Clock Out';
+	titleType.innerHTML = 'Type';
+
+	titleRow.appendChild(titleDate);
+	titleRow.appendChild(titleClockIn);
+	titleRow.appendChild(titleClockOut);
+	titleRow.appendChild(titleType);
+
+	hourTable.appendChild(titleRow);
+
+	studentLogRef.get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			
+			console.log(doc.id, " => ", doc.data());
+			
+			var log = document.createElement('tr');
+			
+			var clockInData = document.createElement('td');
+			var clockOutData = document.createElement('td');
+			var dateData = document.createElement('td');
+			var typeData = document.createElement('td');
+
+			clockInData.innerHTML = doc.data().clockInHour + ":" + doc.data().clockInMinute;
+			clockOutData.innerHTML = doc.data().clockOutHour + ":" + doc.data().clockOutMinute;
+			dateData.innerHTML = doc.id;
+			typeData.innerHTML = doc.data().hourType;
+
+			log.appendChild(dateData);
+			log.appendChild(clockInData);
+			log.appendChild(clockOutData);
+			log.appendChild(typeData);
+
+			hourTable.appendChild(log);		
+		});
+		
+		row.appendChild(hourTable);
+
+	
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
+	
+}
+*/
 
 function setup(){
 	searchButton.addEventListener("click", search);
