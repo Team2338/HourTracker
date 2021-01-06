@@ -18,6 +18,10 @@ const studentIDMax = 8;
 
 var db = firebase.firestore();
 var collectionPeople = db.collection("people");
+var resultBox = document.querySelector('#result');
+
+var timeIn;
+var timeOut;
 
 window.addEventListener('load', function(){
     codeReader
@@ -64,21 +68,115 @@ function decodeContinuously() {
 function onFoundBarcode(result){
 	
 	if (result.length == 8){
-		collectionPeople.doc(result).get().then((docSnapshot) =>{
-			
-			if(docSnapshot.exists){
-				var resultAtribute = document.getElementById('result');
-				resultAtribute.textContent = result;
-				logFirebase(result);
-			} else{
-				console.log("nonexistant student: "+result);
-			}
-		});
+		logFirebase(result);
+		console.log(result);
+		resultBox.innerHTML = result;
+
 	} else {
 		console.log("Faulty scan: "+result);
 	}
 }
 
+function logFirebase(ID){
+	
+	// to prevent reload of the webpage on submit
+	
+	console.log('logging');
+	console.log(timeIn);
+
+	timeIn = new Date();
+
+	var year = String(timeIn.getFullYear());
+	var month = String(timeIn.getMonth() +1);
+	// month +1 because index starts at 0
+	var day = String(timeIn.getDate());
+
+	month = (month.length === 1)? '0' + month : month;
+	day = (day.length === 1)? '0' + day : day;
+
+	var CLOCK_IN_HOUR = String(timeIn.getHours());
+	var CLOCK_IN_MINUTE = String(timeIn.getMinutes());
+	
+	var CLOCK_OUT_HOUR = 21;
+	var CLOCK_OUT_MINUTE = 0;
+
+	var timeOut = new Date(year,month-1,day,CLOCK_OUT_HOUR,CLOCK_OUT_MINUTE);
+	timeIn = new Date(year,month-1,day,CLOCK_IN_HOUR,CLOCK_IN_MINUTE);
+	// redefined to remove seconds and ms
+
+	var elapsedTime = timeOut.getTime() - timeIn.getTime();
+
+	console.log(elapsedTime);
+
+	var studentID = ID;
+	var type = "shop";
+	
+	var docName = month + day + year;
+	var docRefStudent = db.collection("Users").doc(studentID);
+	var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+	var newShopHours;
+	var newServiceHours;
+
+	if(elapsedTime <= 0){
+		alert('negative hours');
+	}
+
+	if(type === "shop"){
+		newShopHours = elapsedTime/3600000; // converting ms to hours
+		newServiceHours = 0;
+		console.log(newShopHours);
+	} else if(type === "service"){
+		newServiceHours = elapsedTime/3600000;
+		newShopHours = 0;
+		console.log(newServiceHours);
+	}
+	
+	if(studentID.length == 8){
+		
+		docRefStudent.get().then(function(doc){
+
+			if(doc.exists){
+
+				docRefLog.set({
+		
+					clockInHour: CLOCK_IN_HOUR,
+					clockInMinute: CLOCK_IN_MINUTE,
+					
+					clockOutHour: CLOCK_OUT_HOUR,
+					clockOutMinute: CLOCK_OUT_MINUTE,
+					
+					hourType: type
+				});
+
+				docRefStudent.set({
+					firstName: doc.data().firstName,
+					lastName: doc.data().lastName,
+					teamNumber: doc.data().teamNumber,
+					subteam: doc.data().subteam,
+					role: doc.data().role,
+					shopHours: doc.data().shopHours + newShopHours,
+					serviceHours: doc.data().serviceHours + newServiceHours
+				});
+				
+
+			}else{
+				
+				alert('Human #'+studentID+' Not found');
+			}
+				
+		});
+				
+		console.log('data in Firebase');
+	
+	} else {
+		alert("check your StudentID, it should be 8 chars long");
+	}
+	
+}
+
+
+/*
 function logFirebase(result){
 	collectionPeople.doc(result).set({
 		test:result
@@ -88,3 +186,4 @@ function logFirebase(result){
 		console.log("error: "+error);
 	});
 }
+*/
