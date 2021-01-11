@@ -1,4 +1,4 @@
-// css for Snapshot page
+
 
 /* our colors
     grey = #BABFB7
@@ -43,10 +43,41 @@
   width: auto;
 }
 
+#peopleData{
+	border: 5px;
+	border-color: #BABFB7;
+}
+
+#peopleData th{
+	border: 2px;
+	border-color: #BABFB7;
+}
+
+#newButton {
+	color: #BABFB7;
+	background-color:green;
+	border:none;
+	
+	color: green;
+	padding:6px;
+	border-radius: 12px;
+	text-align: center;
+	display: inline-block;
+}
+
+#newButton :hover{
+	background-color: green;
+}
+
 body {
     color: #BABFB7;
 }
 
 #background {
     background-color: #02243E;
+}
+
+.hourTable {
+	position:absolute;
+	float: down;
 }
