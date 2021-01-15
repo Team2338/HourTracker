@@ -1,17 +1,10 @@
+
 /* our colors
     grey = #BABFB7
     blue = #02243E
     orange = #FE5000
 
 */
-
-#background {
-    background-color: #02243E;
-}
-
-body {
-    color: #BABFB7;
-}
 
 .topnav table{
   overflow: hidden;
@@ -49,24 +42,10 @@ body {
   width: auto;
 }
 
-#middle{
-    
-	margin: 0px auto;
-	width: auto;
-	height: auto;
-	border: 10px #babfb7 solid;
-}
-#videoStream{
-    
-	width: 440px;
-	height: 80px;
-	overflow: hidden;
-	background-color: #979f9d;
-	border: 10px #02243e solid;
+body {
+    color: #BABFB7;
 }
 
-#result{
-	float: bottom;
+#background {
+    background-color: #02243E;
 }
-
-

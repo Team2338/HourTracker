@@ -1,4 +1,4 @@
-//js for scan in
+// js for checkIn.html
 var firebaseConfig = {
 	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
 	authDomain: "hourtracker-2b6f8.firebaseapp.com",
@@ -10,81 +10,28 @@ var firebaseConfig = {
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
-let deviceId;
-const codeReader = new ZXing.BrowserBarcodeReader();
-const studentIDMax = 8;
+// !!Warning!! read this
+/*
+!!Warning!!
+you are about to use javascript you may end up throwing your device out the window
+*/
 
 var db = firebase.firestore();
-var collectionPeople = db.collection("people");
-var resultBox = document.querySelector('#result');
 
 var timeIn;
 var timeOut;
 
-window.addEventListener('load', function(){
-    codeReader
-        .listVideoInputDevices()
-        .then((videoInputDevices) => {
-            deviceId = videoInputDevices[0].deviceId;
-            if (videoInputDevices.length > 1) {
-                videoInputDevices.forEach((element) => {
-                    deviceId = [1].deviceId;
-                    console.log(element.label);
-                    console.log(element.deviceId);
-                })
-            }
-        })
-        .catch(err => {
-            console.log("err");
-            console.error(err);
-        });
-    decodeContinuously();
-});
+var display = document.querySelector('#recorded-time-display');
+var hourSelect = document.querySelector('#select-hour');
 
-function decodeContinuously() {
-    codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream', (result, err) => {
-    if (result) {
-      onFoundBarcode(result.text);
-    }
-    if (err) {
-        // other errors break loop
-      if (err instanceof ZXing.NotFoundException) {
-        //console.log('No QR code found.')
-      }
+function submitData(event){
 
-      if (err instanceof ZXing.ChecksumException) {
-        //console.log('A code was found, but it\'s read value was not valid.')
-      }
-
-      if (err instanceof ZXing.FormatException) {
-        //console.log('A code was found, but it was in a invalid format.')
-      }
-    }
-  })
-}
-
-function onFoundBarcode(result){
-	
-	if (result.length == 8){
-		logFirebase(result);
-		console.log(result);
-		resultBox.innerHTML = result;
-
-	} else {
-		console.log("Faulty scan: "+result);
-	}
-}
-
-function logFirebase(ID){
-	
 	// to prevent reload of the webpage on submit
+	event.preventDefault();
 	
-	console.log('logging');
+	console.log('submit');
 	console.log(timeIn);
-
-	timeIn = new Date();
 
 	var year = String(timeIn.getFullYear());
 	var month = String(timeIn.getMonth() +1);
@@ -97,8 +44,8 @@ function logFirebase(ID){
 	var CLOCK_IN_HOUR = String(timeIn.getHours());
 	var CLOCK_IN_MINUTE = String(timeIn.getMinutes());
 	
-	var CLOCK_OUT_HOUR = 21;
-	var CLOCK_OUT_MINUTE = 0;
+	var CLOCK_OUT_HOUR = document.querySelector('#select-hour').value;
+	var CLOCK_OUT_MINUTE = document.querySelector('#select-minute').value;
 
 	var timeOut = new Date(year,month-1,day,CLOCK_OUT_HOUR,CLOCK_OUT_MINUTE);
 	timeIn = new Date(year,month-1,day,CLOCK_IN_HOUR,CLOCK_IN_MINUTE);
@@ -108,8 +55,8 @@ function logFirebase(ID){
 
 	console.log(elapsedTime);
 
-	var studentID = ID;
-	var type = "shop";
+	var studentID = document.querySelector('#student-id-box').value;
+	var type = document.querySelector('#hour-type').value;
 	
 	var docName = month + day + year;
 	var docRefStudent = db.collection("Users").doc(studentID);
@@ -158,7 +105,7 @@ function logFirebase(ID){
 					shopHours: doc.data().shopHours + newShopHours,
 					serviceHours: doc.data().serviceHours + newServiceHours
 				});
-				
+				display.innerHTML = 'Your response was recorded';
 
 			}else{
 				
@@ -175,15 +122,32 @@ function logFirebase(ID){
 	
 }
 
+function setup(){
+	
+	console.log('checkIn.js loaded');
+	timeIn = new Date();
+	
+	// Month +1 because month index start at 0 
+	display.innerHTML = 
+		String(timeIn.getMonth()+1) + '-'+
+		String(timeIn.getDate()) + '-'+
+		String(timeIn.getFullYear()) + ' '+
+		String(timeIn.getHours()) + ':' +
+		String(timeIn.getMinutes())
+	;
 
-/*
-function logFirebase(result){
-	collectionPeople.doc(result).set({
-		test:result
-	}).then(function () {
-		console.log("firebase data successful");
-	}).catch(function (error) {
-		console.log("error: "+error);
-	});
+	for(var currentHour = timeIn.getHours(); currentHour<24; currentHour++ ){
+		var opt = document.createElement("option");
+		opt.value = currentHour;
+		opt.innerHTML = currentHour;
+		hourSelect.appendChild(opt);
+	}
+	
+	
+	var form = document.querySelector('#form');
+	
+	form.addEventListener('submit',submitData);
+	
 }
-*/
+
+setup();

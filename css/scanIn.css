@@ -1,4 +1,3 @@
-// checkin css
 
 /* our colors
     grey = #BABFB7
@@ -6,6 +5,14 @@
     orange = #FE5000
 
 */
+
+#background {
+    background-color: #02243E;
+}
+
+body {
+    color: #BABFB7;
+}
 
 .topnav table{
   overflow: hidden;
@@ -43,10 +50,24 @@
   width: auto;
 }
 
-body {
-    color: #BABFB7;
+#middle{
+    
+	margin: 0px auto;
+	width: auto;
+	height: auto;
+	border: 10px #babfb7 solid;
+}
+#videoStream{
+    
+	width: 440px;
+	height: 80px;
+	overflow: hidden;
+	background-color: #979f9d;
+	border: 10px #02243e solid;
 }
 
-#background {
-    background-color: #02243E;
+#result{
+	float: bottom;
 }
+
+
