@@ -24,7 +24,7 @@
 			<table>
 				<tr>
 					<th><a href = "../html/checkIn.html">Check In</a></th>
-					<th><a href = "../html/scanIn.html">Scan In</a></th>
+					<th><a href = "../html/scan.html">Scan</a></th>
 					<th><a href = "../html/admin.html">Admin</a></th>
 				</tr>
 			</table>
@@ -43,8 +43,6 @@
 						<th>Last name</th>
 						<th>First name</th>
 						<th>Team</th>
-						<th>Role</th>
-						<th>main Subteam</th>
 						<!--
 						<th>Service Hours</th>
 						<th>Shop Hours</th>
@@ -69,52 +67,6 @@
 								</option>
 							</select>
 						</th>
-						<th>
-							<select id = "role-select">
-								<!--
-								<option value = "Alum">
-									Alum
-								</option>
-								-->
-								<option value = "none">
-									N/A
-								</option>
-								<option value = "captain">
-									Captain
-								</option>
-								<option value = "subTeamCaptain">
-									subteam Captain
-								</option>
-								<option value = "veteran">
-									Veteran
-								</option>
-								<option value = "member">
-									Member
-								</option>
-							</select>
-						</th>
-						<th>
-							<select id = "subteam-select">
-								<option value = "none">
-									N/A
-								</option>
-								<option value = "webDev">
-									Web/App Dev
-								</option>
-								<option value = "mech">
-									Mechanical engineering
-								</option>
-								<option value = "software">
-									Software Engineering(Robot)
-								</option>
-								<option value = "electrical">
-									Electrical Engineering
-								</option>
-								<option value = "chairmans">
-									Chairmans and Outreach
-								</option>
-							</select>
-						</th>
 						<!--
 						<th>Service Hours</th>
 						<th>Shop Hours</th>
@@ -135,7 +87,11 @@
 			</table>
 			<table id = "personData">
 				<thead id = "personDataHead">
-					<th></th>
+					<th>
+						<span id = "personDataIDBox"><em>ID: </em></span><br>
+						<span id = "personDataIDBox"><em>Last Name: </em></span><br>
+						<span id = "personDataIDBox"><em>First Name: </em></span><br>
+					</th>
 				</thead>
 			</table>
         </div>

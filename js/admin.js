@@ -30,7 +30,7 @@ var subteamSelect = document.querySelector('#subteam-select');
 var searchButton = document.querySelector('#search-button');
 var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
-var hourTable = document.createElement('table');
+var hourTable = document.querySelector('#personData');
 var rowTemp;
 
 const originalTableHTML = dataTableBody.innerHTML;
@@ -46,16 +46,12 @@ function newStudent() {
 	var selectedFirstName = firstNameBox.value;
 	var selectedLastName = lastNameBox.value;
 	var selectedTeam = teamSelect.value;
-	var selectedRole = roleSelect.value;
-	var selectedSubteam = subteamSelect.value;
 	
 	var people = db.collection("Users");
 	
 	if ((selectedID.length == 8) &&
 		(selectedFirstName.length > 0) &&
-		(selectedLastName.length > 0) &&
-		(selectedTeam != "none") &&
-		(selectedRole != "none")
+		(selectedLastName.length > 0)
 	   ){
 				
 		var docRef = db.collection("Users").doc(selectedID);
@@ -68,8 +64,6 @@ function newStudent() {
 					firstName: selectedFirstName,
 					lastName: selectedLastName,
 					teamNumber: selectedTeam,
-					subteam: selectedSubteam,
-					role: selectedRole,
 					shopHours: 0,
 					serviceHours: 0
 				});
@@ -95,8 +89,6 @@ function editStudent() {
 	var selectedFirstName = firstNameBox.value
 	var selectedLastName = lastNameBox.value;
 	var selectedTeamNumber = teamSelect.value;
-	var selectedRole = roleSelect.value;
-	var selectedSubteam = subteamSelect.value;
 	
 	if (selectedID.length == 8){
 		
@@ -108,8 +100,6 @@ function editStudent() {
 				var newFirstName;
 				var newLastName;
 				var newTeamNumber;
-				var newRole;
-				var newSubteam;
 
 				if(selectedFirstName.length >0){
 					newFirstName = selectedFirstName;				
@@ -128,24 +118,11 @@ function editStudent() {
 				} else {
 					newTeamNumber = doc.data().teamNumber;
 				}
-				if(selectedRole != "none"){
-					newRole = selectedRole;
-				} else {
-					newRole = doc.data().role;
-				}
-				console.log(selectedSubteam);
-				if(selectedSubteam != "none"){
-					newSubteam = selectedSubteam;
-				} else {
-					newSubteam = doc.data().subteam;
-				}
 				
 				docRef.set({
 					firstName: newFirstName,
 					lastName: newLastName,
 					teamNumber: newTeamNumber,
-					role: newRole,
-					subteam: newSubteam,
 					shopHours: doc.data().shopHours,
 					serviceHours: doc.data().serviceHours
 				});
@@ -187,13 +164,20 @@ function renderRowHTML(doc) {
 	tableTeamNumber.innerHTML = doc.data().teamNumber;
 	row.appendChild(tableTeamNumber);
 
-	var tableRole = document.createElement('td');
-	tableRole.innerHTML = doc.data().role;
-	row.appendChild(tableRole);
+	var tableButton = document.createElement('button');
+	var tableButtonData = document.createElement('td');
+	
+	tableButton.onclick = () => {
+		expandRow(row);
+	};
+	
+	tableButton.id = doc.id + "Button";
+	tableButton.className = "expandButton"; 
+	// for the arrow css later
+	tableButtonData.appendChild(tableButton);
+	row.appendChild(tableButtonData);
 
-	var tableSubteam = document.createElement('td');
-	tableSubteam.innerHTML = doc.data().subteam;
-	row.appendChild(tableSubteam);
+	dataTableBody.appendChild(row);
 
 	dataTableBody.appendChild(row);
 
@@ -207,13 +191,68 @@ function resetTable(){
 	
 }
 
-/*
+function expandRow(row){
+	console.log('expandRow'+row.id);
+	try{
+		rowTemp.removeChild(hourTable);
+	}catch(err){
+		console.log(err);
+	}
+	rowTemp = row;
+	hourTable.setAttribute('class','hourTable');
+	var studentLogRef = db.collection("Users").doc(row.id).collection('logs');
+	
+	var titleRow = document.createElement('tr');
+	var titleDate = document.createElement('th');
+	var titleClockIn = document.createElement('th');
+	var titleClockOut = document.createElement('th');
+	var titleType = document.createElement('th');
+	titleDate.innerHTML = 'Date';
+	titleClockIn.innerHTML = 'Clock In';
+	titleClockOut.innerHTML = 'Clock Out';
+	titleType.innerHTML = 'Type';
+	titleRow.appendChild(titleDate);
+	titleRow.appendChild(titleClockIn);
+	titleRow.appendChild(titleClockOut);
+	titleRow.appendChild(titleType);
+	hourTable.appendChild(titleRow);
+	studentLogRef.get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(doc) {
+			
+			console.log(doc.id, " => ", doc.data());
+			
+			var log = document.createElement('tr');
+			
+			var clockInData = document.createElement('td');
+			var clockOutData = document.createElement('td');
+			var dateData = document.createElement('td');
+			var typeData = document.createElement('td');
+			clockInData.innerHTML = doc.data().clockInHour + ":" + doc.data().clockInMinute;
+			clockOutData.innerHTML = doc.data().clockOutHour + ":" + doc.data().clockOutMinute;
+			dateData.innerHTML = doc.id;
+			typeData.innerHTML = doc.data().hourType;
+			log.appendChild(dateData);
+			log.appendChild(clockInData);
+			log.appendChild(clockOutData);
+			log.appendChild(typeData);
+			hourTable.appendChild(log);		
+		});
+		
+		row.appendChild(hourTable);
+	
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
+	
+}
+
 function removeAllChildren(thing){
 	while(thing.firstChild){
 		thing.removeChild(thing.firstChild);
 	}
 }
-*/
 
 function search(){
 	
@@ -224,8 +263,6 @@ function search(){
 	var selectedFirstName = firstNameBox.value;
 	var selectedLastName = lastNameBox.value;
 	var selectedTeam = teamSelect.value;
-	var selectedRole = roleSelect.value;
-	var selectedSubteam = subteamSelect.value;
 	
 	var people = db.collection("Users");
 	var filteredPeople;
@@ -253,12 +290,6 @@ function search(){
 		}
 		if(selectedTeam != "none"){
 			filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);		
-		}
-		if(selectedRole != "none"){
-			filteredPeople = filteredPeople.where("role","==",selectedRole);
-		}
-		if(selectedSubteam != "none"){
-			filteredPeople = filteredPeople.where("subteam","==",selectedSubteam);	
 		}
 		
 		filteredPeople.get()

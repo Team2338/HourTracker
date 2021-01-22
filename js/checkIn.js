@@ -100,8 +100,6 @@ function submitData(event){
 					firstName: doc.data().firstName,
 					lastName: doc.data().lastName,
 					teamNumber: doc.data().teamNumber,
-					subteam: doc.data().subteam,
-					role: doc.data().role,
 					shopHours: doc.data().shopHours + newShopHours,
 					serviceHours: doc.data().serviceHours + newServiceHours
 				});

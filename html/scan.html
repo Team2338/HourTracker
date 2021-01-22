@@ -5,14 +5,14 @@
 		<title>HourLogger | Scan In</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<link rel = "stylesheet" type = "text/css" href = "../css/scanIn.css">
+		<link rel = "stylesheet" type = "text/css" href = "../css/scan.css">
 		
 	   	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
 		
 		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-firestore.js"></script>
 
-		<script type = "module" src="../js/scanIn.js"></script>
+		<script type = "module" src="../js/scan.js"></script>
 		
 	</head>
 
@@ -25,29 +25,34 @@
           <table>
             <tr>
               <th><a href = "../html/checkIn.html">Check In</a></th>
-              <th><a href = "../html/scanIn.html">Scan In</a></th>
+              <th><a href = "../html/scan.html">Scan</a></th>
               <th><a href = "../html/admin.html">Admin</a></th>
             </tr>
           </table>
         </div>
     
         <div id ="top">
-            <h1>Scan In</h1>
-            <body>
-                Scan the barcode on your Student ID<br>
-                ... <i>hopefully</i> <br>
+            <h1>Scan</h1>
+            <body id = "topBody">
+                Place your Student Id in the scanner slot
             </body>
         </div>
 
-        <div id = "middle">
-
             <video id="videoStream"></video>
+ 
+			<img id = "greenBox" height = "200" width = "200" src = "../Pictures/greenBox.jpg">
 
             <label id = "result">
-                <em>Nothing Yet!!!</em>
-            </label>
+                <em>Scanning ...</em>
+			</label>
 
-        </div>
+			<span id = "switchDisplay">checking In</span>
+
+			<label class="switch">
+				
+        		<input id = "toggle" type="checkbox" value="boop" checked>
+        		<span class="slider round"></span>
+        	</label>
         
     </body>
 
