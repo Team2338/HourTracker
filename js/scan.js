@@ -48,17 +48,18 @@ window.addEventListener('load', function(){
 	decodeContinuously();
 	
 });
-
+/*
 toggle.addEventListener('change', function() {
-	if (this.checked) {
+	if (!this.checked) {
 	  console.log("switch is checked..");
-	  switchDisplay.innerHTML = "checking In";
+	  switchDisplay.innerHTML = "checking Out";
+	  
 	} else {
 	  console.log("switch is not checked..");
-	  switchDisplay.innerHTML = "checking Out";
+	  switchDisplay.innerHTML = "checking In";
 	}
 });
-
+*/
 function decodeContinuously() {
 	
     codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream', (result, err) => {
@@ -85,7 +86,7 @@ function onFoundBarcode(result){
 	
 	if ((result.length == 8) && (scanBlock == false)){
 
-		toggle.checked ? logClockIn(result) : logClockOut(result);
+		toggle.checked ?  logClockOut(result): logClockIn(result);
 
 		greenBox.style.visibility = "visible";
 		resultBox.innerHTML = result;
@@ -205,7 +206,7 @@ function logClockOut(ID){
 
 				}else{
 
-					resultBox.innerHTML = ' YOU DID NOT CLOCK IN TODAY GO SEE ZAIN';
+					resultBox.innerHTML = 'You forgot to clock in😔';
 
 					console.log('you never clocked in');
 					docRefLog.set({

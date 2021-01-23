@@ -13,8 +13,8 @@ body {
 	color: #BABFB7;
 }
 
-#switchDisplay{
-	display: block;
+#switchBox{
+	display: inline-flex;
 }
 
 .topnav table{
@@ -56,15 +56,14 @@ body {
 make topBody big
 */
 
-#result{
-	float: center;
-}
 /* The switch - the box around the slider */
 .switch {
 	position: relative;
 	display: block;
 	width: 60px;
 	height: 34px;
+	margin-left: 20px;
+	margin-right: 20px;
 }
 
 /* Hide default HTML checkbox */
