@@ -163,7 +163,7 @@ function renderRowHTML(doc) {
 	var tableTeamNumber = document.createElement('td');
 	tableTeamNumber.innerHTML = doc.data().teamNumber;
 	row.appendChild(tableTeamNumber);
-
+	/*
 	var tableButton = document.createElement('button');
 	var tableButtonData = document.createElement('td');
 	
@@ -176,9 +176,7 @@ function renderRowHTML(doc) {
 	// for the arrow css later
 	tableButtonData.appendChild(tableButton);
 	row.appendChild(tableButtonData);
-
-	dataTableBody.appendChild(row);
-
+	*/
 	dataTableBody.appendChild(row);
 
 }
