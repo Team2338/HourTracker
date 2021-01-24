@@ -12,7 +12,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 let deviceId;
-const codeReader = new ZXing.BrowserBarcodeReader();
+var codeReader = new ZXing.BrowserBarcodeReader();
 const studentIDMax = 8;
 
 var db = firebase.firestore();
@@ -22,6 +22,7 @@ var toggle = document.querySelector('#toggle');
 var switchDisplay = document.querySelector("#switchDisplay");
 var greenBox = document.querySelector('#greenBox');
 var scanBlock = false;
+var name;
 
 var timeIn;
 var timeOut;
@@ -71,13 +72,15 @@ function decodeContinuously() {
         // other errors break loop
       if (err instanceof ZXing.NotFoundException) {
         //console.log('No QR code found.')
-      } else if (err instanceof ZXing.ChecksumException) {
+	  } 
+	  if (err instanceof ZXing.ChecksumException) {
         //console.log('A code was found, but it\'s read value was not valid.')
-      } else if (err instanceof ZXing.FormatException) {
-        //console.log('A code was found, but it was in a invalid format.')
-      } else {
-		  console.log(err);
 	  }
+	  if (err instanceof ZXing.FormatException) {
+        //console.log('A code was found, but it was in a invalid format.')
+      }
+	  //console.log(err);
+	  
     }
   })
 }
@@ -87,10 +90,6 @@ function onFoundBarcode(result){
 	if ((result.length == 8) && (scanBlock == false)){
 
 		toggle.checked ?  logClockOut(result): logClockIn(result);
-
-		greenBox.style.visibility = "visible";
-		resultBox.innerHTML = result;
-		
 		scanBlock = true;
 		setTimeout(function(){
 			resultBox.innerHTML = '<em>Scanning ...</em>';
@@ -101,8 +100,7 @@ function onFoundBarcode(result){
 	} else if (scanBlock){
 		console.log('ScanBlocked');
 	} else {
-		console.log("Faulty scan: "+result);
-		// possibly reconstruct barcode scanner object
+		console.log("Faulty scan: "+result+"\n reload may be necessary");
 	}
 }
 
@@ -131,26 +129,33 @@ function logClockIn(ID){
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
 
 	docRefStudent.get().then(function(Studentdoc){
-		
 
 		if(Studentdoc.exists){
 			
-			docRefLog.set({
-	
-				clockInHour: CLOCK_IN_HOUR,
-				clockInMinute: CLOCK_IN_MINUTE,
-				
-				clockOutHour: "N/A",
-				clockOutMinute: "N/A",
-				
-				hourType: type
-			});				
+			greenBox.style.visibility = "visible";
+			resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
 
+			docRefLog.get().then(function(docLog){
+
+				if(docLog.exists){
+					resultBox.innerHTML = "You already clocked in today.";	
+				} else {
+
+					docRefLog.set({
+						clockInHour: CLOCK_IN_HOUR,
+						clockInMinute: CLOCK_IN_MINUTE,
+						
+						clockOutHour: "N/A",
+						clockOutMinute: "N/A",
+						
+						hourType: type
+					});				
+				}
+			});
 		}else{
 			
-			alert('Human #'+studentID+' Not found');
+			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
 		}
-			
 	});
 			
 	console.log('data in Firebase');
@@ -187,6 +192,9 @@ function logClockOut(ID){
 
 		if(Studentdoc.exists){
 
+			greenBox.style.visibility = "visible";
+			resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
+
 			docRefLog.get().then(function(Logdoc){
 			
 				if(Logdoc.exists){
@@ -219,7 +227,6 @@ function logClockOut(ID){
 						hourType: type
 					});
 				
-					
 				}
 			
 			});
@@ -234,13 +241,4 @@ function logClockOut(ID){
 		
 	console.log('data in Firebase');
 	
-}
-
-function reload(Id){
-    var container = document.getElementById(Id);
-    var content = container.innerHTML;
-    container.innerHTML= content; 
-    
-   //this line is to watch the result in console , you can remove it later	
-    console.log("Refreshed"); 
 }

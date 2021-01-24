@@ -9,8 +9,8 @@
 		
 	   	<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
 		
-		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
 
 		<script type = "module" src="../js/scan.js"></script>
 		
@@ -24,8 +24,8 @@
         	</a>
         	<table>
 			<tr>
-				<th><a href = "../html/checkIn.html">Check In</a></th>
 				<th><a href = "../html/scan.html">Scan</a></th>
+				<th><a href = "../html/manual.html">Manual</a></th>
 				<th><a href = "../html/admin.html">Admin</a></th>
 			</tr>
           </table>
@@ -34,31 +34,28 @@
         <div id ="top">
             <h1>Scan</h1>
             <body id = "topBody" style="font-size:30px;">
-                Place your Student Id in the scanner slot
+                Place your Student ID in the scanner slot
             </body>
-        </div>
-
-            <video id="videoStream" height = "300" width = "300"></video>
- 
+		</div>
+		<video id="videoStream" height = "300" width = "300"></video>
+		<div id = middle>
 			<label id = "result">
 				<em>Scanning ...</em>
 			</label>
-
 			<img id = "greenBox" height = "200" width = "200" src = "../Pictures/greenBox.jpg">
 
-			<table>
-				
-			</table>
-			<span id = "switchBox">
-				
-				Check In
-				<label class="switch">
+		</div>
 
-        			<input id = "toggle" type="checkbox" value="boop" >
-        			<span class="slider round"></span>
-					</label>
-				Check Out
-			</span>
+		<span id = "switchBox">
+			
+			Check In
+			<label class="switch">
+
+        		<input id = "toggle" type="checkbox" value="boop" >
+        		<span class="slider round"></span>
+				</label>
+			Check Out
+		</span>
         
     </body>
 
