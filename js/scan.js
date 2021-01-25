@@ -100,7 +100,9 @@ function onFoundBarcode(result){
 	} else if (scanBlock){
 		console.log('ScanBlocked');
 	} else {
+		
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
+		location.reload();
 	}
 }
 
