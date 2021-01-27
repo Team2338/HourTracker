@@ -154,7 +154,7 @@ function deleteStudent(){
 	if (selectedID.length == 8){
 		docRef.get().then(function(Studentdoc){
 			if(Studentdoc.exists){
-				answer = window.confirm("You are about to delete"+Studentdoc.data().firstName+"You sure about this");
+				answer = window.confirm("You are about to delete "+Studentdoc.data().firstName+". Are you sure about this?");
 				if (answer){
 					docRef.delete().then(function() {
 						console.log("Document successfully deleted!");

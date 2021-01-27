@@ -14,12 +14,13 @@ firebase.initializeApp(firebaseConfig);
 // !!Warning!! read this
 /*
 !!Warning!!
-you are about to use javascript you may end up throwing your device out the window
+you are about to use javascript you may end up throwing your device out a window
 */
 
 var db = firebase.firestore();
 var toggle = document.querySelector('#toggle');
 var responseBox = document.querySelector('#responseBox');
+var nameSelect = document.querySelector('#nameSelect');
 var time;
 
 function submitData(event){
@@ -45,7 +46,7 @@ function submitData(event){
 
 	// redefined to remove seconds and ms
 
-	var studentID = document.querySelector('#student-id-box').value;
+	var studentID = document.querySelector('#nameSelect').value;
 	var type = "shop";
 	
 	var docName = month + day + year;
@@ -138,6 +139,24 @@ function submitData(event){
 function setup(){
 	
 	console.log('checkIn.js loaded');
+
+	var people = db.collection("Users");
+
+	people.get()
+	.then(function(querySnapshot) {
+		//dataTableHTML = '';
+		querySnapshot.forEach(function(doc) {
+			console.log(doc.id, " => ", doc.data());
+			var option = document.createElement('option');
+			option.value = doc.id;
+			option.text = doc.data().firstName +" "+doc.data().lastName;
+			nameSelect.appendChild(option);
+		});
+		//dataTableBody.innerHTML = dataTableHTML;
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});
 
 	var form = document.querySelector('#form');
 	
