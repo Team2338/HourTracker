@@ -19,18 +19,17 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 var dataTableBody = document.querySelector('#tableBody');
-
 var IDBox = document.querySelector('#student-id-box');
 var firstNameBox = document.querySelector('#first-name-box');
 var lastNameBox = document.querySelector('#last-name-box');
 var teamSelect = document.querySelector('#team-select');
 var roleSelect = document.querySelector('#role-select');
 var subteamSelect = document.querySelector('#subteam-select');
-
 var searchButton = document.querySelector('#search-button');
 var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
 var hourTable = document.querySelector('#personData');
+
 var rowTemp;
 
 const originalTableHTML = dataTableBody.innerHTML;
@@ -152,13 +151,13 @@ function renderRowHTML(doc) {
 	tableID.innerHTML = doc.id;
 	row.appendChild(tableID);
 
-	var tableLastName = document.createElement('td');  
-	tableLastName.innerHTML = doc.data().lastName;
-	row.appendChild(tableLastName);
-
 	var tableFirstName = document.createElement('td'); 
 	tableFirstName.innerHTML = doc.data().firstName;
 	row.appendChild(tableFirstName);
+
+	var tableLastName = document.createElement('td');  
+	tableLastName.innerHTML = doc.data().lastName;
+	row.appendChild(tableLastName);
 
 	var tableTeamNumber = document.createElement('td');
 	tableTeamNumber.innerHTML = doc.data().teamNumber;
