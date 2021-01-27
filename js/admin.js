@@ -28,6 +28,7 @@ var subteamSelect = document.querySelector('#subteam-select');
 var searchButton = document.querySelector('#search-button');
 var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
+var deleteButton = document.querySelector('#delete-button');
 var hourTable = document.querySelector('#personData');
 
 var rowTemp;
@@ -139,6 +140,39 @@ function editStudent() {
 	}
 	
 	// create a new collection/doc for hours that are logged
+}
+
+function deleteStudent(){
+	console.log('delete');
+	var selectedID = IDBox.value;
+
+	var people = db.collection("Users");
+	var docRef = people.doc(selectedID);
+
+	var answer;
+	
+	if (selectedID.length == 8){
+		docRef.get().then(function(Studentdoc){
+			if(Studentdoc.exists){
+				answer = window.confirm("You are about to delete"+Studentdoc.data().firstName+"You sure about this");
+				if (answer){
+					docRef.delete().then(function() {
+						console.log("Document successfully deleted!");
+					}).catch(function(error) {
+						console.error("Error removing document: ", error);
+					});
+				} else{
+					console.log('delete canceled');
+				}
+			} else{
+				console.log('cannot delete, student not found');
+			}
+				
+		});
+	} else{
+		console.log('Id not 8 chars');
+	}
+	
 }
 
 function renderRowHTML(doc) {
@@ -311,6 +345,7 @@ function setup(){
 	searchButton.addEventListener("click", search);
 	newButton.addEventListener("click",newStudent);
 	editButton.addEventListener("click",editStudent);
+	deleteButton.addEventListener("click",deleteStudent);
 }
 
 setup();
