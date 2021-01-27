@@ -18,42 +18,32 @@ you are about to use javascript you may end up throwing your device out the wind
 */
 
 var db = firebase.firestore();
-
-var timeIn;
-var timeOut;
-
-var display = document.querySelector('#recorded-time-display');
-var hourSelect = document.querySelector('#select-hour');
+var toggle = document.querySelector('#toggle');
+var responseBox = document.querySelector('#responseBox');
+var time;
 
 function submitData(event){
+
+	time = new Date();
 
 	// to prevent reload of the webpage on submit
 	event.preventDefault();
 	
 	console.log('submit');
-	console.log(timeIn);
+	console.log(time);
 
-	var year = String(timeIn.getFullYear());
-	var month = String(timeIn.getMonth() +1);
+	var year = String(time.getFullYear());
+	var month = String(time.getMonth() +1);
 	// month +1 because index starts at 0
-	var day = String(timeIn.getDate());
+	var day = String(time.getDate());
 
 	month = (month.length === 1)? '0' + month : month;
 	day = (day.length === 1)? '0' + day : day;
 
-	var CLOCK_IN_HOUR = String(timeIn.getHours());
-	var CLOCK_IN_MINUTE = String(timeIn.getMinutes());
-	
-	var CLOCK_OUT_HOUR = document.querySelector('#select-hour').value;
-	var CLOCK_OUT_MINUTE = document.querySelector('#select-minute').value;
+	var HOUR = time.getHours();
+	var MINUTE = time.getMinutes();
 
-	var timeOut = new Date(year,month-1,day,CLOCK_OUT_HOUR,CLOCK_OUT_MINUTE);
-	timeIn = new Date(year,month-1,day,CLOCK_IN_HOUR,CLOCK_IN_MINUTE);
 	// redefined to remove seconds and ms
-
-	var elapsedTime = timeOut.getTime() - timeIn.getTime();
-
-	console.log(elapsedTime);
 
 	var studentID = document.querySelector('#student-id-box').value;
 	var type = "shop";
@@ -61,14 +51,7 @@ function submitData(event){
 	var docName = month + day + year;
 	var docRefStudent = db.collection("Users").doc(studentID);
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
-
-	var newShopHours;
-	var newServiceHours;
-
-	if(elapsedTime <= 0){
-		alert('negative hours');
-	}
-
+/*
 	if(type === "shop"){
 		newShopHours = elapsedTime/3600000; // converting ms to hours
 		newServiceHours = 0;
@@ -78,13 +61,53 @@ function submitData(event){
 		newShopHours = 0;
 		console.log(newServiceHours);
 	}
-	
+*/	
 	if(studentID.length == 8){
 		
-		docRefStudent.get().then(function(doc){
+		docRefStudent.get().then(function(Studentdoc){
 
-			if(doc.exists){
+			if(Studentdoc.exists){
 
+				docRefLog.get().then(function(Logdoc){
+					if(!Logdoc.exists && !toggle.checked){
+						
+						console.log('checkin');
+						
+						docRefLog.set({
+							clockInHour: HOUR,
+							clockInMinute: MINUTE,
+							clockOutHour: "N/A",
+							clockOutMinute: "N/A",
+							hourType: type
+						});
+						responseBox.innerHTML = "checkin successful";
+					} else if(Logdoc.exists && toggle.checked){
+						console.log('checkout');
+						docRefLog.set({
+							clockInHour: Logdoc.data().clockInHour,
+							clockInMinute: Logdoc.data().clockInMinute,
+							clockOutHour: HOUR,
+							clockOutMinute: MINUTE,
+							hourType: type
+						});
+						responseBox.innerHTML = "checkout successful";
+
+					} else if(!Logdoc.exists && toggle.checked){
+						console.log('you never clocked in');
+						docRefLog.set({
+							clockInHour: "N/A",
+							clockInMinute: "N/A",
+							clockOutHour: HOUR,
+							clockOutMinute: MINUTE,
+							hourType: type
+						});
+						responseBox.innerHTML = "you never clocked in";
+					} else if(Logdoc.exists && !toggle.checked){
+						console.log('you already clocked in today');
+						responseBox.innerHTML = "you already clocked in today";
+					}
+				});
+/*
 				docRefLog.set({
 		
 					clockInHour: CLOCK_IN_HOUR,
@@ -95,15 +118,7 @@ function submitData(event){
 					
 					hourType: type
 				});
-
-				docRefStudent.set({
-					firstName: doc.data().firstName,
-					lastName: doc.data().lastName,
-					teamNumber: doc.data().teamNumber,
-					shopHours: doc.data().shopHours + newShopHours,
-					serviceHours: doc.data().serviceHours + newServiceHours
-				});
-				display.innerHTML = 'Your response was recorded';
+*/
 
 			}else{
 				
@@ -123,25 +138,7 @@ function submitData(event){
 function setup(){
 	
 	console.log('checkIn.js loaded');
-	timeIn = new Date();
-	
-	// Month +1 because month index start at 0 
-	display.innerHTML = 
-		String(timeIn.getMonth()+1) + '-'+
-		String(timeIn.getDate()) + '-'+
-		String(timeIn.getFullYear()) + ' '+
-		String(timeIn.getHours()) + ':' +
-		String(timeIn.getMinutes())
-	;
 
-	for(var currentHour = timeIn.getHours(); currentHour<24; currentHour++ ){
-		var opt = document.createElement("option");
-		opt.value = currentHour;
-		opt.innerHTML = currentHour;
-		hourSelect.appendChild(opt);
-	}
-	
-	
 	var form = document.querySelector('#form');
 	
 	form.addEventListener('submit',submitData);

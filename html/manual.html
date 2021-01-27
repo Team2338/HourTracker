@@ -1,6 +1,6 @@
 <!doctype html>
 <html>
-	
+		
 	<head>
 		<title>HourLogger | Manual</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,13 +10,13 @@
 		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
 		
-	
+		
 		<script type = "module" src="../js/manual.js"></script>
 		
 	</head>
 
-    <body id = "background">
-        
+	<body id = "background">
+	    
 	<div class ="topnav">
 		<a href = "../index.html" id = "indexlink">
 			<img src = "../Pictures/logo_clear.png" id = "logo" >
@@ -29,47 +29,31 @@
 			</tr>
 		</table>
 	</div>
-        
+	
 	<div id ="top">
-		<h1>Check In</h1>
-		<body>
-			Scan Alternative
-		</body>
+		<h1>Manual Mode</h1>
 	</div>
 		
 		<div id = "middle">
 			
-			<span>
-				the check in time will be recorded at:<br>
-			</span>
-			
-			<span id = "recorded-time-display">
-				
-			</span>
 		
 			<form id = "form" >
 				
 				<input type = "text" id = "student-id-box" placeholder = "student ID" required>
-				
-				<label for = "select-time">
-					Clock Out Time
-				</label>
-				
-				<select id = "select-hour" required>
-				</select>
-				
-				<select id = "select-minute" required>
-					<option value = "00" selected> 00 </option>
-					<option value = "15"> 15 </option>
-					<option value = "30"> 30 </option>
-					<option value = "45"> 45 </option>
-				</select>
 
-				<label for = "hour-type">
-					type of hours
-				</label>
-								
-				<input type = "submit" value = "Submit">
+				<span id = "switchBox">
+		
+					Check In
+					<label class="switch">
+						<input id = "toggle" type="checkbox" value="boop" >
+						<span class="slider round"></span>
+						</label>
+					Check Out
+				</span>
+					
+				<input type = "submit" value = "Submit" id = "submitButton">
+
+				<span id = "responseBox"></span>
 				
 			</form>
 		
