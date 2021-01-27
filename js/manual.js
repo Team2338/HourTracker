@@ -56,7 +56,7 @@ function submitData(event){
 	console.log(elapsedTime);
 
 	var studentID = document.querySelector('#student-id-box').value;
-	var type = document.querySelector('#hour-type').value;
+	var type = "shop";
 	
 	var docName = month + day + year;
 	var docRefStudent = db.collection("Users").doc(studentID);
