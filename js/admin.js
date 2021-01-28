@@ -23,8 +23,6 @@ var IDBox = document.querySelector('#student-id-box');
 var firstNameBox = document.querySelector('#first-name-box');
 var lastNameBox = document.querySelector('#last-name-box');
 var teamSelect = document.querySelector('#team-select');
-var roleSelect = document.querySelector('#role-select');
-var subteamSelect = document.querySelector('#subteam-select');
 var searchButton = document.querySelector('#search-button');
 var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
@@ -80,6 +78,15 @@ function newStudent() {
 		alert('new student parameters invalid');
 	}
 	
+}
+
+function clearTextBoxes(){
+	
+	console.log('clearTextBoxes');
+	teamSelect.value = "none";
+	IDBox.value = "";
+	firstNameBox.value = "";
+	lastNameBox.value = "";
 }
 
 function editStudent() {
@@ -348,7 +355,7 @@ function setup(){
 	newButton.addEventListener("click",newStudent);
 	editButton.addEventListener("click",editStudent);
 	deleteButton.addEventListener("click",deleteStudent);
-	clearButton.addEventListener("click",resetTable);
+	clearButton.addEventListener("click",clearTextBoxes);
 }
 
 setup();

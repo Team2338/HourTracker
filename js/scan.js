@@ -49,6 +49,7 @@ window.addEventListener('load', function(){
 	decodeContinuously();
 	
 });
+
 /*
 toggle.addEventListener('change', function() {
 	if (!this.checked) {
