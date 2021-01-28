@@ -1,4 +1,6 @@
 //JS for scanIn.html
+
+/** firebase */
 var firebaseConfig = {
 	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
 	authDomain: "hourtracker-2b6f8.firebaseapp.com",
@@ -8,60 +10,24 @@ var firebaseConfig = {
 	appId: "1:82969866110:web:5a089299065444cbea0d2f",
 	measurementId: "G-DS4GRL509N"
 };
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-let deviceId;
-var codeReader = new ZXing.BrowserBarcodeReader();
-const studentIDMax = 8;
-
 var db = firebase.firestore();
-var collectionPeople = db.collection("people");
+var people = db.collection("Users");
+
+/** html docrefs */
 var resultBox = document.querySelector('#result');
 var toggle = document.querySelector('#toggle');
 var switchDisplay = document.querySelector("#switchDisplay");
 var greenBox = document.querySelector('#greenBox');
+
+/** scanning */
+let deviceId;
+var codeReader = new ZXing.BrowserBarcodeReader();
+const studentIDLength = 8;
 var scanBlock = false;
-var name;
+var time;
 
-var timeIn;
-var timeOut;
-
-window.addEventListener('load', function(){
-    codeReader
-        .listVideoInputDevices()
-        .then((videoInputDevices) => {
-            deviceId = videoInputDevices[0].deviceId;
-            if (videoInputDevices.length > 1) {
-                videoInputDevices.forEach((element) => {
-                    deviceId = [1].deviceId;
-                    console.log(element.label);
-					console.log(element.deviceId);
-					
-				});
-				
-            }
-        })
-        .catch(err => {
-            console.log("err");
-            console.error(err);
-        });
-	decodeContinuously();
-	
-});
-
-/*
-toggle.addEventListener('change', function() {
-	if (!this.checked) {
-	  console.log("switch is checked..");
-	  switchDisplay.innerHTML = "checking Out";
-	  
-	} else {
-	  console.log("switch is not checked..");
-	  switchDisplay.innerHTML = "checking In";
-	}
-});
-*/
 function decodeContinuously() {
 	
     codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream', (result, err) => {
@@ -88,7 +54,7 @@ function decodeContinuously() {
 
 function onFoundBarcode(result){
 	
-	if ((result.length == 8) && (scanBlock == false)){
+	if ((result.length == studentIDLength) && (scanBlock == false)){
 
 		toggle.checked ?  logClockOut(result): logClockIn(result);
 		scanBlock = true;
@@ -246,3 +212,26 @@ function logClockOut(ID){
 	console.log('data in Firebase');
 	
 }
+
+window.addEventListener('load', function(){
+    codeReader
+        .listVideoInputDevices()
+        .then((videoInputDevices) => {
+            deviceId = videoInputDevices[0].deviceId;
+            if (videoInputDevices.length > 1) {
+                videoInputDevices.forEach((element) => {
+                    deviceId = [1].deviceId;
+                    console.log(element.label);
+					console.log(element.deviceId);
+					
+				});
+				
+            }
+        })
+        .catch(err => {
+            console.log("err");
+            console.error(err);
+        });
+	decodeContinuously();
+	
+});
