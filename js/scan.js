@@ -82,7 +82,7 @@ function decodeContinuously() {
 	  //console.log(err);
 	  
     }
-  })
+  });
 }
 
 function onFoundBarcode(result){
@@ -98,6 +98,7 @@ function onFoundBarcode(result){
 		}, 3000);
 
 	} else if (scanBlock){
+		// block scan to prevent immediate rescan of same id
 		console.log('ScanBlocked');
 	} else {
 		
@@ -235,7 +236,7 @@ function logClockOut(ID){
 
 		}else{
 			
-			alert('Human #'+studentID+' Not found');
+			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
 		
 		}
 

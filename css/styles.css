@@ -5,6 +5,7 @@
     orange = #FE5000
 */
 
+/*topnav*/
 .topnav table{
 	overflow: hidden;
 	opacity: 1;
@@ -40,7 +41,7 @@
 	height: 60px;
 	width: auto;
 }
-
+/*switches*/
 .switch {
 	position: relative;
 	width: 60px;
@@ -103,7 +104,7 @@ input:checked + .slider:before {
 .slider.round:before {
 	border-radius: 50%;
 }
-
+/* background */
 #background {
 	background-color: #02243E;
 	color: #BABFB7;
