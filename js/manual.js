@@ -1,4 +1,6 @@
 // js for checkIn.html
+
+/** firebase **/
 var firebaseConfig = {
 	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
 	authDomain: "hourtracker-2b6f8.firebaseapp.com",
@@ -8,19 +10,19 @@ var firebaseConfig = {
 	appId: "1:82969866110:web:5a089299065444cbea0d2f",
 	measurementId: "G-DS4GRL509N"
 };
-// Initialize Firebase
+
 firebase.initializeApp(firebaseConfig);
 
-// !!Warning!! read this
-/*
-!!Warning!!
-you are about to use javascript you may end up throwing your device out a window
-*/
-
 var db = firebase.firestore();
+var people = db.collection("Users");
+
+/** html docrefs **/
 var toggle = document.querySelector('#toggle');
 var responseBox = document.querySelector('#responseBox');
 var nameSelect = document.querySelector('#nameSelect');
+var form = document.querySelector('#form');
+
+/** other js stuff **/
 var time;
 
 function submitData(event){
@@ -46,11 +48,11 @@ function submitData(event){
 
 	// redefined to remove seconds and ms
  
-	var studentID = document.querySelector('#nameSelect').value;
+	var studentID = nameSelect.value;
 	var type = "shop";
 	
 	var docName = month + day + year;
-	var docRefStudent = db.collection("Users").doc(studentID);
+	var docRefStudent = people.doc(studentID);
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
 /*
 	if(type === "shop"){
@@ -123,7 +125,7 @@ function submitData(event){
 
 			}else{
 				
-				alert('Human #'+studentID+' Not found');
+				alert('Error: ID #'+studentID+' not found');
 			}
 				
 		});
@@ -140,8 +142,6 @@ function setup(){
 	
 	console.log('checkIn.js loaded');
 
-	var people = db.collection("Users");
-
 	people.get()
 	.then(function(querySnapshot) {
 		//dataTableHTML = '';
@@ -149,7 +149,7 @@ function setup(){
 			console.log(doc.id, " => ", doc.data());
 			var option = document.createElement('option');
 			option.value = doc.id;
-			option.text = doc.data().lastName +" "+doc.data().firstName;
+			option.text = doc.data().firstName +" "+doc.data().lastName;
 			nameSelect.appendChild(option);
 		});
 		//dataTableBody.innerHTML = dataTableHTML;
@@ -157,8 +157,6 @@ function setup(){
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
 	});
-
-	var form = document.querySelector('#form');
 	
 	form.addEventListener('submit',submitData);
 	
