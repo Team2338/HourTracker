@@ -45,7 +45,7 @@ function submitData(event){
 	var MINUTE = time.getMinutes();
 
 	// redefined to remove seconds and ms
-
+ 
 	var studentID = document.querySelector('#nameSelect').value;
 	var type = "shop";
 	
@@ -149,7 +149,7 @@ function setup(){
 			console.log(doc.id, " => ", doc.data());
 			var option = document.createElement('option');
 			option.value = doc.id;
-			option.text = doc.data().firstName +" "+doc.data().lastName;
+			option.text = doc.data().lastName +" "+doc.data().firstName;
 			nameSelect.appendChild(option);
 		});
 		//dataTableBody.innerHTML = dataTableHTML;

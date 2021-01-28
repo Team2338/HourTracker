@@ -53,7 +53,7 @@ function newStudent() {
 		(selectedFirstName.length > 0) &&
 		(selectedLastName.length > 0)
 	   ){
-				
+		
 		var docRef = db.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
@@ -67,6 +67,7 @@ function newStudent() {
 					shopHours: 0,
 					serviceHours: 0
 				});
+				docRef.collection("logs").doc("")
 				// TODO:
 				// add individual hour logs here
 			}
