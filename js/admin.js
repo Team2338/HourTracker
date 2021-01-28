@@ -30,6 +30,7 @@ var newButton = document.querySelector('#new-button');
 var editButton = document.querySelector('#edit-button');
 var deleteButton = document.querySelector('#delete-button');
 var hourTable = document.querySelector('#personData');
+var clearButton = document.querySelector('#clear-button');
 
 var rowTemp;
 
@@ -347,6 +348,7 @@ function setup(){
 	newButton.addEventListener("click",newStudent);
 	editButton.addEventListener("click",editStudent);
 	deleteButton.addEventListener("click",deleteStudent);
+	clearButton.addEventListener("click",resetTable);
 }
 
 setup();
