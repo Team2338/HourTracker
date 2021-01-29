@@ -16,54 +16,153 @@ var db = firebase.firestore();
 var people = db.collection("Users");
 
 /** html docrefs */
-var resultBox = document.querySelector('#result');
-var toggle = document.querySelector('#toggle');
-var switchDisplay = document.querySelector("#switchDisplay");
-var greenBox = document.querySelector('#greenBox');
+var resultBox = $('#result');
+var toggle = $('#checkInSwitchToggle');
+var switchDisplay = $('#switchDisplay');
+var greenBox = $('#greenBox');
 
 /** scanning */
 let deviceId;
 var codeReader = new ZXing.BrowserBarcodeReader();
-const studentIDLength = 8;
-var scanBlock = false;
-var time;
 
-function decodeContinuously() {
+/** processing and logging*/
+const studentIDLength = 8;
+const greenBoxVisibilityDelay = 3000;
+var scanBlock = false;
+
+
+function processBarcode(result,err){
+	// essentially checks for barcode validity
+
+	if (err) {
+		var broken = false;
+		// other errors break loop <= need to find fix for broken loops
+		if (err instanceof ZXing.NotFoundException) {
+		// console.log('No code found.')
+		}
+		if (err instanceof ZXing.ChecksumException) {
+			console.log('A code was found, but it\'s read value was not valid.');
+		}
+		if (err instanceof ZXing.FormatException) {
+			console.log('A code was found, but it was in a invalid format.');
+		}
+		console.log(err);
+
+	}
 	
-    codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream', (result, err) => {
-    if (result) {
-      onFoundBarcode(result.text);
-    }
-    if (err) {
-		
-        // other errors break loop
-      if (err instanceof ZXing.NotFoundException) {
-        //console.log('No QR code found.')
-	  } 
-	  if (err instanceof ZXing.ChecksumException) {
-        //console.log('A code was found, but it\'s read value was not valid.')
-	  }
-	  if (err instanceof ZXing.FormatException) {
-        //console.log('A code was found, but it was in a invalid format.')
-      }
-	  //console.log(err);
-	  
-    }
-  });
+	if ((result.length === studentIDLength) && !scanBlock) {
+		onFoundBarcode(result.text);
+	} else if (scanBlock){
+		console.log('scan to early, scan was blocked');
+	}
+
 }
 
-function onFoundBarcode(result){
+function onFoundBarcode(IdNumber){
+	var time = new Date();
+	scanBlock = true;
+
+	console.log('Id number found'+ IdNumber +'at: ');
+	console.log(time);
 	
-	if ((result.length == studentIDLength) && (scanBlock == false)){
+	var year = String(time.getFullYear());
+	var month = String(time.getMonth() +1);
+	// month +1 because index starts at 0
+	var day = String(time.getDate());
 
+	month = (month.length === 1)? '0' + month : month;
+	day = (day.length === 1)? '0' + day : day;
+	
+	var HOUR = time.getHours();
+	var MINUTE = time.getMinutes();
+	// redefined to remove seconds and ms
+	var studentID = IdNumber;
+	var type = "shop";
+
+	var docName = month + day + year;
+	var docRefStudent = people.doc(studentID);
+	var docRefLog = docRefStudent.collection("logs").doc(docName);
+	
+	docRefStudent.get().then(function(Studentdoc){
+
+		if(Studentdoc.exists){
+
+			docRefLog.get().then(function(Logdoc){
+			
+				if(!Logdoc.exists && !toggle.checked){
+					// checkin
+					
+					greenBox.style.visibility = "visible";
+					resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
+
+					docRefLog.set({
+						clockInHour: HOUR,
+						clockInMinute: MINUTE,
+						clockOutHour: "N/A",
+						clockOutMinute: "N/A",
+						hourType: type
+					});
+					
+					reset();
+
+				} else if(Logdoc.exists && toggle.checked){
+					// checkout
+
+					greenBox.style.visibility = "visible";
+					resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
+
+					docRefLog.set({
+						clockInHour: Logdoc.data().clockInHour,
+						clockInMinute: Logdoc.data().clockInMinute,
+						clockOutHour: HOUR,
+						clockOutMinute: MINUTE,
+						hourType: type
+					});
+
+					reset();
+
+				} else if(!Logdoc.exists && toggle.checked){
+					// you never clocked in
+					greenBox.style.visibility = "visible";
+
+					resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ", you forgot to clock in 😔";
+
+					docRefLog.set({
+						clockInHour: "N/A",
+						clockInMinute: "N/A",
+						clockOutHour: HOUR,
+						clockOutMinute: MINUTE,
+						hourType: type
+					});
+
+					reset();
+				} else if(Logdoc.exists && !toggle.checked){
+					greenBox.style.visibility = "visible";
+					resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ "you already clocked in today";
+
+					reset();
+				}
+			});
+			docRefLog.set({
+	
+				clockInHour: CLOCK_IN_HOUR,
+				clockInMinute: CLOCK_IN_MINUTE,
+				
+				clockOutHour: CLOCK_OUT_HOUR,
+				clockOutMinute: CLOCK_OUT_MINUTE,
+				
+				hourType: type
+			});
+		}else{
+			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
+		}
+			
+	});
+/*
+	
+
+	if (() && (scanBlock == false)){
 		toggle.checked ?  logClockOut(result): logClockIn(result);
-		scanBlock = true;
-		setTimeout(function(){
-			resultBox.innerHTML = '<em>Scanning ...</em>';
-			greenBox.style.visibility = "hidden";
-			scanBlock = false;
-		}, 3000);
-
 	} else if (scanBlock){
 		// block scan to prevent immediate rescan of same id
 		console.log('ScanBlocked');
@@ -72,6 +171,14 @@ function onFoundBarcode(result){
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
 		location.reload();
 	}
+}
+
+function reset(){
+	setTimeout(function(){
+		resultBox.innerHTML = '<em>Scanning ...</em>';
+		greenBox.style.visibility = "hidden";
+		scanBlock = false;
+	}, greenBoxVisibilityDelay);
 }
 
 function logClockIn(ID){
@@ -212,7 +319,7 @@ function logClockOut(ID){
 	console.log('data in Firebase');
 	
 }
-
+/*
 window.addEventListener('load', function(){
     codeReader
         .listVideoInputDevices()
@@ -235,3 +342,30 @@ window.addEventListener('load', function(){
 	decodeContinuously();
 	
 });
+*/
+function setup(){
+	console.log('scan.js loaded');
+
+	/** Barcode Scanner init */
+
+	// list our all camera devices
+	codeReader
+		.listVideoInputDevices()
+		.then(videoInputDevices => {
+			videoInputDevices.forEach(device =>
+				console.log(`${device.label}, ${device.deviceId}`)
+			);
+		})
+		.catch(err => console.error(err));
+	
+	// goes to system default
+	deviceId = undefined;
+
+	// pick a device and start continous scan
+	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
+		processBarcode(result,err);
+	});
+
+}
+
+setup();

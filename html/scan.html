@@ -10,7 +10,7 @@
 
 		<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
 		
-		<script src="jquery-3.5.1.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-firestore.js"></script>
@@ -40,7 +40,9 @@
  				Place your Student ID in the scanner slot
  			</body>
 		</div>
+
 		<video id="videoStream" height = "300" width = "300"></video>
+		
 		<div id = middle>
 			<label id = "result">
 				<em>Scanning ...</em>
@@ -54,7 +56,7 @@
 			Check In
 			<label class="switch">
 
-				<input id = "switchToggle" type="checkbox" value="boop" >
+				<input id = "checkInSwitchToggle" type="checkbox" value="boop" >
 				<span class="slider round"></span>
 				</label>
 			Check Out
