@@ -16,10 +16,11 @@ var db = firebase.firestore();
 var people = db.collection("Users");
 
 /** html docrefs */
-var resultBox = $('#result');
-var toggle = $('#checkInSwitchToggle');
-var switchDisplay = $('#switchDisplay');
-var greenBox = $('#greenBox');
+const resultBox = $('#result');
+const toggle = $('#checkInSwitchToggle');
+const typeToggle = $('#typeSwitchToggle');
+const switchDisplay = $('#switchDisplay');
+const greenBox = $('#greenBox');
 
 /** scanning */
 let deviceId;
@@ -35,28 +36,32 @@ function processBarcode(result,err){
 	// essentially checks for barcode validity
 
 	if (err) {
-		var broken = false;
+		var different = true;
 		// other errors break loop <= need to find fix for broken loops
 		if (err instanceof ZXing.NotFoundException) {
-		// console.log('No code found.')
+			console.log('No code found.');
+			different = false;
 		}
 		if (err instanceof ZXing.ChecksumException) {
+			different = false;
 			console.log('A code was found, but it\'s read value was not valid.');
 		}
 		if (err instanceof ZXing.FormatException) {
+			different = false;
 			console.log('A code was found, but it was in a invalid format.');
 		}
-		console.log(err);
-
+		if (different === true) {
+			console.log(err);
+		}
 	} else if ((result.length === studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
 	} else if (scanBlock){
 		console.log('scan to early, scan was blocked');
 	} else {
 		// I theorize this case breaks above loop maybe find a reset instead
-	
+		codeReader.reset();
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
+		//location.reload();
 	}
 
 }
@@ -80,7 +85,7 @@ function onFoundBarcode(IdNumber){
 	var MINUTE = time.getMinutes();
 	// redefined to remove seconds and ms
 	var studentID = IdNumber;
-	var type = "shop";
+	var type = typeToggle.checked;
 
 	var docName = month + day + year;
 	var docRefStudent = people.doc(studentID);
@@ -155,7 +160,16 @@ function onFoundBarcode(IdNumber){
 			
 	});
 }
-/*
+
+function reset(){
+	setTimeout(function(){
+		resultBox.innerHTML = '<em>Scanning ...</em>';
+		greenBox.style.visibility = "hidden";
+		scanBlock = false;
+	}, greenBoxVisibilityDelay);
+}
+
+/** ancient technologies
 	
 
 	if (() && (scanBlock == false)){
@@ -168,14 +182,6 @@ function onFoundBarcode(IdNumber){
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
 		location.reload();
 	}
-}
-
-function reset(){
-	setTimeout(function(){
-		resultBox.innerHTML = '<em>Scanning ...</em>';
-		greenBox.style.visibility = "hidden";
-		scanBlock = false;
-	}, greenBoxVisibilityDelay);
 }
 
 function logClockIn(ID){
