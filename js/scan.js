@@ -48,12 +48,15 @@ function processBarcode(result,err){
 		}
 		console.log(err);
 
-	}
-	
-	if ((result.length === studentIDLength) && !scanBlock) {
+	} else if ((result.length === studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
 	} else if (scanBlock){
 		console.log('scan to early, scan was blocked');
+	} else {
+		// I theorize this case breaks above loop maybe find a reset instead
+	
+		console.log("Faulty scan: "+result+"\n reload may be necessary");
+		location.reload();
 	}
 
 }
@@ -137,27 +140,21 @@ function onFoundBarcode(IdNumber){
 
 					reset();
 				} else if(Logdoc.exists && !toggle.checked){
+					// you already clocked in
+
 					greenBox.style.visibility = "visible";
 					resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ "you already clocked in today";
 
 					reset();
 				}
 			});
-			docRefLog.set({
 	
-				clockInHour: CLOCK_IN_HOUR,
-				clockInMinute: CLOCK_IN_MINUTE,
-				
-				clockOutHour: CLOCK_OUT_HOUR,
-				clockOutMinute: CLOCK_OUT_MINUTE,
-				
-				hourType: type
-			});
 		}else{
 			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
 		}
 			
 	});
+}
 /*
 	
 
