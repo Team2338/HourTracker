@@ -190,40 +190,78 @@ function deleteStudent(){
 	
 }
 
+
+
 function downloadCSV(){
 	console.log('download');
+/*
+	function createSave(){
+		
+		.catch(function(error) {
+			console.log("Error getting documents: ", error);
+		});
 
-	var titleString ="Id, first name, last name, team# \n";
-	var saveArray = [titleString];
+	}
+*/
+	//Id = "61001708";
+	var titleString ="Id, first name, last name, team#, date, HourIn, MinuteIn, HourOut, MinuteOut,type \n";
 	var saveString = titleString;
 
-	var i = 1;
-
-	people.get()
+	saveString = await people.get()
 	.then(function(querySnapshot) {
-		//dataTableHTML = '';
-		querySnapshot.forEach(function(doc) {
-			//console.log(doc.id, " => ", doc.data());
-			saveString = doc.id + ',' + doc.data().firstName + ',' + doc.data().lastName + ',' + doc.data().teamNumber + '\r\n';
-			console.log(saveString);
-			//i += 1;
+		var students;
+		querySnapshot.forEach(function(studentDoc) {
+			//studentLogs = getlogs
+			console.log(studentDoc.id);
+			students += studentDoc.id + '\r\n';
 		});
-		//dataTableBody.innerHTML = dataTableHTML;
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
+		return students;
 	});
 
-	let csvContent = "data:text/csv;charset=utf-8,";
+	//console.log(saveString);
+/*
+	var studentlogs = await people.doc(Id).collection('logs').get()
+	.then(function(queryLog){
+		var logs;
+		queryLog.forEach(function(logDoc){
+			var logString = studentDoc.id + ','
+			+ studentDoc.data().firstName
+			+ ',' + studentDoc.data().lastName
+			+ ',' + studentDoc.data().teamNumber 
+			+ ',' + logDoc.id
+			+ ',' + logDoc.data().clockInHour
+			+ ',' + logDoc.data().clockInMinute
+			+ ',' + logDoc.data().clockOutHour
+			+ ',' + logDoc.data().clockOutMinute
+			+ '\r\n';
+			logs += logString;
+	  //console.log(saveString);
+		});
+		return logs;
+		//console.log(saveString);
+	});
+*/
+	console.log('behold');
+	console.log(studentlogs);
+	
+
+	function save(saveString){
+		var blob = new Blob([saveString], { type: 'text/plain' });
+		saveAs(blob, "data.csv");
+	}
+
+	save(studentlogs);
+
+	//let csvContent = "data:text/csv;charset=utf-8,";
 /*
 	saveArray.forEach(function(rowArray) {
 		let row = rowArray.join(",");
 		csvContent += row + "\r\n";
 	});
 */
-	var blob = new Blob([saveString], { type: 'data:text/csv;charset=utf-8,' });
+	
 
-	saveAs(blob, "hello world.csv");
+	
 }
 
 function renderRowHTML(doc) {
