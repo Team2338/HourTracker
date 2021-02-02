@@ -193,22 +193,37 @@ function deleteStudent(){
 function downloadCSV(){
 	console.log('download');
 
-	var blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, "hello world.csv");
+	var titleString ="Id, first name, last name, team# \n";
+	var saveArray = [titleString];
+	var saveString = titleString;
 
-	/*		
+	var i = 1;
+
 	people.get()
 	.then(function(querySnapshot) {
 		//dataTableHTML = '';
 		querySnapshot.forEach(function(doc) {
-			console.log(doc.id, " => ", doc.data());
-			
+			//console.log(doc.id, " => ", doc.data());
+			saveString = doc.id + ',' + doc.data().firstName + ',' + doc.data().lastName + ',' + doc.data().teamNumber + '\r\n';
+			console.log(saveString);
+			//i += 1;
 		});
 		//dataTableBody.innerHTML = dataTableHTML;
 	})
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
-	});*/
+	});
+
+	let csvContent = "data:text/csv;charset=utf-8,";
+/*
+	saveArray.forEach(function(rowArray) {
+		let row = rowArray.join(",");
+		csvContent += row + "\r\n";
+	});
+*/
+	var blob = new Blob([saveString], { type: 'data:text/csv;charset=utf-8,' });
+
+	saveAs(blob, "hello world.csv");
 }
 
 function renderRowHTML(doc) {
@@ -232,6 +247,7 @@ function renderRowHTML(doc) {
 	var tableTeamNumber = document.createElement('td');
 	tableTeamNumber.innerHTML = doc.data().teamNumber;
 	row.appendChild(tableTeamNumber);
+	
 	/*
 	var tableButton = document.createElement('button');
 	var tableButtonData = document.createElement('td');
