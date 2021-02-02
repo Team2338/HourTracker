@@ -5,31 +5,15 @@
     orange = #FE5000
 
 */
-
+/*
 #peopleData{
 	border: 5px;
 	border-color: #BABFB7;
 }
-
+*/
 #peopleData th{
 	border: 2px;
 	border-color: #BABFB7;
-}
-
-#newButton {
-	color: #BABFB7;
-	background-color:green;
-	border:none;
-	
-	color: green;
-	padding:6px;
-	border-radius: 12px;
-	text-align: center;
-	display: inline-block;
-}
-
-#newButton :hover{
-	background-color: green;
 }
 
 .hourTable {

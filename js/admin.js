@@ -17,18 +17,24 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
+var people = db.collection("Users");
 
-var dataTableBody = document.querySelector('#tableBody');
-var IDBox = document.querySelector('#student-id-box');
-var firstNameBox = document.querySelector('#first-name-box');
-var lastNameBox = document.querySelector('#last-name-box');
-var teamSelect = document.querySelector('#team-select');
-var searchButton = document.querySelector('#search-button');
-var newButton = document.querySelector('#new-button');
-var editButton = document.querySelector('#edit-button');
-var deleteButton = document.querySelector('#delete-button');
-var hourTable = document.querySelector('#personData');
-var clearButton = document.querySelector('#clear-button');
+//var requirejs = require('requirejs');
+//import { saveAs } from 'file-saver';
+//var FileSaver = require('file-saver');
+
+var dataTableBody = $('#tableBody');
+var IDBox = $('#studentIdBox');
+var firstNameBox = $('#firstNameBox');
+var lastNameBox = $('#lastNameBox');
+var teamSelect = $('#teamSelect');
+var searchButton = $('#searchButton');
+var newButton = $('#newButton');
+var editButton = $('#editButton');
+var deleteButton = $('#deleteButton');
+var hourTable = $('#personData');
+var clearButton = $('#clearButton');
+var downloadButton = $('#downloadButton');
 
 var rowTemp;
 
@@ -184,6 +190,27 @@ function deleteStudent(){
 	
 }
 
+function downloadCSV(){
+	console.log('download');
+
+	var blob = new Blob(["Hello, world!"], {type: "text/plain;charset=utf-8"});
+	saveAs(blob, "hello world.csv");
+
+	/*		
+	people.get()
+	.then(function(querySnapshot) {
+		//dataTableHTML = '';
+		querySnapshot.forEach(function(doc) {
+			console.log(doc.id, " => ", doc.data());
+			
+		});
+		//dataTableBody.innerHTML = dataTableHTML;
+	})
+	.catch(function(error) {
+		console.log("Error getting documents: ", error);
+	});*/
+}
+
 function renderRowHTML(doc) {
 
 	var row = document.createElement('tr');
@@ -304,7 +331,6 @@ function search(){
 	var selectedLastName = lastNameBox.value;
 	var selectedTeam = teamSelect.value;
 	
-	var people = db.collection("Users");
 	var filteredPeople;
 	
 	if(selectedID.length == 8){
@@ -351,11 +377,15 @@ function search(){
 }
 
 function setup(){
-	searchButton.addEventListener("click", search);
-	newButton.addEventListener("click",newStudent);
-	editButton.addEventListener("click",editStudent);
-	deleteButton.addEventListener("click",deleteStudent);
-	clearButton.addEventListener("click",clearTextBoxes);
+	
+	console.log('admin.js loaded');
+
+	searchButton.click(search);
+	newButton.click(newStudent);
+	editButton.click(editStudent);
+	deleteButton.click(deleteStudent);
+	clearButton.click(clearTextBoxes);
+	downloadButton.click(downloadCSV);
 }
 
 setup();
