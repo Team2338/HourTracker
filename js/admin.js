@@ -47,13 +47,11 @@ function newStudent() {
 	console.log('newStudent');
 	resetTable();
 	
-	var selectedID = IDBox.value;
-	var selectedFirstName = firstNameBox.value;
-	var selectedLastName = lastNameBox.value;
-	var selectedTeam = teamSelect.value;
-	
-	var people = db.collection("Users");
-	
+	var selectedID = IDBox.val();
+	var selectedFirstName = firstNameBox.val();
+	var selectedLastName = lastNameBox.val();
+	var selectedTeam = teamSelect.val();
+
 	if ((selectedID.length == 8) &&
 		(selectedFirstName.length > 0) &&
 		(selectedLastName.length > 0)
@@ -72,7 +70,9 @@ function newStudent() {
 					shopHours: 0,
 					serviceHours: 0
 				});
-				docRef.collection("logs").doc("")
+				docRef.collection("logs").doc("init").set({
+					thing: "empty"
+				});
 				// TODO:
 				// add individual hour logs here
 			}
@@ -89,10 +89,10 @@ function newStudent() {
 function clearTextBoxes(){
 	
 	console.log('clearTextBoxes');
-	teamSelect.value = "none";
-	IDBox.value = "";
-	firstNameBox.value = "";
-	lastNameBox.value = "";
+	teamSelect.val("none");
+	IDBox.val("");
+	firstNameBox.val("");
+	lastNameBox.val("");
 }
 
 function editStudent() {
@@ -100,10 +100,10 @@ function editStudent() {
 	console.log('edit');
 	resetTable();
 
-	var selectedID = IDBox.value;
-	var selectedFirstName = firstNameBox.value
-	var selectedLastName = lastNameBox.value;
-	var selectedTeamNumber = teamSelect.value;
+	var selectedID = IDBox.val();
+	var selectedFirstName = firstNameBox.val();
+	var selectedLastName = lastNameBox.val();
+	var selectedTeam = teamSelect.val();
 	
 	if (selectedID.length == 8){
 		
@@ -128,8 +128,8 @@ function editStudent() {
 					newLastName = doc.data().lastName;
 				}
 
-				if(selectedTeamNumber != "none"){
-					newTeamNumber = selectedTeamNumber;					
+				if(selectedTeam != "none"){
+					newTeamNumber = selectedTeam;					
 				} else {
 					newTeamNumber = doc.data().teamNumber;
 				}
@@ -159,9 +159,12 @@ function editStudent() {
 
 function deleteStudent(){
 	console.log('delete');
-	var selectedID = IDBox.value;
+	
+	var selectedID = IDBox.val();
+	//var selectedFirstName = firstNameBox.val();
+	//var selectedLastName = lastNameBox.val();
+	//var selectedTeam = teamSelect.val();
 
-	var people = db.collection("Users");
 	var docRef = people.doc(selectedID);
 
 	var answer;
@@ -190,8 +193,6 @@ function deleteStudent(){
 	
 }
 
-
-
 function downloadCSV(){
 	console.log('download');
 
@@ -202,8 +203,6 @@ function downloadCSV(){
 	var i = 0;
 	people.get()
 	.then(function(querySnapshot) {
-		console.log('size');
-		console.log(querySnapshot.size);
 
 		querySnapshot.forEach(function(studentDoc) {
 			
@@ -223,11 +222,10 @@ function downloadCSV(){
 					+ ',' + logDoc.data().hourType
 					+ '\r\n';
 					saveString += logString;
-					console.log(saveString);
+					
 				});
 				i += 1;
 				if(i >= querySnapshot.size){
-					console.log('end of dis ting');
 					save(saveString);
 				}
 				
@@ -280,15 +278,19 @@ function renderRowHTML(doc) {
 	tableButtonData.appendChild(tableButton);
 	row.appendChild(tableButtonData);
 	*/
-	dataTableBody.appendChild(row);
+	dataTableBody.append(row);
 
 }
 
 function resetTable(){
 	//dataTableBody.innerHTML = originalTableHTML;
+	/*
 	while(dataTableBody.firstChild){
 		dataTableBody.removeChild(dataTableBody.firstChild);
-	}
+	}*/
+	console.log('clear');
+	$("#tableBody > tr").remove();
+	//$("#dataTableBody tr").remove();
 	
 }
 
@@ -360,14 +362,19 @@ function search(){
 	console.log('search');
 	resetTable();
 
-	var selectedID = IDBox.value;
-	var selectedFirstName = firstNameBox.value;
-	var selectedLastName = lastNameBox.value;
-	var selectedTeam = teamSelect.value;
+	var selectedID = IDBox.val();
+	var selectedFirstName = firstNameBox.val();
+	var selectedLastName = lastNameBox.val();
+	var selectedTeam = teamSelect.val();
 	
 	var filteredPeople;
+
+	console.log(selectedID);
+	console.log(selectedLastName);
+	console.log(selectedLastName);
+	console.log(selectedTeam);
 	
-	if(selectedID.length == 8){
+	if(selectedID.length === 8){
 		console.log('ID search');
 		filteredPeople = people.doc(selectedID).get().then(
 			function(doc){
@@ -380,7 +387,7 @@ function search(){
 			}
 		);
 
-	} else if(selectedID.length == 0){
+	} else if(selectedID.length === 0){
 		filteredPeople = people;
 		if(selectedFirstName.length >0){
 			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
