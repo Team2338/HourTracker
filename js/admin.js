@@ -194,74 +194,54 @@ function deleteStudent(){
 
 function downloadCSV(){
 	console.log('download');
-/*
-	function createSave(){
-		
-		.catch(function(error) {
-			console.log("Error getting documents: ", error);
-		});
 
-	}
-*/
-	//Id = "61001708";
-	var titleString ="Id, first name, last name, team#, date, HourIn, MinuteIn, HourOut, MinuteOut,type \n";
+	var titleString ="Id,first name,last name,team#,date,HourIn,MinuteIn,HourOut,MinuteOut,type\r\n";
 	var saveString = titleString;
 
-	saveString = await people.get()
+	var isComplete = false;
+	var i = 0;
+	people.get()
 	.then(function(querySnapshot) {
-		var students;
+		console.log('size');
+		console.log(querySnapshot.size);
+
 		querySnapshot.forEach(function(studentDoc) {
-			//studentLogs = getlogs
-			console.log(studentDoc.id);
-			students += studentDoc.id + '\r\n';
-		});
-		return students;
+			
+			people.doc(studentDoc.id).collection('logs').get()
+			.then(function(queryLog){
+				
+				queryLog.forEach(function(logDoc){
+					var logString = studentDoc.id + ','
+					+ studentDoc.data().firstName
+					+ ',' + studentDoc.data().lastName
+					+ ',' + studentDoc.data().teamNumber 
+					+ ',' + logDoc.id
+					+ ',' + logDoc.data().clockInHour
+					+ ',' + logDoc.data().clockInMinute
+					+ ',' + logDoc.data().clockOutHour
+					+ ',' + logDoc.data().clockOutMinute
+					+ ',' + logDoc.data().hourType
+					+ '\r\n';
+					saveString += logString;
+					console.log(saveString);
+				});
+				i += 1;
+				if(i >= querySnapshot.size){
+					console.log('end of dis ting');
+					save(saveString);
+				}
+				
+			});		
+			
+		});		
+
 	});
 
-	//console.log(saveString);
-/*
-	var studentlogs = await people.doc(Id).collection('logs').get()
-	.then(function(queryLog){
-		var logs;
-		queryLog.forEach(function(logDoc){
-			var logString = studentDoc.id + ','
-			+ studentDoc.data().firstName
-			+ ',' + studentDoc.data().lastName
-			+ ',' + studentDoc.data().teamNumber 
-			+ ',' + logDoc.id
-			+ ',' + logDoc.data().clockInHour
-			+ ',' + logDoc.data().clockInMinute
-			+ ',' + logDoc.data().clockOutHour
-			+ ',' + logDoc.data().clockOutMinute
-			+ '\r\n';
-			logs += logString;
-	  //console.log(saveString);
-		});
-		return logs;
-		//console.log(saveString);
-	});
-*/
-	console.log('behold');
-	console.log(studentlogs);
-	
-
-	function save(saveString){
-		var blob = new Blob([saveString], { type: 'text/plain' });
+	function save(myString){
+		console.log('saving',myString);
+		var blob = new Blob([myString], { type: 'text/plain' });
 		saveAs(blob, "data.csv");
-	}
-
-	save(studentlogs);
-
-	//let csvContent = "data:text/csv;charset=utf-8,";
-/*
-	saveArray.forEach(function(rowArray) {
-		let row = rowArray.join(",");
-		csvContent += row + "\r\n";
-	});
-*/
-	
-
-	
+	}	
 }
 
 function renderRowHTML(doc) {
