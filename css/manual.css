@@ -5,12 +5,13 @@
     orange = #FE5000
 
 */
+#checkInToggleBox{
+	padding-top: 15px;
+}
 
-#switchBox{
-	padding: 10px;
-	padding-left: 0px;
+.switchBox{
 	display: flex;
-	text-align: center;
+	padding-bottom: 15px;
 }
 
 #submitButton {

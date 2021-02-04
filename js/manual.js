@@ -18,6 +18,7 @@ var people = db.collection("Users");
 
 /** html docrefs **/
 var toggle = $('#toggle');
+var typeToggle = $('#typeSwitchToggle');
 var responseBox = $('#responseBox');
 var nameSelect = $('#nameSelect');
 var form = $('#form');
@@ -48,8 +49,9 @@ function submitData(event){
 
 	// redefined to remove seconds and ms
  
-	var studentID = nameSelect.value;
-	var type = "shop";
+	var studentID = nameSelect.val();
+	var type = typeToggle.is(':checked')? "service" : "shop" ;
+	var toggleChecked = toggle.is(':checked');
 	
 	var docName = month + day + year;
 	var docRefStudent = people.doc(studentID);
@@ -72,10 +74,8 @@ function submitData(event){
 			if(Studentdoc.exists){
 
 				docRefLog.get().then(function(Logdoc){
-					if(!Logdoc.exists && !toggle.checked){
-						
-						console.log('checkin');
-						
+					if(!Logdoc.exists && !toggleChecked){
+						console.log('checkin');						
 						docRefLog.set({
 							clockInHour: HOUR,
 							clockInMinute: MINUTE,
@@ -83,8 +83,9 @@ function submitData(event){
 							clockOutMinute: "N/A",
 							hourType: type
 						});
-						responseBox.innerHTML = "checkin successful";
-					} else if(Logdoc.exists && toggle.checked){
+						responseBox.html("checkin successful");
+
+					} else if(Logdoc.exists && toggleChecked){
 						console.log('checkout');
 						docRefLog.set({
 							clockInHour: Logdoc.data().clockInHour,
@@ -93,9 +94,9 @@ function submitData(event){
 							clockOutMinute: MINUTE,
 							hourType: type
 						});
-						responseBox.innerHTML = "checkout successful";
+						responseBox.html("checkout successful");
 
-					} else if(!Logdoc.exists && toggle.checked){
+					} else if(!Logdoc.exists && toggleChecked){
 						console.log('you never clocked in');
 						docRefLog.set({
 							clockInHour: "N/A",
@@ -104,10 +105,11 @@ function submitData(event){
 							clockOutMinute: MINUTE,
 							hourType: type
 						});
-						responseBox.innerHTML = "you never clocked in";
-					} else if(Logdoc.exists && !toggle.checked){
+						responseBox.html("you never clocked in");
+
+					} else if(Logdoc.exists && !toggleChecked){
 						console.log('you already clocked in today');
-						responseBox.innerHTML = "you already clocked in today";
+						responseBox.html("you already clocked in today");
 					}
 				});
 /*
@@ -147,10 +149,11 @@ function setup(){
 		//dataTableHTML = '';
 		querySnapshot.forEach(function(doc) {
 			console.log(doc.id, " => ", doc.data());
-			var option = document.createElement('option');
-			option.value = doc.id;
-			option.text = doc.data().firstName +" "+doc.data().lastName;
-			nameSelect.appendChild(option);
+			//var option = document.createElement('option');
+			//option.value = doc.id;
+			//option.text = doc.data().firstName +" "+doc.data().lastName;
+			nameSelect.append(new Option(doc.data().firstName +" "+doc.data().lastName, doc.id));
+			//nameSelect.appendChild(option);
 		});
 		//dataTableBody.innerHTML = dataTableHTML;
 	})
@@ -158,7 +161,7 @@ function setup(){
 		console.log("Error getting documents: ", error);
 	});
 	
-	form.addEventListener('submit',submitData);
+	form.submit(submitData);
 	
 }
 
