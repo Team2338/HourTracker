@@ -1,5 +1,4 @@
 //JS for scanIn.html
-
 /** firebase */
 var firebaseConfig = {
 	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
@@ -39,7 +38,7 @@ function processBarcode(result,err){
 		var different = true;
 		// other errors break loop <= need to find fix for broken loops
 		if (err instanceof ZXing.NotFoundException) {
-			console.log('No code found.');
+			//console.log('No code found.');
 			different = false;
 		}
 		if (err instanceof ZXing.ChecksumException) {
@@ -51,7 +50,7 @@ function processBarcode(result,err){
 			console.log('A code was found, but it was in a invalid format.');
 		}
 		if (different === true) {
-			console.log(err);
+			console.log('we got an interesting error\n',err);
 		}
 	} else if ((result.length === studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
@@ -63,6 +62,7 @@ function processBarcode(result,err){
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
 		//location.reload();
 	}
+	
 
 }
 
@@ -70,7 +70,7 @@ function onFoundBarcode(IdNumber){
 	var time = new Date();
 	scanBlock = true;
 
-	console.log('Id number found'+ IdNumber +'at: ');
+	console.log('Id number found '+ IdNumber +' at: ');
 	console.log(time);
 	
 	var year = String(time.getFullYear());
@@ -84,8 +84,13 @@ function onFoundBarcode(IdNumber){
 	var HOUR = time.getHours();
 	var MINUTE = time.getMinutes();
 	// redefined to remove seconds and ms
-	var studentID = IdNumber;
-	var type = typeToggle.checked;
+	var studentID = String(IdNumber);
+	
+	var type = typeToggle.is(':checked')? "service" : "shop" ;
+	var checkOut = toggle.is(':checked');
+
+	console.log(type);
+	console.log(checkOut);
 
 	var docName = month + day + year;
 	var docRefStudent = people.doc(studentID);
@@ -97,11 +102,11 @@ function onFoundBarcode(IdNumber){
 
 			docRefLog.get().then(function(Logdoc){
 			
-				if(!Logdoc.exists && !toggle.checked){
+				if(!Logdoc.exists && !checkOut){
 					// checkin
 					
-					greenBox.style.visibility = "visible";
-					resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
+					greenBox.css('visibility', 'visible');
+					resultBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
 					docRefLog.set({
 						clockInHour: HOUR,
@@ -113,11 +118,11 @@ function onFoundBarcode(IdNumber){
 					
 					reset();
 
-				} else if(Logdoc.exists && toggle.checked){
+				} else if(Logdoc.exists && checkOut){
 					// checkout
 
-					greenBox.style.visibility = "visible";
-					resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
+					greenBox.css('visibility', 'visible');
+					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
 					docRefLog.set({
 						clockInHour: Logdoc.data().clockInHour,
@@ -129,11 +134,11 @@ function onFoundBarcode(IdNumber){
 
 					reset();
 
-				} else if(!Logdoc.exists && toggle.checked){
+				} else if(!Logdoc.exists && checkOut){
 					// you never clocked in
-					greenBox.style.visibility = "visible";
+					greenBox.css('visibility', 'visible');
 
-					resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ", you forgot to clock in 😔";
+					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ", you forgot to clock in 😔");
 
 					docRefLog.set({
 						clockInHour: "N/A",
@@ -144,18 +149,18 @@ function onFoundBarcode(IdNumber){
 					});
 
 					reset();
-				} else if(Logdoc.exists && !toggle.checked){
+				} else if(Logdoc.exists && !checkOut){
 					// you already clocked in
 
-					greenBox.style.visibility = "visible";
-					resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ "you already clocked in today";
+					greenBox.css('visibility', 'visible');
+					resultBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ " you already clocked in today");
 
 					reset();
 				}
 			});
 	
 		}else{
-			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
+			resultBox.html('Error: ID #'+studentID+' not found');
 		}
 			
 	});
@@ -163,8 +168,8 @@ function onFoundBarcode(IdNumber){
 
 function reset(){
 	setTimeout(function(){
-		resultBox.innerHTML = '<em>Scanning ...</em>';
-		greenBox.style.visibility = "hidden";
+		resultBox.html('<em>Scanning ...</em>');
+		greenBox.css('visibility', 'hidden');
 		scanBlock = false;
 	}, greenBoxVisibilityDelay);
 }
@@ -365,9 +370,13 @@ function setup(){
 	deviceId = undefined;
 
 	// pick a device and start continous scan
+
+	setTimeout(onFoundBarcode('61001708'),50000);
+	
 	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
 		processBarcode(result,err);
 	});
+	onFoundBarcode('61001708');
 
 }
 

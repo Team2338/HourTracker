@@ -17,10 +17,10 @@ var db = firebase.firestore();
 var people = db.collection("Users");
 
 /** html docrefs **/
-var toggle = document.querySelector('#toggle');
-var responseBox = document.querySelector('#responseBox');
-var nameSelect = document.querySelector('#nameSelect');
-var form = document.querySelector('#form');
+var toggle = $('#toggle');
+var responseBox = $('#responseBox');
+var nameSelect = $('#nameSelect');
+var form = $('#form');
 
 /** other js stuff **/
 var time;
