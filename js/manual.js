@@ -151,7 +151,7 @@ function setup(){
 			//var option = document.createElement('option');
 			//option.value = doc.id;
 			//option.text = doc.data().firstName +" "+doc.data().lastName;
-			nameSelect.append(new Option(doc.data().firstName +" "+doc.data().lastName, doc.id));
+			nameSelect.append(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
 			//nameSelect.appendChild(option);
 		});
 		//dataTableBody.innerHTML = dataTableHTML;

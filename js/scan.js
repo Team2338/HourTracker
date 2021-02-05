@@ -64,7 +64,6 @@ function processBarcode(result,err){
 		//location.reload();
 	}
 	
-
 }
 
 function onFoundBarcode(IdNumber){
@@ -174,7 +173,6 @@ function reset(){
 
 /** ancient technologies
 	
-
 	if (() && (scanBlock == false)){
 		toggle.checked ?  logClockOut(result): logClockIn(result);
 	} else if (scanBlock){
@@ -232,7 +230,7 @@ function logClockIn(ID){
 						clockOutMinute: "N/A",
 						
 						hourType: type
-					});				
+					});
 				}
 			});
 		}else{
@@ -349,6 +347,7 @@ window.addEventListener('load', function(){
 	
 });
 */
+
 function setup(){
 	console.log('scan.js loaded');
 
