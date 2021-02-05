@@ -17,11 +17,11 @@ var db = firebase.firestore();
 var people = db.collection("Users");
 
 /** html docrefs **/
-var toggle = $('#toggle');
-var typeToggle = $('#typeSwitchToggle');
-var responseBox = $('#responseBox');
-var nameSelect = $('#nameSelect');
-var form = $('#form');
+const toggle = $('#toggle');
+const typeToggle = $('#typeSwitchToggle');
+const responseBox = $('#responseBox');
+const nameSelect = $('#nameSelect');
+const form = $('#form');
 
 /** other js stuff **/
 var time;
@@ -126,7 +126,6 @@ function submitData(event){
 */
 
 			}else{
-				
 				alert('Error: ID #'+studentID+' not found');
 			}
 				

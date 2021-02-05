@@ -9,6 +9,7 @@ var firebaseConfig = {
 	appId: "1:82969866110:web:5a089299065444cbea0d2f",
 	measurementId: "G-DS4GRL509N"
 };
+
 firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
@@ -120,7 +121,6 @@ function onFoundBarcode(IdNumber){
 
 				} else if(Logdoc.exists && checkOut){
 					// checkout
-
 					greenBox.css('visibility', 'visible');
 					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
@@ -137,7 +137,6 @@ function onFoundBarcode(IdNumber){
 				} else if(!Logdoc.exists && checkOut){
 					// you never clocked in
 					greenBox.css('visibility', 'visible');
-
 					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ", you forgot to clock in 😔");
 
 					docRefLog.set({
@@ -151,7 +150,6 @@ function onFoundBarcode(IdNumber){
 					reset();
 				} else if(Logdoc.exists && !checkOut){
 					// you already clocked in
-
 					greenBox.css('visibility', 'visible');
 					resultBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ " you already clocked in today");
 
@@ -370,13 +368,11 @@ function setup(){
 	deviceId = undefined;
 
 	// pick a device and start continous scan
-
-	setTimeout(onFoundBarcode('61001708'),50000);
 	
 	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
 		processBarcode(result,err);
 	});
-	onFoundBarcode('61001708');
+	
 
 }
 
