@@ -36,7 +36,7 @@ function processBarcode(result,err){
 	// essentially checks for barcode validity
 
 	if (err) {
-		var different = true;
+		var different = false;
 		// other errors break loop <= need to find fix for broken loops
 		if (err instanceof ZXing.NotFoundException) {
 			//console.log('No code found.');
@@ -53,7 +53,7 @@ function processBarcode(result,err){
 		if (different === true) {
 			console.log('we got an interesting error\n',err);
 		}
-	} else if ((result.length === studentIDLength) && !scanBlock) {
+	} else if ((result.length == studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
 	} else if (scanBlock){
 		console.log('scan to early, scan was blocked');
