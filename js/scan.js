@@ -79,8 +79,8 @@ function onFoundBarcode(IdNumber){
 	// month +1 because index starts at 0
 	var day = String(time.getDate());
 
-	month = (month.length === 1)? '0' + month : month;
-	day = (day.length === 1)? '0' + day : day;
+	month = (month.length == 1)? '0' + month : month;
+	day = (day.length == 1)? '0' + day : day;
 	
 	var HOUR = time.getHours();
 	var MINUTE = time.getMinutes();

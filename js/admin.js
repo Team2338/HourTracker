@@ -196,7 +196,7 @@ function deleteStudent(){
 function downloadCSV(){
 	console.log('download');
 
-	var titleString ="Id,first name,last name,team#,date,HourIn,MinuteIn,HourOut,MinuteOut,type\r\n";
+	var titleString ="Id,first name,last name,team#,date,HourIn,MinuteIn,HourOut,MinuteOut,type, elapsed\r\n";
 	var saveString = titleString;
 
 	var isComplete = false;
@@ -210,6 +210,18 @@ function downloadCSV(){
 			.then(function(queryLog){
 				
 				queryLog.forEach(function(logDoc){
+
+					var startDate = new Date();
+					var endDate = new Date();
+					
+					startDate.setHours(logDoc.data().clockInHour);
+					startDate.setMinutes(logDoc.data().clockInMinute);
+					endDate.setHours(logDoc.data().clockOutHour);
+					endDate.setMinutes(logDoc.data().clockOutMinute);
+
+					var elapsed = endDate - startDate;
+					elapsed /= 60000;
+
 					var logString = studentDoc.id + ','
 					+ studentDoc.data().firstName
 					+ ',' + studentDoc.data().lastName
@@ -220,6 +232,7 @@ function downloadCSV(){
 					+ ',' + logDoc.data().clockOutHour
 					+ ',' + logDoc.data().clockOutMinute
 					+ ',' + logDoc.data().hourType
+					+ ',' + elapsed
 					+ '\r\n';
 					saveString += logString;
 					
@@ -296,11 +309,13 @@ function resetTable(){
 
 function expandRow(row){
 	console.log('expandRow'+row.id);
+
 	try{
 		rowTemp.removeChild(hourTable);
 	}catch(err){
 		console.log(err);
 	}
+
 	rowTemp = row;
 	hourTable.setAttribute('class','hourTable');
 	var studentLogRef = db.collection("Users").doc(row.id).collection('logs');
