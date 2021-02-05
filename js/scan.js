@@ -36,7 +36,7 @@ function processBarcode(result,err){
 	// essentially checks for barcode validity
 
 	if (err) {
-		var different = false;
+		var different = true;
 		// other errors break loop <= need to find fix for broken loops
 		if (err instanceof ZXing.NotFoundException) {
 			//console.log('No code found.');
