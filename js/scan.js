@@ -53,7 +53,7 @@ function processBarcode(result,err){
 		if (different === true) {
 			console.log('we got an interesting error\n',err);
 		}
-	} else if ((result.length == studentIDLength) && !scanBlock) {
+	} else if ((result.text.length == studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
 	} else if (scanBlock){
 		console.log('scan to early, scan was blocked');
@@ -63,6 +63,7 @@ function processBarcode(result,err){
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
 		//location.reload();
 	}
+	console.log('scanblock: ',scanBlock);
 	
 }
 
