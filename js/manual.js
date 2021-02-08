@@ -143,23 +143,30 @@ function setup(){
 	
 	console.log('checkIn.js loaded');
 
+	var optsList= []
+
 	people.get()
 	.then(function(querySnapshot) {
-		//dataTableHTML = '';
+		
 		querySnapshot.forEach(function(doc) {
 			console.log(doc.id, " => ", doc.data());
-			//var option = document.createElement('option');
-			//option.value = doc.id;
-			//option.text = doc.data().firstName +" "+doc.data().lastName;
-			nameSelect.append(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
-			//nameSelect.appendChild(option);
+			optsList.push(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
 		});
-		//dataTableBody.innerHTML = dataTableHTML;
+
+		optsList.sort(function (a, b) {
+			return $(a).text() > $(b).text() ? 1 : -1;
+		});
+
+		optsList.forEach(function(element) {
+			nameSelect.append(element);
+		});
+
+		
 	})
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
 	});
-	
+
 	form.submit(submitData);
 	
 }
