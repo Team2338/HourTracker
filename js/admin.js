@@ -23,18 +23,18 @@ var people = db.collection("Users");
 //import { saveAs } from 'file-saver';
 //var FileSaver = require('file-saver');
 
-var dataTableBody = $('#tableBody');
-var IDBox = $('#studentIdBox');
-var firstNameBox = $('#firstNameBox');
-var lastNameBox = $('#lastNameBox');
-var teamSelect = $('#teamSelect');
-var searchButton = $('#searchButton');
-var newButton = $('#newButton');
-var editButton = $('#editButton');
-var deleteButton = $('#deleteButton');
-var hourTable = $('#personData');
-var clearButton = $('#clearButton');
-var downloadButton = $('#downloadButton');
+const dataTableBody = $('#tableBody');
+const IDBox = $('#studentIdBox');
+const firstNameBox = $('#firstNameBox');
+const lastNameBox = $('#lastNameBox');
+const teamSelect = $('#teamSelect');
+const searchButton = $('#searchButton');
+const newButton = $('#newButton');
+const editButton = $('#editButton');
+const deleteButton = $('#deleteButton');
+const hourTable = $('#personData');
+const clearButton = $('#clearButton');
+const downloadButton = $('#downloadButton');
 
 var rowTemp;
 
@@ -435,6 +435,12 @@ function search(){
 function setup(){
 	
 	console.log('admin.js loaded');
+
+	$(document).ready(function () {
+		$("div[data-includeHTML]").each(function () {
+			$(this).load($(this).attr("data-includeHTML"));
+		});
+	});
 
 	searchButton.click(search);
 	newButton.click(newStudent);
