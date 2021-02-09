@@ -448,6 +448,10 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+
+	people.get().then(function(querySnapshot){
+		
+	});
 }
 
 setup();
