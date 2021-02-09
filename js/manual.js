@@ -56,6 +56,7 @@ function submitData(event){
 	var docName = month + day + year;
 	var docRefStudent = people.doc(studentID);
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
+
 /*
 	if(type === "shop"){
 		newShopHours = elapsedTime/3600000; // converting ms to hours

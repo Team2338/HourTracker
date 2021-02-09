@@ -56,14 +56,13 @@ function processBarcode(result,err){
 	} else if ((result.text.length == studentIDLength) && !scanBlock) {
 		onFoundBarcode(result.text);
 	} else if (scanBlock){
-		console.log('scan to early, scan was blocked');
+		//console.log('scan to early, scan was blocked');
 	} else {
 		// I theorize this case breaks above loop maybe find a reset instead
 		codeReader.reset();
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
 		//location.reload();
 	}
-	console.log('scanblock: ',scanBlock);
 	
 }
 
