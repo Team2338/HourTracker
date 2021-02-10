@@ -59,9 +59,9 @@ function processBarcode(result,err){
 		//console.log('scan to early, scan was blocked');
 	} else {
 		// I theorize this case breaks above loop maybe find a reset instead
-		codeReader.reset();
+		//codeReader.reset();
 		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		//location.reload();
+		location.reload();
 	}
 	
 }
