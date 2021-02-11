@@ -17,7 +17,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
-var fbRTDB =
+var fbRTDB = firebase.database();
 var people = db.collection("Users");
 
 //var requirejs = require('requirejs');
