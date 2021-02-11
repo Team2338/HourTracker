@@ -10,12 +10,12 @@
 	border-color: #BABFB7;
 }
 */
-
+/*
 #peopleData th{
 	border: 2px;
 	border-color: #BABFB7;
 }
-
+*/
 h2{
 	font-size: 20px;
 }
@@ -28,3 +28,8 @@ h2{
 #personData{
 	float: right;
 }
+/*
+#footer {
+	position: bottom;
+
+}*/
