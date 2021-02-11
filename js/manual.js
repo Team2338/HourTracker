@@ -221,7 +221,6 @@ function setup(){
 			nameSelect.append(element);
 		});
 
-		
 	})
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);

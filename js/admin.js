@@ -37,6 +37,7 @@ const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
 const hereTableBody = $('#hereTableBody');
+const checkoutAllButton = $('#checkOutAll')
 
 var rowTemp;
 
@@ -434,6 +435,61 @@ function search(){
 
 }
 
+function checkoutAll(){
+	console.log('checkoutAll');
+
+	firebase.database().ref('users/').once('value').then((snapshot) => {
+
+		var time = new Date();
+
+		var HOUR = time.getHours();
+		var MINUTE = time.getMinutes();
+
+		var year = String(time.getFullYear());
+		var month = String(time.getMonth() +1);
+		// month +1 because index starts at 0
+		var day = String(time.getDate());
+		
+		month = (month.length == 1)? '0' + month : month;
+		day = (day.length == 1)? '0' + day : day;
+
+		var peopleList = snapshot.val().here;
+		console.log(peopleList);
+
+		var docName = month + day + year;
+
+		peopleList.forEach(function(element){
+			var studentID = element[0];
+			
+			var docRefStudent = people.doc(studentID);
+			var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+			docRefLog.get().then(function(logDoc){
+				if(logDoc.exists){
+					docRefLog.set({
+						clockInHour: logDoc.data().clockInHour,
+						clockInMinute: logDoc.data().clockInMinute,
+						clockOutHour: HOUR,
+						clockOutMinute: MINUTE,
+						hourType: logDoc.data().hourType
+					});
+				}
+			});	
+			
+		});
+
+		peopleList = [["no one is here","",""]];
+
+		firebase.database().ref('users/').set({
+			here: peopleList
+		});
+	}).catch(function(err){
+		
+		console.log('an err happened at checkoutAll',err);
+	});
+
+}
+
 function setup(){
 	
 	console.log('admin.js loaded');
@@ -450,6 +506,7 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+	checkoutAllButton.click(checkoutAll);
 
 	fbRTDB.ref('users/').on('value', (snapshot) => {
 
