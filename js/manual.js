@@ -125,6 +125,7 @@ function submitData(event){
 							console.log(peopleList);
 							
 							// remove that element
+
 							peopleList = peopleList.filter(function(el) {
 								if(el[0] === Studentdoc.id){
 									return;
@@ -133,6 +134,10 @@ function submitData(event){
 								}
 								
 							});
+
+							if (peopleList.length === 0){
+								peopleList = [["no one is here","",""]];
+							}
 
 							console.log(peopleList);
 							

@@ -451,7 +451,11 @@ function setup(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 
-	fbRTDB.ref('users/').on('value', (snapshot) =>{
+	fbRTDB.ref('users/').on('value', (snapshot) => {
+
+		console.log('clear');
+		$("#hereTableBody > tr").remove();
+
 		var peopleList = snapshot.val().here;
 		console.log(peopleList);
 		
