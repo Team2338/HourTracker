@@ -99,7 +99,7 @@ function submitData(event){
 								here: peopleList
 							});
 						}).catch(function(err){
-							peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
+							var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
 							firebase.database().ref('users/').set({
 								here: peopleList
 							});
