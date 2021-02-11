@@ -13,7 +13,6 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-
 var db = firebase.firestore();
 var fbRTDB = firebase.database();
 var people = db.collection("Users");
