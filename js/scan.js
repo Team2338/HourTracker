@@ -115,6 +115,24 @@ function onFoundBarcode(IdNumber){
 						clockOutMinute: "N/A",
 						hourType: type
 					});
+
+					firebase.
+					database().ref('users/').once('value').then((snapshot) => {
+	
+						var peopleList = snapshot.val().here;
+						console.log(peopleList);
+						peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
+						console.log(peopleList);
+						
+						firebase.database().ref('users/').set({
+							here: peopleList
+						});
+					}).catch(function(err){
+						var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
+						firebase.database().ref('users/').set({
+							here: peopleList
+						});
+					});
 					
 					reset();
 
@@ -129,6 +147,29 @@ function onFoundBarcode(IdNumber){
 						clockOutHour: HOUR,
 						clockOutMinute: MINUTE,
 						hourType: type
+					});
+
+					firebase.database().ref('users/').once('value').then((snapshot) => {
+						var peopleList = snapshot.val().here;
+						console.log(peopleList);
+						
+						// remove that element
+						peopleList = peopleList.filter(function(el) {
+							if(el[0] === Studentdoc.id){
+								return;
+							}else{
+								return el
+							}
+							
+						});
+						if (peopleList.length === 0){
+							peopleList = [["no one is here","",""]];
+						}
+						console.log(peopleList);
+						
+						firebase.database().ref('users/').set({
+							here: peopleList
+						});
 					});
 
 					reset();
