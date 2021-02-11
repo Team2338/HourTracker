@@ -13,7 +13,9 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+
 var db = firebase.firestore();
+var fbRTDB = firebase.database();
 var people = db.collection("Users");
 
 /** html docrefs **/
@@ -84,7 +86,23 @@ function submitData(event){
 							clockOutMinute: "N/A",
 							hourType: type
 						});
-						responseBox.html("checkin successful");
+						
+						firebase.database().ref('users/').once('value').then((snapshot) => {
+							
+							var peopleList = snapshot.val().here;
+							console.log(peopleList);
+
+							peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
+							console.log(peopleList);
+							
+							firebase.database().ref('users/').set({
+								here: peopleList
+							});
+						});						
+
+						//sets here to an id, name and lastname
+						
+						responseBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
 					} else if(Logdoc.exists && toggleChecked){
 						console.log('checkout');
@@ -95,7 +113,32 @@ function submitData(event){
 							clockOutMinute: MINUTE,
 							hourType: type
 						});
+
+						firebase.database().ref('users/').once('value').then((snapshot) => {
+	
+							var peopleList = snapshot.val().here;
+							console.log(peopleList);
+							
+							// remove that element
+							peopleList = peopleList.filter(function(el) {
+								if(el[0] === Studentdoc.id){
+									return;
+								}else{
+									return el
+								}
+								
+							});
+
+							console.log(peopleList);
+							
+							firebase.database().ref('users/').set({
+								here: peopleList
+							});
+						});
+
 						responseBox.html("checkout successful");
+
+						//removes 
 
 					} else if(!Logdoc.exists && toggleChecked){
 						console.log('you never clocked in');
@@ -112,6 +155,7 @@ function submitData(event){
 						console.log('you already clocked in today');
 						responseBox.html("you already clocked in today");
 					}
+
 				});
 /*
 				docRefLog.set({

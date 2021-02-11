@@ -35,6 +35,7 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
+const hereTableBody = $('#hereTableBody');
 
 var rowTemp;
 
@@ -449,8 +450,30 @@ function setup(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 
-	people.get().then(function(querySnapshot){
+	firebase.database().ref('users/').on('value', (snapshot) =>{
+		var peopleList = snapshot.val().here;
+		console.log(peopleList);
 		
+		// remove that element
+
+		peopleList.forEach(function(element){
+			
+			var row = document.createElement('tr');
+
+			var ID = document.createElement('td');
+			var firstName = document.createElement('td');
+			var lastName = document.createElement('td');
+			
+			ID.innerHTML = element[0];
+			firstName.innerHTML = element[1];
+			lastName.innerHTML = element[2];
+
+			row.appendChild(ID);
+			row.appendChild(firstName);
+			row.appendChild(lastName);
+			
+			hereTableBody.append(row);
+		});
 	});
 }
 

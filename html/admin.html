@@ -12,6 +12,8 @@
 	
 		<script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>		
+		
 
 		<script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
 
@@ -27,10 +29,27 @@
 			<h1>Admin</h1>
 			<h2>Reporting</h2>
 			<button type = "button" id = "downloadButton">Download Raw</button>
+			
+		</div>
+
+		<div id = "middle">
 			<h2 id = "userHeading">Users</h2>
+			this should show who is here, and not here but live
+			<table >
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>first Name</th>
+						<th>last Name</th>
+					</tr>
+				</thead>
+				<tbody id = "hereTableBody">
+
+				</tbody>
+			</table>
 		</div>
 		
-		<div id = "middle">
+		<div id = "bottom">
 
 			<table id = "peopleData">
 				<thead id= "tableHead">
