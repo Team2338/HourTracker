@@ -17,6 +17,7 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
+var fbRTDB =
 var people = db.collection("Users");
 
 //var requirejs = require('requirejs');
@@ -450,7 +451,7 @@ function setup(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 
-	firebase.database().ref('users/').on('value', (snapshot) =>{
+	fbRTDB.ref('users/').on('value', (snapshot) =>{
 		var peopleList = snapshot.val().here;
 		console.log(peopleList);
 		

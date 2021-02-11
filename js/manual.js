@@ -98,7 +98,12 @@ function submitData(event){
 							firebase.database().ref('users/').set({
 								here: peopleList
 							});
-						});						
+						}).catch(function(err){
+							peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
+							firebase.database().ref('users/').set({
+								here: peopleList
+							});
+						});
 
 						//sets here to an id, name and lastname
 						
