@@ -18,7 +18,8 @@ firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
 var fbRTDB = firebase.database();
-//var auth = firebase.auth();
+
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 var people = db.collection("Users");
 
@@ -543,6 +544,46 @@ function setup(){
 		});
 	});
 
+	ui.start('#firebaseui-auth-container', {
+		callbacks: {
+			signInSuccessWithAuthResult: function(authResult) {
+				onSignIn();
+				return false;
+			},
+			uiShown: function() {
+				// The widget is rendered.
+				// Hide the loader.
+				document.getElementById('loader').style.display = 'none';
+			}
+		},
+		// Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+		signInFlow: 'popup',
+		//signInSuccessUrl: '<url-to-redirect-to-on-success>',
+		signInOptions: [
+			// List of OAuth providers supported.
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			//firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+			//firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+			//firebase.auth.GithubAuthProvider.PROVIDER_ID
+		],
+		// Other config options...
+	});
+		
+	
+	
+	
+	
+	
+	
+
+	
+	
+	
+
+}
+
+function onSignIn(){
+
 	searchButton.click(search);
 	newButton.click(newStudent);
 	editButton.click(editStudent);
@@ -551,10 +592,13 @@ function setup(){
 	downloadButton.click(downloadCSV);
 	checkoutAllButton.click(checkoutAll);
 
+	$('#top').css('visibility', 'visible');
+	$('#middle').css('visibility', 'visible');
+	$('#bottom').css('visibility', 'visible');
+
 	fbRTDB.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
 	});
-
 }
 
 setup();
