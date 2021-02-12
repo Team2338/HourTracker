@@ -554,8 +554,6 @@ function setup(){
 		refreshRealTime(snapshot);
 	});
 
-	realTimeSetup();
-
 }
 
 setup();

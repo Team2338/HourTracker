@@ -91,8 +91,12 @@ function submitData(event){
 							var peopleList = snapshot.val().here;
 							console.log(peopleList);
 
+							if (here === [["N/A","N/A","N/A"]]){
+								peopleList = [];
+							}
+
 							peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
-							console.log(peopleList);
+							console.log(peopleList);							
 							
 							firebase.database().ref('users/').set({
 								here: peopleList
