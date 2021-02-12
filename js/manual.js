@@ -135,7 +135,7 @@ function submitData(event){
 							});
 
 							if (peopleList.length === 0){
-								peopleList = [["no one is here","",""]];
+								peopleList = [["N/A","N/A","N/A"]];
 							}
 
 							console.log(peopleList);

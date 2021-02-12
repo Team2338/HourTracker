@@ -37,7 +37,9 @@ const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
 const hereTableBody = $('#hereTableBody');
-const checkoutAllButton = $('#checkOutAll')
+const checkoutAllButton = $('#checkOutAll');
+const hereTable = $('#hereTable');
+const noOneHereBox = $('#noOneHereBox');
 
 var rowTemp;
 
@@ -474,8 +476,8 @@ function checkoutAll(){
 						hourType: logDoc.data().hourType
 					});
 				}
-			});	
-			
+			});
+		
 		});
 
 		peopleList = [["no one is here","",""]];
@@ -488,6 +490,46 @@ function checkoutAll(){
 		console.log('an err happened at checkoutAll',err);
 	});
 
+}
+
+function refreshRealTime(snapshot){
+
+	console.log('realTime list change');
+	
+	hereTableBody.empty();
+	
+	var peopleList = snapshot.val().here;
+	console.log(peopleList);
+	
+	peopleList.forEach(function(element){
+		
+		if(element[0] === "N/A"){
+			console.log('nobody here');
+			
+			hereTable.css('display', 'none');
+			noOneHereBox.css('display', 'block');
+		
+		} else {
+			noOneHereBox.css('display', 'none');
+			hereTable.css('display', 'block');
+			
+			var row = document.createElement('tr');
+			var ID = document.createElement('td');
+			var firstName = document.createElement('td');
+			var lastName = document.createElement('td');
+			
+			ID.innerHTML = element[0];
+			firstName.innerHTML = element[1];
+			lastName.innerHTML = element[2];
+			
+			row.appendChild(ID);
+			row.appendChild(firstName);
+			row.appendChild(lastName);
+			
+			hereTableBody.append(row);
+		}
+	});
+	
 }
 
 function setup(){
@@ -509,34 +551,11 @@ function setup(){
 	checkoutAllButton.click(checkoutAll);
 
 	fbRTDB.ref('users/').on('value', (snapshot) => {
-
-		console.log('clear');
-		$("#hereTableBody > tr").remove();
-
-		var peopleList = snapshot.val().here;
-		console.log(peopleList);
-		
-		// remove that element
-
-		peopleList.forEach(function(element){
-			
-			var row = document.createElement('tr');
-
-			var ID = document.createElement('td');
-			var firstName = document.createElement('td');
-			var lastName = document.createElement('td');
-			
-			ID.innerHTML = element[0];
-			firstName.innerHTML = element[1];
-			lastName.innerHTML = element[2];
-
-			row.appendChild(ID);
-			row.appendChild(firstName);
-			row.appendChild(lastName);
-			
-			hereTableBody.append(row);
-		});
+		refreshRealTime(snapshot);
 	});
+
+	realTimeSetup();
+
 }
 
 setup();
