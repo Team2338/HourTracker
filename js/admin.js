@@ -480,7 +480,7 @@ function checkoutAll(){
 		
 		});
 
-		peopleList = [["no one is here","",""]];
+		peopleList = [["N/A","N/A","N/A"]];
 
 		firebase.database().ref('users/').set({
 			here: peopleList
