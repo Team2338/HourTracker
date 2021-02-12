@@ -36,6 +36,9 @@ h2{
 	visibility: hidden ;
 	
 }
+#hereTable, #noOneHereBox{
+	display: none;
+}
 /*
 #footer {
 	position: bottom;
