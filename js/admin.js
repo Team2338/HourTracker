@@ -18,11 +18,9 @@ firebase.initializeApp(firebaseConfig);
 
 var db = firebase.firestore();
 var fbRTDB = firebase.database();
-var people = db.collection("Users");
+//var auth = firebase.auth();
 
-//var requirejs = require('requirejs');
-//import { saveAs } from 'file-saver';
-//var FileSaver = require('file-saver');
+var people = db.collection("Users");
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -406,9 +404,11 @@ function search(){
 				}
 			}
 		);
-
+	
 	} else if(selectedID.length === 0){
+	
 		filteredPeople = people;
+	
 		if(selectedFirstName.length >0){
 			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
 		}
@@ -426,6 +426,7 @@ function search(){
 				console.log(doc.id, " => ", doc.data());
 				renderRowHTML(doc);
 			});
+
 			//dataTableBody.innerHTML = dataTableHTML;
 		})
 		.catch(function(error) {
