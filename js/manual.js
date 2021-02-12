@@ -58,17 +58,7 @@ function submitData(event){
 	var docRefStudent = people.doc(studentID);
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
 
-/*
-	if(type === "shop"){
-		newShopHours = elapsedTime/3600000; // converting ms to hours
-		newServiceHours = 0;
-		console.log(newShopHours);
-	} else if(type === "service"){
-		newServiceHours = elapsedTime/3600000;
-		newShopHours = 0;
-		console.log(newServiceHours);
-	}
-*/	
+
 	if(studentID.length == 8){
 		
 		docRefStudent.get().then(function(Studentdoc){
@@ -76,9 +66,10 @@ function submitData(event){
 			if(Studentdoc.exists){
 
 				docRefLog.get().then(function(Logdoc){
+					
 					if(!Logdoc.exists && !toggleChecked){
-						console.log('checkin');						
-						docRefLog.set({
+						console.log('checkin');
+							docRefLog.set({
 							clockInHour: HOUR,
 							clockInMinute: MINUTE,
 							clockOutHour: "N/A",
@@ -113,7 +104,9 @@ function submitData(event){
 						responseBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
 					} else if(Logdoc.exists && toggleChecked){
+					
 						console.log('checkout');
+					
 						docRefLog.set({
 							clockInHour: Logdoc.data().clockInHour,
 							clockInMinute: Logdoc.data().clockInMinute,
@@ -170,18 +163,6 @@ function submitData(event){
 					}
 
 				});
-/*
-				docRefLog.set({
-		
-					clockInHour: CLOCK_IN_HOUR,
-					clockInMinute: CLOCK_IN_MINUTE,
-					
-					clockOutHour: CLOCK_OUT_HOUR,
-					clockOutMinute: CLOCK_OUT_MINUTE,
-					
-					hourType: type
-				});
-*/
 
 			}else{
 				alert('Error: ID #'+studentID+' not found');
@@ -197,6 +178,51 @@ function submitData(event){
 	
 }
 
+/*
+function logID(ID, type, In){
+
+	time = new Date();
+
+	console.log('logging ', ID, 'at:', time);
+	console.log(time);
+	
+	var year = String(time.getFullYear());
+	var month = String(time.getMonth() +1);
+	// month +1 because index starts at 0
+	var day = String(time.getDate());
+	
+	// adding the tens place digit back on if it doesnt exist
+	month = (month.length == 1)? '0' + month : month;
+	day = (day.length == 1)? '0' + day : day;
+	
+	// where the log should go
+	var docRef = people.doc(studentID).collection("logs").doc(month + day + year);
+
+	// data to put in the log
+	var HOUR = time.getHours();
+	var MINUTE = time.getMinutes();
+	
+	var studentID = nameSelect.val();
+
+	docRef.get().then(function(snapshot){});
+	
+}
+
+function onSubmit(event){
+	
+	// to prevent reload of the webpage on submit
+	event.preventDefault();
+
+	var studentID = nameSelect.val();
+	var type = typeToggle.is(':checked')? "service" : "shop" ;
+	var In = !toggle.is(':checked');
+	
+	if(studentID.length == studentIDLength ){
+		logID(studentID, type, In);
+	}
+	
+}*/
+
 function setup(){
 
 	$(document).ready(function () {
@@ -207,7 +233,7 @@ function setup(){
 	
 	console.log('checkIn.js loaded');
 
-	var optsList= []
+	var optsList= [];
 
 	people.get()
 	.then(function(querySnapshot) {
