@@ -19,9 +19,9 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var fbRTDB = firebase.database();
 
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
-
 var people = db.collection("Users");
+
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -544,10 +544,39 @@ function setup(){
 		});
 	});
 
+	/*
+
+	var link = window.location.protocol+ window.location.hostname +':'+window.location.port+'/html/signIn.html';
+	
+	let params = new URLSearchParams(link);
+	params.append('returnLink', window.location.href);
+	
+	var linknParams = link + '?' + params.toString();
+
+	console.log(linknParams);
+
+	let url = new URL(linknParams);
+
+	location.replace(url);
+*/
+
 	ui.start('#firebaseui-auth-container', {
 		callbacks: {
-			signInSuccessWithAuthResult: function(authResult) {
+			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+				$('.showOnSignIn').css('visibility','visible');
+				//$('.showHideSignIn').css('visibility','hidden');
+				var user = firebase.auth().currentUser;
+				var profilePicUrl;
+				
 				onSignIn();
+				
+				if (user != null) {
+					user.providerData.forEach(profile => {
+				   		console.log(profile.photoURL);
+						profilePicUrl = profile.photoURL;
+					});
+				}
+				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
 				return false;
 			},
 			uiShown: function() {
@@ -557,8 +586,8 @@ function setup(){
 			}
 		},
 		// Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-		signInFlow: 'popup',
-		//signInSuccessUrl: '<url-to-redirect-to-on-success>',
+		//signInFlow: 'popup',
+		//signInSuccessUrl: '../html/admin.html',
 		signInOptions: [
 			// List of OAuth providers supported.
 			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -568,17 +597,6 @@ function setup(){
 		],
 		// Other config options...
 	});
-		
-	
-	
-	
-	
-	
-	
-
-	
-	
-	
 
 }
 

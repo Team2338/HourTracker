@@ -30,12 +30,19 @@ h2{
 }
 
 #tableBody {
+
 }
 
+.showOnSignIn{
+	visibility: hidden;
+}
+
+/*
 #top, #middle, #bottom{
 	visibility: hidden ;
 	
-}
+}*/
+
 #hereTable, #noOneHereBox{
 	display: none;
 }

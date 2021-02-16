@@ -13,6 +13,7 @@
 
 /**topnav---------------------------------------------------------------------------------------------------->>>>>>>*/
 .topnav table{
+	display: inline;
 	overflow: hidden;
 	opacity: 1;
 	background-color:#02243E;
@@ -47,6 +48,18 @@
 	height: 60px;
 	width: auto;
 }
+
+#googleSignIn{
+	display: inline;
+	float:right;
+}
+
+.profPic{
+	height: 60px;
+	width: 60px;
+	border-radius: 30px;
+}
+
 /**switches and toggles------------------------------------------------------------------------------------------------>>>>>>>>>>>*/
 .switch {
 	position: relative;
