@@ -565,6 +565,7 @@ function setup(){
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
 				$('.showOnSignIn').css('visibility','visible');
 				//$('.showHideSignIn').css('visibility','hidden');
+				console.log(authResult.credential.accessToken);
 				var user = firebase.auth().currentUser;
 				var profilePicUrl;
 				
