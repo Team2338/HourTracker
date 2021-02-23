@@ -1,56 +1,88 @@
-//JS for scanIn.html
-import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
+/** firebase */
+export var firebaseConfig = {
+	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
+	authDomain: "hourtracker-2b6f8.firebaseapp.com",
+	projectId: "hourtracker-2b6f8",
+	storageBucket: "hourtracker-2b6f8.appspot.com",
+	messagingSenderId: "82969866110",
+	appId: "1:82969866110:web:5a089299065444cbea0d2f",
+	measurementId: "G-DS4GRL509N"
+};
 
-/** html docrefs */
-const resultBox = $('#result');
-const toggle = $('#checkInSwitchToggle');
-const typeToggle = $('#typeSwitchToggle');
-const switchDisplay = $('#switchDisplay');
-const greenBox = $('#greenBox');
+firebase.initializeApp(firebaseConfig);
 
-/** scanning */
-var codeReader;
+export var firestore = firebase.firestore();
+export var people = firestore.collection("Users");
 
-/** processing and logging*/
-const studentIDLength = 8;
-const greenBoxVisibilityDelay = 3000;
-var scanBlock = false;
+export var auth = firebase.auth();
+export var ui = new firebaseui.auth.AuthUI(auth);
+export var realTimeDataBase = firebase.database();
 
-function processBarcode(result,err){
-	// essentially checks for barcode validity
-
-	if (err) {
-		var different = true;
-		// other errors break loop <= need to find fix for broken loops
-		if (err instanceof ZXing.NotFoundException) {
-			//console.log('No code found.');
-			different = false;
-		}
-		if (err instanceof ZXing.ChecksumException) {
-			different = false;
-			console.log('A code was found, but it\'s read value was not valid.');
-		}
-		if (err instanceof ZXing.FormatException) {
-			different = false;
-			console.log('A code was found, but it was in a invalid format.');
-		}
-		if (different === true) {
-			console.log('we got an interesting error\n',err);
-		}
-	} else if ((result.text.length == studentIDLength) && !scanBlock) {
-		onFoundBarcode(result.text);
-	} else if (scanBlock){
-		//console.log('scan to early, scan was blocked');
-	} else {
-		// I theorize this case breaks above loop maybe find a reset instead
-		//codeReader.reset();
-		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
-	}
-	
+export function loadExternalHTML(){
+	$(document).ready(function () {
+		$("div[data-includeHTML]").each(function () {
+			$(this).load($(this).attr("data-includeHTML"));
+		});
+	});
 }
 
-function onFoundBarcode(IdNumber){
+export function signOut(){
+	auth.signOut().then(() => {
+		$('.showOnSignIn').css('visibility','hidden');
+		$('.showWhenSignedOut').css('visibility','visible');
+	}).catch((error) => {
+		console.log('err');
+	});
+}
+
+export function verify(onSignIn){
+	ui.start('#firebaseui-auth-container', {
+		callbacks: {
+			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+				$('.showOnSignIn').css('visibility','visible');
+				//$('.showHideSignIn').css('visibility','hidden');
+				//console.log(authResult.credential.accessToken);
+				var user = auth.currentUser;
+				var profilePicUrl;
+				
+				onSignIn();
+				
+				if (user != null) {
+					user.providerData.forEach(profile => {
+						   console.log(profile.photoURL);
+						profilePicUrl = profile.photoURL;
+					});
+				}
+				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
+				return false;
+			},
+			uiShown: function() {
+				// The widget is rendered.
+				// Hide the loader.
+				document.getElementById('loader').style.display = 'none';
+			}
+		},
+		signInOptions: [
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+		],
+		// Other config options...
+	});
+}
+/*
+function logIDFirestore(
+  IDNumber,
+  time,
+  type,
+  onStart,
+  onCheckIn,
+  onCheckOut,
+  onCheckOutWithoutClockIn,
+  onSecondClockIn,
+  onEnd,
+  checkOut
+  ){
+	onStart();
+
 	var time = new Date();
 	scanBlock = true;
 
@@ -190,50 +222,8 @@ function onFoundBarcode(IdNumber){
 		}
 			
 	});
-}
-
-function reset(){
-	setTimeout(function(){
-		resultBox.html('<em>Scanning ...</em>');
-		greenBox.css('visibility', 'hidden');
-		scanBlock = false;
-	}, greenBoxVisibilityDelay);
-}
-
-function setup(){
-	
-// goes to system default
-
-	loadExternalHTML();
-
-	console.log('scan.js loaded');
-	verify(onSignIn);
-
-	let deviceId;
-	codeReader = new ZXing.BrowserBarcodeReader();
-	codeReader
-	.getVideoInputDevices()
-	.then(videoInputDevices => {
-		deviceId = videoInputDevices[0].deviceId;
-		videoInputDevices.forEach(device =>
-			console.log(`${device.label}, ${device.deviceId}`)
-		);
-	})
-	.catch(err => console.error(err));
-	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
-		processBarcode(result,err);
-	});
-
 	}
 
-function onSignIn(){
 
-	// pick a device and start continous scan
-/*
-	$('#top').css('visibility', 'visible');
-	$('#middle').css('visibility', 'visible');
-	$('#bottom').css('visibility', 'visible');
+};
 */
-}
-
-setup();
