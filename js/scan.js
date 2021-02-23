@@ -211,6 +211,13 @@ function setup(){
 
 	let deviceId;
 	codeReader = new ZXing.BrowserBarcodeReader();
+	// to future programmers
+	// this library uses getUserMedia()
+	// if it breaks without good reason check the corresponding security rules for above method 
+
+}
+
+function onSignIn(){
 	codeReader
 	.getVideoInputDevices()
 	.then(videoInputDevices => {
@@ -223,11 +230,6 @@ function setup(){
 	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
 		processBarcode(result,err);
 	});
-
-	}
-
-function onSignIn(){
-
 	// pick a device and start continous scan
 /*
 	$('#top').css('visibility', 'visible');
