@@ -9,8 +9,6 @@
 	border: 5px;
 	border-color: #BABFB7;
 }
-*/
-/*
 #peopleData th{
 	border: 2px;
 	border-color: #BABFB7;
@@ -33,21 +31,6 @@ h2{
 
 }
 
-.showOnSignIn{
-	visibility: hidden;
-}
-
-/*
-#top, #middle, #bottom{
-	visibility: hidden ;
-	
-}*/
-
 #hereTable, #noOneHereBox{
 	display: none;
 }
-/*
-#footer {
-	position: bottom;
-
-}*/

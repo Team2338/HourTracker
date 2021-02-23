@@ -39,6 +39,7 @@ const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
+const signOutButton = $('#signOutButton');
 
 var rowTemp;
 
@@ -425,7 +426,9 @@ function search(){
 			//dataTableHTML = '';
 			querySnapshot.forEach(function(doc) {
 				console.log(doc.id, " => ", doc.data());
-				renderRowHTML(doc);
+				if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
+					renderRowHTML(doc);
+				}
 			});
 
 			//dataTableBody.innerHTML = dataTableHTML;
@@ -534,6 +537,14 @@ function refreshRealTime(snapshot){
 	
 }
 
+function signOut(){
+	firebase.auth().signOut().then(() => {
+		$('.showOnSignIn').css('visibility','hidden');
+	  }).catch((error) => {
+		console.log('err');
+	  });
+}
+
 function setup(){
 	
 	console.log('admin.js loaded');
@@ -544,21 +555,7 @@ function setup(){
 		});
 	});
 
-	/*
-
-	var link = window.location.protocol+ window.location.hostname +':'+window.location.port+'/html/signIn.html';
-	
-	let params = new URLSearchParams(link);
-	params.append('returnLink', window.location.href);
-	
-	var linknParams = link + '?' + params.toString();
-
-	console.log(linknParams);
-
-	let url = new URL(linknParams);
-
-	location.replace(url);
-*/
+	//firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
 	ui.start('#firebaseui-auth-container', {
 		callbacks: {
@@ -568,6 +565,21 @@ function setup(){
 				console.log(authResult.credential.accessToken);
 				var user = firebase.auth().currentUser;
 				var profilePicUrl;
+/*
+				people.doc(user.accessToken.).get()
+				.then(function(querySnapshot) {
+					//dataTableHTML = '';
+					querySnapshot.forEach(function(doc) {
+						console.log(doc.id, " => ", doc.data());
+						if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
+							renderRowHTML(doc);
+						}
+					});
+					//dataTableBody.innerHTML = dataTableHTML;
+				})
+				.catch(function(error) {
+					console.log("Error getting documents: ", error);
+				});*/
 				
 				onSignIn();
 				
@@ -586,8 +598,6 @@ function setup(){
 				document.getElementById('loader').style.display = 'none';
 			}
 		},
-		// Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-		//signInFlow: 'popup',
 		//signInSuccessUrl: '../html/admin.html',
 		signInOptions: [
 			// List of OAuth providers supported.
@@ -610,6 +620,7 @@ function onSignIn(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 	checkoutAllButton.click(checkoutAll);
+	signOutButton.click(signOut);
 
 	$('#top').css('visibility', 'visible');
 	$('#middle').css('visibility', 'visible');
@@ -620,4 +631,7 @@ function onSignIn(){
 	});
 }
 
+function denyAdmin(){
+	
+}
 setup();

@@ -8,20 +8,15 @@
 		<link rel = "stylesheet" type = "text/css" href = "../css/styles.css">
 		<link rel = "stylesheet" type = "text/css" href = "../css/admin.css">
 
-		<link rel = "stylesheet" type = "text/css" href = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css">		
-		
+		<link rel = "stylesheet" type = "text/css" href = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css">
+
 		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-app.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-firestore.js"></script>
-<<<<<<< HEAD
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-database.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-auth.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-auth.js"></script>
 		<script src = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
-=======
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-database.js"></script>		
-		
->>>>>>> V1.1-debug
 
 		<script async = "" src = "https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
 
@@ -37,7 +32,8 @@
 		<div id = "googleSignIn">
 			<div id = "firebaseui-auth-container"></div>
 			<div id = "loader">Loading...</div>
-			<div id = "profilePic"><img></div>
+			<div id = "profilePic" class = "showOnSignIn"><img></div>
+			<button id = "signOutButton" class = "showOnSignIn">Sign Out</button>
 		</div>
 
 		<h1>Admin</h1>
@@ -63,20 +59,6 @@
 				</thead>
 				<tbody id = "hereTableBody"></tbody>
 			</table>
-			<!--
-			<table>
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>first Name</th>
-						<th>last Name</th>
-						<th><button type = "button" id = "checkOutAll">Checkout All</button></th>
-					</tr>
-				</thead>
-				<tbody id = "hereTableBody">
-
-				</tbody>
-			</table>-->
 		</div>
 		
 		<div class = "showOnSignIn" id = "bottom">

@@ -15,6 +15,8 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var people = db.collection("Users");
 
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
 /** html docrefs */
 const resultBox = $('#result');
 const toggle = $('#checkInSwitchToggle');
@@ -216,182 +218,14 @@ function reset(){
 	}, greenBoxVisibilityDelay);
 }
 
-/** ancient technologies
-	
-	if (() && (scanBlock == false)){
-		toggle.checked ?  logClockOut(result): logClockIn(result);
-	} else if (scanBlock){
-		// block scan to prevent immediate rescan of same id
-		console.log('ScanBlocked');
-	} else {
-		
-		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
-	}
+
+function signOut(){
+	firebase.auth().signOut().then(() => {
+		$('.showOnSignIn').css('visibility','hidden');
+	  }).catch((error) => {
+		console.log('err');
+	  });
 }
-
-function logClockIn(ID){
-	
-	timeIn = new Date();
-	console.log('logging Check In'+ ID+ ' at:\n'+timeIn);
-
-	var yearString = String(timeIn.getFullYear());
-	var monthString = String(timeIn.getMonth() +1);
-	// month +1 because index starts at 0
-	var dayString = String(timeIn.getDate());
-	
-
-	monthString = (monthString.length === 1)? '0' + monthString : monthString;
-	dayString = (dayString.length === 1)? '0' + dayString : dayString;
-	
-	var CLOCK_IN_HOUR= String(timeIn.getHours());
-	var CLOCK_IN_MINUTE = String(timeIn.getMinutes());
-
-	var studentID = ID;
-	var type = "shop";
-	
-	var docName = monthString + dayString + yearString;
-	var docRefStudent = db.collection("Users").doc(studentID);
-	var docRefLog = docRefStudent.collection("logs").doc(docName);
-
-	docRefStudent.get().then(function(Studentdoc){
-
-		if(Studentdoc.exists){
-			
-			greenBox.style.visibility = "visible";
-			resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
-
-			docRefLog.get().then(function(docLog){
-
-				if(docLog.exists){
-					resultBox.innerHTML = "You already clocked in today.";	
-				} else {
-
-					docRefLog.set({
-						clockInHour: CLOCK_IN_HOUR,
-						clockInMinute: CLOCK_IN_MINUTE,
-						
-						clockOutHour: "N/A",
-						clockOutMinute: "N/A",
-						
-						hourType: type
-					});
-				}
-			});
-		}else{
-			
-			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
-		}
-	});
-			
-	console.log('data in Firebase');
-	
-}
-
-function logClockOut(ID){
-
-	timeOut = new Date();
-	console.log('logging Check Out'+ ID+ ' at:\n'+timeOut);
-
-	var yearString = String(timeOut.getFullYear());
-	var monthString = String(timeOut.getMonth() +1);
-	// month +1 because index starts at 0
-	var dayString = String(timeOut.getDate());
-
-	monthString = (monthString.length === 1)? '0' + monthString : monthString;
-	dayString = (dayString.length === 1)? '0' + dayString : dayString;
-	
-
-	var CLOCK_OUT_HOUR = String(timeOut.getHours());
-	var CLOCK_OUT_MINUTE = String(timeOut.getMinutes());
-	var CLOCK_IN_HOUR;
-	var CLOCK_IN_MINUTE;
-
-	var studentID = ID;
-	var type = "shop";
-
-	var docName = monthString + dayString + yearString;
-	var docRefStudent = db.collection("Users").doc(studentID);
-	var docRefLog = docRefStudent.collection("logs").doc(docName);
-
-	docRefStudent.get().then(function(Studentdoc){
-
-		if(Studentdoc.exists){
-
-			greenBox.style.visibility = "visible";
-			resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
-
-			docRefLog.get().then(function(Logdoc){
-			
-				if(Logdoc.exists){
-
-					CLOCK_IN_HOUR = Logdoc.data().clockInHour;
-					CLOCK_IN_MINUTE = Logdoc.data().clockInMinute;
-
-					docRefLog.set({
-						clockInHour: CLOCK_IN_HOUR,
-						clockInMinute: CLOCK_IN_MINUTE,
-						
-						clockOutHour: CLOCK_OUT_HOUR,
-						clockOutMinute: CLOCK_OUT_MINUTE,
-						
-						hourType: type
-					});
-
-				}else{
-
-					resultBox.innerHTML = 'You forgot to clock in😔';
-
-					console.log('you never clocked in');
-					docRefLog.set({
-						clockInHour: "N/A",
-						clockInMinute: "N/A",
-						
-						clockOutHour: CLOCK_OUT_HOUR,
-						clockOutMinute: CLOCK_OUT_MINUTE,
-						
-						hourType: type
-					});
-				
-				}
-			
-			});
-
-		}else{
-			
-			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
-		
-		}
-
-	});
-		
-	console.log('data in Firebase');
-	
-}
-/*
-window.addEventListener('load', function(){
-    codeReader
-        .listVideoInputDevices()
-        .then((videoInputDevices) => {
-            deviceId = videoInputDevices[0].deviceId;
-            if (videoInputDevices.length > 1) {
-                videoInputDevices.forEach((element) => {
-                    deviceId = [1].deviceId;
-                    console.log(element.label);
-					console.log(element.deviceId);
-					
-				});
-				
-            }
-        })
-        .catch(err => {
-            console.log("err");
-            console.error(err);
-        });
-	decodeContinuously();
-	
-});
-*/
 
 function setup(){
 
@@ -403,28 +237,89 @@ function setup(){
 
 	console.log('scan.js loaded');
 
+	ui.start('#firebaseui-auth-container', {
+		callbacks: {
+			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+				$('.showOnSignIn').css('visibility','visible');
+				//$('.showHideSignIn').css('visibility','hidden');
+				console.log(authResult.credential.accessToken);
+				var user = firebase.auth().currentUser;
+				var profilePicUrl;
+/*
+				people.doc(user.accessToken.).get()
+				.then(function(querySnapshot) {
+					//dataTableHTML = '';
+					querySnapshot.forEach(function(doc) {
+						console.log(doc.id, " => ", doc.data());
+						if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 cha
+							renderRowHTML(doc);
+						}
+					});
+					//dataTableBody.innerHTML = dataTableHTML;
+				})
+				.catch(function(error) {
+					console.log("Error getting documents: ", error);
+				});*/
+				
+				onSignIn();
+				
+				if (user != null) {
+					user.providerData.forEach(profile => {
+				   		console.log(profile.photoURL);
+						profilePicUrl = profile.photoURL;
+					});
+				}
+				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
+				return false;
+			},
+			uiShown: function() {
+				// The widget is rendered.
+				// Hide the loader.
+				document.getElementById('loader').style.display = 'none';
+			}
+		},
+		//signInSuccessUrl: '../html/admin.html',
+		signInOptions: [
+			// List of OAuth providers supported.
+			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			//firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+			//firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+			//firebase.auth.GithubAuthProvider.PROVIDER_ID
+		],
+		// Other config options...
+	});
+
 	/** Barcode Scanner init */
 
 	// list our all camera devices
+
+	
+}
+
+function onSignIn(){
+
 	codeReader
-		.listVideoInputDevices()
-		.then(videoInputDevices => {
-			videoInputDevices.forEach(device =>
-				console.log(`${device.label}, ${device.deviceId}`)
-			);
-		})
-		.catch(err => console.error(err));
+	.listVideoInputDevices()
+	.then(videoInputDevices => {
+		videoInputDevices.forEach(device =>
+			console.log(`${device.label}, ${device.deviceId}`)
+		);
+	})
+	.catch(err => console.error(err));
 	
 	// goes to system default
 	deviceId = undefined;
-
 	// pick a device and start continous scan
-	
+
 	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
 		processBarcode(result,err);
 	});
-	
+
+	$('#top').css('visibility', 'visible');
+	$('#middle').css('visibility', 'visible');
+	$('#bottom').css('visibility', 'visible');
 
 }
+
 
 setup();
