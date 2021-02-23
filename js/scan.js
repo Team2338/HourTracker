@@ -120,7 +120,7 @@ function onFoundBarcode(IdNumber){
 	
 						var peopleList = snapshot.val().here;
 						console.log(peopleList);
-						if (here === [["N/A","N/A","N/A"]]){
+						if (peopleList === [["N/A","N/A","N/A"]]){
 							peopleList = [];
 						}
 						peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
@@ -130,6 +130,8 @@ function onFoundBarcode(IdNumber){
 							here: peopleList
 						});
 					}).catch(function(err){
+						// purges the database and adds the person
+						console.log(err);
 						var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
 						firebase.database().ref('users/').set({
 							here: peopleList
