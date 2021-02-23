@@ -25,14 +25,12 @@ const switchDisplay = $('#switchDisplay');
 const greenBox = $('#greenBox');
 
 /** scanning */
-let deviceId;
-var codeReader = new ZXing.BrowserBarcodeReader();
+var codeReader;
 
 /** processing and logging*/
 const studentIDLength = 8;
 const greenBoxVisibilityDelay = 3000;
 var scanBlock = false;
-
 
 function processBarcode(result,err){
 	// essentially checks for barcode validity
@@ -218,7 +216,6 @@ function reset(){
 	}, greenBoxVisibilityDelay);
 }
 
-
 function signOut(){
 	firebase.auth().signOut().then(() => {
 		$('.showOnSignIn').css('visibility','hidden');
@@ -234,6 +231,8 @@ function setup(){
 			$(this).load($(this).attr("data-includeHTML"));
 		});
 	});
+	
+// goes to system default
 
 	console.log('scan.js loaded');
 
@@ -242,24 +241,9 @@ function setup(){
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
 				$('.showOnSignIn').css('visibility','visible');
 				//$('.showHideSignIn').css('visibility','hidden');
-				console.log(authResult.credential.accessToken);
+				//console.log(authResult.credential.accessToken);
 				var user = firebase.auth().currentUser;
 				var profilePicUrl;
-/*
-				people.doc(user.accessToken.).get()
-				.then(function(querySnapshot) {
-					//dataTableHTML = '';
-					querySnapshot.forEach(function(doc) {
-						console.log(doc.id, " => ", doc.data());
-						if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 cha
-							renderRowHTML(doc);
-						}
-					});
-					//dataTableBody.innerHTML = dataTableHTML;
-				})
-				.catch(function(error) {
-					console.log("Error getting documents: ", error);
-				});*/
 				
 				onSignIn();
 				
@@ -278,40 +262,33 @@ function setup(){
 				document.getElementById('loader').style.display = 'none';
 			}
 		},
-		//signInSuccessUrl: '../html/admin.html',
 		signInOptions: [
-			// List of OAuth providers supported.
 			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			//firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-			//firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-			//firebase.auth.GithubAuthProvider.PROVIDER_ID
 		],
 		// Other config options...
 	});
-
-	/** Barcode Scanner init */
-
-	// list our all camera devices
-
 	
 }
 
 function onSignIn(){
 
+	// pick a device and start continous scan
+
+	let deviceId;
+
+	codeReader = new ZXing.BrowserBarcodeReader();
+
 	codeReader
-	.listVideoInputDevices()
+	.getVideoInputDevices()
 	.then(videoInputDevices => {
+		deviceId = videoInputDevices[0].deviceId;
 		videoInputDevices.forEach(device =>
 			console.log(`${device.label}, ${device.deviceId}`)
 		);
 	})
 	.catch(err => console.error(err));
-	
-	// goes to system default
-	deviceId = undefined;
-	// pick a device and start continous scan
 
-	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
+	codeReader.decodeFromInputVideoDeviceContinuously(0, 'videoStream',(result, err) =>{
 		processBarcode(result,err);
 	});
 
@@ -320,6 +297,5 @@ function onSignIn(){
 	$('#bottom').css('visibility', 'visible');
 
 }
-
 
 setup();

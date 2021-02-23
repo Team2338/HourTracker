@@ -3,15 +3,18 @@
 	
 	<head>
 		<title>HourLogger | Scan In</title>
+
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<link rel = "stylesheet" type = "text/css" href = "../css/styles.css">
-		<link rel = "stylesheet" type = "text/css" href = "../css/scan.css">
+		<base href = "../">
+		
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/scan.css">
 		<link rel = "stylesheet" type = "text/css" href = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css">
 		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-		<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.2/umd/index.js"></script>
+		<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.4/umd/index.js"></script>
 
 		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
 		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-firestore.js"></script>
@@ -19,13 +22,13 @@
 		<script src = "https://www.gstatic.com/firebasejs/8.2.9/firebase-auth.js"></script>
 		<script src = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
 
-		<script type = "module" src="../js/scan.js"></script>
+		<script type = "module" src="js/scan.js"></script>
 		
 	</head>
 
 	<body id = "background">
 		
-		<div data-includeHTML = "../html/header.html"></div>
+		<div data-includeHTML = "html/header.html"></div>
 
 		<div id = "googleSignIn">
 			<div id = "firebaseui-auth-container"></div>
