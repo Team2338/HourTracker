@@ -1,21 +1,5 @@
 // js for checkIn.html
-
-/** firebase **/
-var firebaseConfig = {
-	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
-	authDomain: "hourtracker-2b6f8.firebaseapp.com",
-	projectId: "hourtracker-2b6f8",
-	storageBucket: "hourtracker-2b6f8.appspot.com",
-	messagingSenderId: "82969866110",
-	appId: "1:82969866110:web:5a089299065444cbea0d2f",
-	measurementId: "G-DS4GRL509N"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-var db = firebase.firestore();
-var fbRTDB = firebase.database();
-var people = db.collection("Users");
+import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
 
 /** html docrefs **/
 const toggle = $('#toggle');
@@ -77,7 +61,7 @@ function submitData(event){
 							hourType: type
 						});
 						
-						firebase.database().ref('users/').once('value').then((snapshot) => {
+						realTimeDataBase.ref('users/').once('value').then((snapshot) => {
 							
 							var peopleList = snapshot.val().here;
 							console.log(peopleList);
@@ -89,12 +73,12 @@ function submitData(event){
 							peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
 							console.log(peopleList);							
 							
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						}).catch(function(err){
 							var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						});
@@ -115,8 +99,8 @@ function submitData(event){
 							hourType: type
 						});
 
-						firebase.database().ref('users/').once('value').then((snapshot) => {
-	
+						realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+						
 							var peopleList = snapshot.val().here;
 							console.log(peopleList);
 							
@@ -128,7 +112,6 @@ function submitData(event){
 								}else{
 									return el
 								}
-								
 							});
 
 							if (peopleList.length === 0){
@@ -137,7 +120,7 @@ function submitData(event){
 
 							console.log(peopleList);
 							
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						});
@@ -178,61 +161,18 @@ function submitData(event){
 	
 }
 
-/*
-function logID(ID, type, In){
+function setup(){
 
-	time = new Date();
+	loadExternalHTML();
 
-	console.log('logging ', ID, 'at:', time);
-	console.log(time);
+	console.log('checkIn.js loaded');
 	
-	var year = String(time.getFullYear());
-	var month = String(time.getMonth() +1);
-	// month +1 because index starts at 0
-	var day = String(time.getDate());
-	
-	// adding the tens place digit back on if it doesnt exist
-	month = (month.length == 1)? '0' + month : month;
-	day = (day.length == 1)? '0' + day : day;
-	
-	// where the log should go
-	var docRef = people.doc(studentID).collection("logs").doc(month + day + year);
-
-	// data to put in the log
-	var HOUR = time.getHours();
-	var MINUTE = time.getMinutes();
-	
-	var studentID = nameSelect.val();
-
-	docRef.get().then(function(snapshot){});
+	verify(onSignIn);	
 	
 }
 
-function onSubmit(event){
+function onSignIn(){
 	
-	// to prevent reload of the webpage on submit
-	event.preventDefault();
-
-	var studentID = nameSelect.val();
-	var type = typeToggle.is(':checked')? "service" : "shop" ;
-	var In = !toggle.is(':checked');
-	
-	if(studentID.length == studentIDLength ){
-		logID(studentID, type, In);
-	}
-	
-}*/
-
-function setup(){
-
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
-	});
-	
-	console.log('checkIn.js loaded');
-
 	var optsList= [];
 
 	people.get()
@@ -242,22 +182,18 @@ function setup(){
 			console.log(doc.id, " => ", doc.data());
 			optsList.push(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
 		});
-
 		optsList.sort(function (a, b) {
 			return $(a).text() > $(b).text() ? 1 : -1;
 		});
-
 		optsList.forEach(function(element) {
 			nameSelect.append(element);
 		});
-
 	})
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
 	});
-
 	form.submit(submitData);
-	
 }
+
 
 setup();
