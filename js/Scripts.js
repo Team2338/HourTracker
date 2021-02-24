@@ -63,10 +63,21 @@ export function verify(onSignIn){
 					// The widget is rendered.
 					// Hide the loader.
 					document.getElementById('loader').style.display = 'none';
-				}
+				},
+				customParameters: {
+					// Forces password re-entry.
+					auth_type: 'reauthenticate'
+				  }
 			},
 			signInOptions: [
-				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				{
+					provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+					
+					customParameters: {
+						
+						prompt: 'select_account'
+					}
+				  }
 			],
 			// Other config options...
 		});
