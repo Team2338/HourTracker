@@ -36,52 +36,40 @@ export function signOut(){
 }
 
 export function verify(onSignIn){
-	firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-	.then(() => {
-		document.getElementById("signOutButton").click(signOut);
-		ui.start('#firebaseui-auth-container', {
-			callbacks: {
-				signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-					$('.showOnSignIn').css('visibility','visible');
-					
-					var user = auth.currentUser;
-					var profilePicUrl;
-
-					if (user != null) {
-						user.providerData.forEach(profile => {
-							   console.log(profile.photoURL);
-							profilePicUrl = profile.photoURL;
-						});
-					}
-					$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
-					
-					onSignIn();
-
-					return false;
-				},
-				uiShown: function() {
-					// The widget is rendered.
-					// Hide the loader.
-					document.getElementById('loader').style.display = 'none';
-				},
-				customParameters: {
-					// Forces password re-entry.
-					auth_type: 'reauthenticate'
-				  }
+	
+	document.getElementById("signOutButton").click(signOut);
+	ui.start('#firebaseui-auth-container', {
+		
+		callbacks: {
+			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+				$('.showOnSignIn').css('visibility','visible');
+				
+				var user = auth.currentUser;
+				var profilePicUrl;
+				if (user != null) {
+					user.providerData.forEach(profile => {
+						   console.log(profile.photoURL);
+						profilePicUrl = profile.photoURL;
+					});
+				}
+				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
+				
+				onSignIn();
+				return false;
 			},
-			signInOptions: [
-				{
-					provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-					
-					customParameters: {
-						
-						prompt: 'select_account'
-					}
-				  }
-			],
-			// Other config options...
-		});
+			uiShown: function() {
+				// The widget is rendered.
+				// Hide the loader.
+				document.getElementById('loader').style.display = 'none';
+			}
+			
+		},
+		customParameters: {
+			auth_type: 'reauthenticate'
+		}
+		// Other config options...
 	});
+	
 }
 /*
 function logIDFirestore(

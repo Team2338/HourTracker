@@ -539,11 +539,11 @@ function onSignIn(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 	checkoutAllButton.click(checkoutAll);
-	signOutButton.click(signOut);
+	//signOutButton.click(signOut);
 
-	$('#top').css('visibility', 'visible');
-	$('#middle').css('visibility', 'visible');
-	$('#bottom').css('visibility', 'visible');
+	//$('#top').css('visibility', 'visible');
+	//$('#middle').css('visibility', 'visible');
+	//$('#bottom').css('visibility', 'visible');
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
