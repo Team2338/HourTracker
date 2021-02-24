@@ -38,17 +38,14 @@ export function signOut(){
 export function verify(onSignIn){
 	firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 	.then(() => {
-	
 		document.getElementById("signOutButton").click(signOut);
 		ui.start('#firebaseui-auth-container', {
 			callbacks: {
 				signInSuccessWithAuthResult: function(authResult, redirectUrl) {
 					$('.showOnSignIn').css('visibility','visible');
-										
+					
 					var user = auth.currentUser;
 					var profilePicUrl;
-
-					onSignIn();
 
 					if (user != null) {
 						user.providerData.forEach(profile => {
@@ -57,6 +54,9 @@ export function verify(onSignIn){
 						});
 					}
 					$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
+					
+					onSignIn();
+
 					return false;
 				},
 				uiShown: function() {
