@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
+import { loadExternalHTML, ui, people, auth, signOut, verify, realTimeDataBase } from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -428,7 +428,7 @@ function search(){
 function checkoutAll(){
 	console.log('checkoutAll');
 
-	firebase.database().ref('users/').once('value').then((snapshot) => {
+	realTimeDataBase.ref('users/').once('value').then((snapshot) => {
 
 		var time = new Date();
 
@@ -470,7 +470,7 @@ function checkoutAll(){
 
 		peopleList = [["N/A","N/A","N/A"]];
 
-		firebase.database().ref('users/').set({
+		realTimeDataBase.ref('users/').set({
 			here: peopleList
 		});
 	}).catch(function(err){
@@ -545,7 +545,7 @@ function onSignIn(){
 	$('#middle').css('visibility', 'visible');
 	$('#bottom').css('visibility', 'visible');
 
-	fbRTDB.ref('users/').on('value', (snapshot) => {
+	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
 	});
 }
