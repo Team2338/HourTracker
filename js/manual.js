@@ -60,7 +60,7 @@ function submitData(event){
 							hourType: type
 						});
 						
-						firebase.database().ref('users/').once('value').then((snapshot) => {
+						realTimeDataBase.ref('users/').once('value').then((snapshot) => {
 							
 							var peopleList = snapshot.val().here;
 							console.log(peopleList);
@@ -72,12 +72,12 @@ function submitData(event){
 							peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
 							console.log(peopleList);							
 							
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						}).catch(function(err){
 							var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						});
@@ -98,8 +98,8 @@ function submitData(event){
 							hourType: type
 						});
 
-						firebase.database().ref('users/').once('value').then((snapshot) => {
-	
+						realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+						
 							var peopleList = snapshot.val().here;
 							console.log(peopleList);
 							
@@ -111,7 +111,6 @@ function submitData(event){
 								}else{
 									return el
 								}
-								
 							});
 
 							if (peopleList.length === 0){
@@ -120,7 +119,7 @@ function submitData(event){
 
 							console.log(peopleList);
 							
-							firebase.database().ref('users/').set({
+							realTimeDataBase.ref('users/').set({
 								here: peopleList
 							});
 						});
@@ -181,21 +180,18 @@ function onSignIn(){
 			console.log(doc.id, " => ", doc.data());
 			optsList.push(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
 		});
-
 		optsList.sort(function (a, b) {
 			return $(a).text() > $(b).text() ? 1 : -1;
 		});
-
 		optsList.forEach(function(element) {
 			nameSelect.append(element);
 		});
-
 	})
 	.catch(function(error) {
 		console.log("Error getting documents: ", error);
 	});
-
 	form.submit(submitData);
 }
+
 
 setup();

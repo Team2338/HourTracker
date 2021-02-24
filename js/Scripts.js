@@ -36,37 +36,40 @@ export function signOut(){
 }
 
 export function verify(onSignIn){
-	document.getElementById("signOutButton").click(signOut);
-	ui.start('#firebaseui-auth-container', {
-		callbacks: {
-			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-				$('.showOnSignIn').css('visibility','visible');
-				//$('.showHideSignIn').css('visibility','hidden');
-				//console.log(authResult.credential.accessToken);
-				var user = auth.currentUser;
-				var profilePicUrl;
-				
-				onSignIn();
-				
-				if (user != null) {
-					user.providerData.forEach(profile => {
-						   console.log(profile.photoURL);
-						profilePicUrl = profile.photoURL;
-					});
+	firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+	.then(() => {
+	
+		document.getElementById("signOutButton").click(signOut);
+		ui.start('#firebaseui-auth-container', {
+			callbacks: {
+				signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+					$('.showOnSignIn').css('visibility','visible');
+										
+					var user = auth.currentUser;
+					var profilePicUrl;
+
+					onSignIn();
+
+					if (user != null) {
+						user.providerData.forEach(profile => {
+							   console.log(profile.photoURL);
+							profilePicUrl = profile.photoURL;
+						});
+					}
+					$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
+					return false;
+				},
+				uiShown: function() {
+					// The widget is rendered.
+					// Hide the loader.
+					document.getElementById('loader').style.display = 'none';
 				}
-				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
-				return false;
 			},
-			uiShown: function() {
-				// The widget is rendered.
-				// Hide the loader.
-				document.getElementById('loader').style.display = 'none';
-			}
-		},
-		signInOptions: [
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-		],
-		// Other config options...
+			signInOptions: [
+				firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+			],
+			// Other config options...
+		});
 	});
 }
 /*

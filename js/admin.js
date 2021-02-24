@@ -4,24 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-var firebaseConfig = {
-    apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
-    authDomain: "hourtracker-2b6f8.firebaseapp.com",
-    projectId: "hourtracker-2b6f8",
-    storageBucket: "hourtracker-2b6f8.appspot.com",
-    messagingSenderId: "82969866110",
-    appId: "1:82969866110:web:5a089299065444cbea0d2f",
-    measurementId: "G-DS4GRL509N"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-var db = firebase.firestore();
-var fbRTDB = firebase.database();
-
-var people = db.collection("Users");
-
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
+import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -537,77 +520,13 @@ function refreshRealTime(snapshot){
 	
 }
 
-function signOut(){
-	firebase.auth().signOut().then(() => {
-		$('.showOnSignIn').css('visibility','hidden');
-	  }).catch((error) => {
-		console.log('err');
-	  });
-}
-
 function setup(){
 	
 	console.log('admin.js loaded');
 
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
-	});
+	loadExternalHTML();
 
-	//firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-	ui.start('#firebaseui-auth-container', {
-		callbacks: {
-			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-				$('.showOnSignIn').css('visibility','visible');
-				//$('.showHideSignIn').css('visibility','hidden');
-				console.log(authResult.credential.accessToken);
-				var user = firebase.auth().currentUser;
-				var profilePicUrl;
-/*
-				people.doc(user.accessToken.).get()
-				.then(function(querySnapshot) {
-					//dataTableHTML = '';
-					querySnapshot.forEach(function(doc) {
-						console.log(doc.id, " => ", doc.data());
-						if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
-							renderRowHTML(doc);
-						}
-					});
-					//dataTableBody.innerHTML = dataTableHTML;
-				})
-				.catch(function(error) {
-					console.log("Error getting documents: ", error);
-				});*/
-				
-				onSignIn();
-				
-				if (user != null) {
-					user.providerData.forEach(profile => {
-				   		console.log(profile.photoURL);
-						profilePicUrl = profile.photoURL;
-					});
-				}
-				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
-				return false;
-			},
-			uiShown: function() {
-				// The widget is rendered.
-				// Hide the loader.
-				document.getElementById('loader').style.display = 'none';
-			}
-		},
-		//signInSuccessUrl: '../html/admin.html',
-		signInOptions: [
-			// List of OAuth providers supported.
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			//firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-			//firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-			//firebase.auth.GithubAuthProvider.PROVIDER_ID
-		],
-		// Other config options...
-	});
+	verify(onSignIn);
 
 }
 
