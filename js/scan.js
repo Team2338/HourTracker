@@ -10,6 +10,7 @@ const greenBox = $('#greenBox');
 
 /** scanning */
 var codeReader;
+let deviceId;
 
 /** processing and logging*/
 const studentIDLength = 8;
@@ -208,16 +209,19 @@ function setup(){
 
 	console.log('scan.js loaded');
 	verify(onSignIn);
-
-	let deviceId;
-	codeReader = new ZXing.BrowserBarcodeReader();
+	
+	
 	// to future programmers
-	// this library uses getUserMedia()
-	// if it breaks without good reason check the corresponding security rules for above method 
+	// the scanning library uses getUserMedia()
+	// if it breaks without good reason check the corresponding security rules for above method
+	// and check for updates
 
 }
 
 function onSignIn(){
+
+	codeReader = new ZXing.BrowserBarcodeReader();
+	
 	codeReader
 	.getVideoInputDevices()
 	.then(videoInputDevices => {

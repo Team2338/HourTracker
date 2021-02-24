@@ -1,6 +1,5 @@
 // JS for index.html
-// this file is empty but just here by convention
-
+import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
 // !!Warning!! read this
 /*
 !!Warning!!
@@ -11,11 +10,8 @@ function setup(){
 	
 	console.log('index.js');
 
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
-	});
+	loadExternalHTML();
+	
 }
 
 setup();

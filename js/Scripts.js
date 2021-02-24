@@ -36,6 +36,7 @@ export function signOut(){
 }
 
 export function verify(onSignIn){
+	document.getElementById("signOutButton").click(signOut);
 	ui.start('#firebaseui-auth-container', {
 		callbacks: {
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
