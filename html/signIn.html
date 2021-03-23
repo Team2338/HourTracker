@@ -1,30 +1,6 @@
-<html>
-	<head>
-		<title>HourTracker | Admin Sign In</title>
-		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-
-		<link rel = "stylesheet" type = "text/css" href = "../css/styles.css">
-		<link rel = "stylesheet" type = "text/css" href = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css">
-
-		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-app.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-auth.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
-
-		<script type = "module" src = "../js/signIn.js"></script>
-	
-	</head>
-	<body id = "background">
-
-		<h1>Sign In</h1>
-
-		<div id = "firebaseui-auth-container"></div>
-		<div id = "loader">Loading...</div>
-
-
-		<div id = "footer" data-includeHTML = "../html/footer.html"></div>
-
-	</body>
-
-</html>
+<div id = "googleSignIn">
+	<div id = "firebaseui-auth-container" class = "showWhenSignedOut firebaseui-auth-container"></div>
+	<div id = "loader" class = "loader">Loading...</div>
+	<div id = "profilePic" class = "showOnSignIn profilePic"><img></div>
+	<button id = "signOutButton" class = "showOnSignIn signOutButton">Sign Out</button>
+</div>

@@ -1,5 +1,5 @@
 /** firebase */
-export var firebaseConfig = {
+var firebaseConfig = {
 	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
 	authDomain: "hourtracker-2b6f8.firebaseapp.com",
 	projectId: "hourtracker-2b6f8",
@@ -18,6 +18,82 @@ export var auth = firebase.auth();
 export var ui = new firebaseui.auth.AuthUI(auth);
 export var realTimeDataBase = firebase.database();
 
+/*
+function signIn() {
+	// Sign in Firebase using popup auth and Google as the identity provider.
+	var provider = new firebase.auth.GoogleAuthProvider();
+	firebase.auth().signInWithPopup(provider);
+}*/
+
+// Signs-out of application
+export function signOut(){
+	auth.signOut()
+	.then(() => {
+		console.log('signed Out');
+	}).catch((err) => {
+		console.log('err at Scripts.js: signOut()', err);
+	});
+}
+
+export function authStateObserver(user){
+
+	var profilePicUrl;
+	var userName;
+
+	if(user){// signed in
+
+		profilePicUrl = getProfilePicUrl();
+		userName = getUserName();
+
+		$('.showOnSignIn').css('visibility','visible');
+		$('.showWhenSignedOut').css('visibility','hidden');
+
+	} else {// signed out
+
+		profilePicUrl = 'Pictures/anonymous icon.png';
+		userName = 'not signed In';
+
+		$('.showOnSignIn').css('visibility','hidden');
+		$('.showWhenSignedOut').css('visibility','visible');
+	}
+
+	$('#profilePic').href = profilePicUrl;
+	
+}
+
+// Initiate firebase auth.
+export function initFirebaseAuth() {
+	// Listen to auth state changes.
+	firebase.auth().onAuthStateChanged(authStateObserver);
+}
+
+// Returns the signed-in user's profile Pic URL.
+export function getProfilePicUrl() {
+	return firebase.auth().currentUser.photoURL || '../Pictures/anonymous icon.png';
+}
+  
+// Returns the signed-in user's display name.
+export function getUserName() {
+	return firebase.auth().currentUser.displayName;
+}
+
+// Returns true if a user is signed-in.
+export function isUserSignedIn() {
+	return !!firebase.auth().currentUser;
+}
+
+/*export function pageInit(){
+
+	loadExternalHTML();
+	initFirebaseAuth();
+
+	$('.showOnSignIn').css('visibility','visible');
+	$('.showWhenSignedOut').css('visibility','hidden');
+
+	verify();
+
+}*/
+
 export function loadExternalHTML(){
 	$(document).ready(function () {
 		$("div[data-includeHTML]").each(function () {
@@ -26,35 +102,48 @@ export function loadExternalHTML(){
 	});
 }
 
-export function signOut(){
-	auth.signOut().then(() => {
-		$('.showOnSignIn').css('visibility','hidden');
-		$('.showWhenSignedOut').css('visibility','visible');
-	}).catch((error) => {
-		console.log('err');
-	});
-}
+/*
+export function verify(){
 
-export function verify(onSignIn){
+	auth.onAuthStateChanged(authStateObserver);
+
+	var provider = new firebase.auth.GoogleAuthProvider();
+	auth.signInWithPopup(provider);
 	
+}*/
+
+export function verify(onSuccess){
+
 	document.getElementById("signOutButton").click(signOut);
-	ui.start('#firebaseui-auth-container', {
-		
+
+	var config = {
+
 		callbacks: {
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
-				$('.showOnSignIn').css('visibility','visible');
-				
-				var user = auth.currentUser;
+
+				onSuccess();
+				/*
 				var profilePicUrl;
+				var user = auth.currentUser;
+				padding: 14px 16px;
+				console.log(user.providerData);
+
 				if (user != null) {
 					user.providerData.forEach(profile => {
-						   console.log(profile.photoURL);
+
 						profilePicUrl = profile.photoURL;
+						console.log(profilePicUrl);
 					});
 				}
+
 				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
-				
-				onSignIn();
+				*/
+
+				$('#authStatus').html('signed In');
+
+				// User successfully signed in.
+				// Return type determines whether we continue the redirect automatically
+				// or whether we leave that to developer to handle.
 				return false;
 			},
 			uiShown: function() {
@@ -62,17 +151,32 @@ export function verify(onSignIn){
 				// Hide the loader.
 				document.getElementById('loader').style.display = 'none';
 			}
-			
 		},
-		customParameters: {
-			auth_type: 'reauthenticate'
-		}
-		// Other config options...
-	});
+
+		signInOptions: [
+			{
+				provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				customParameters: {
+					// Forces password re-entry.
+					auth_type: 'reauthenticate'
+				}
+			}//,
+/*			{
+				provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+				customParameters: {
+					// Forces password re-entry.
+					auth_type: 'reauthenticate'
+				}
+			}*/
+		]
+		
+	};
+
+	ui.start('#firebaseui-auth-container', config);
 	
 }
-/*
-function logIDFirestore(
+
+/**function logIDFirestore(
   IDNumber,
   time,
   type,

@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import { loadExternalHTML, ui, people, auth, signOut, verify, realTimeDataBase } from './Scripts.js';
+import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth } from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -29,7 +29,6 @@ var rowTemp;
 const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
 
-//creation of a new student
 function newStudent() {
 	
 	console.log('newStudent');
@@ -72,15 +71,6 @@ function newStudent() {
 		alert('new student parameters invalid');
 	}
 	
-}
-
-function clearTextBoxes(){
-	
-	console.log('clearTextBoxes');
-	teamSelect.val("none");
-	IDBox.val("");
-	firstNameBox.val("");
-	lastNameBox.val("");
 }
 
 function editStudent() {
@@ -480,6 +470,15 @@ function checkoutAll(){
 
 }
 
+function clearTextBoxes(){
+	
+	console.log('clearTextBoxes');
+	teamSelect.val("none");
+	IDBox.val("");
+	firstNameBox.val("");
+	lastNameBox.val("");
+}
+
 function refreshRealTime(snapshot){
 
 	console.log('realTime list change');
@@ -520,9 +519,51 @@ function refreshRealTime(snapshot){
 	
 }
 
+function createAdmin(email,password){
+
+	auth.createUserWithEmailAndPassword(email, password)
+		.then((userCredential) => {
+		// Signed in 
+		var user = userCredential.user;
+		// ...
+		console.log(userCredential);
+	})
+	.catch((error) => {
+		console.log(error);
+		//var errorCode = error.code;
+		//var errorMessage = error.message;
+		// ..
+	});
+}
+
+function adminSignIn(email,password){
+	auth.signInWithEmailAndPassword(email, password)
+	.then((userCredential) => {
+		// Signed in
+		var user = userCredential.user;
+		// ...
+		console.log(userCredential);
+	})
+	.catch((error) => {
+		//var errorCode = error.code;
+		//var errorMessage = error.message;
+		console.log(error);
+	});
+}
+
+function adminSignOut(){
+	firebase.auth().signOut().then(() => {
+		console.log('signed out');
+	}).catch((error) => {
+		console.log('adminSignOut error');
+	});
+}
+
 function setup(){
 	
 	console.log('admin.js loaded');
+
+	//pageInit();
 
 	loadExternalHTML();
 
@@ -550,7 +591,4 @@ function onSignIn(){
 	});
 }
 
-function denyAdmin(){
-	
-}
 setup();
