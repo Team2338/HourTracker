@@ -1,5 +1,5 @@
 // js for checkIn.html
-import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
+import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
 /** html docrefs **/
 const toggle = $('#toggle');
 const typeToggle = $('#typeSwitchToggle');
@@ -164,8 +164,10 @@ function setup(){
 
 	loadExternalHTML();
 	
-	verify(onSignIn);
+	initFirebaseAuth();
 	
+	onSignIn();
+
 	console.log('checkIn.js loaded');
 	
 }

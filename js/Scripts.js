@@ -13,6 +13,7 @@ firebase.initializeApp(firebaseConfig);
 
 export var firestore = firebase.firestore();
 export var people = firestore.collection("Users");
+export var user = firebase.auth().currentUser; 
 
 export var auth = firebase.auth();
 export var ui = new firebaseui.auth.AuthUI(auth);
@@ -26,6 +27,14 @@ function signIn() {
 }*/
 
 // Signs-out of application
+
+function sleep(milliseconds) {
+	const date = Date.now();
+	let currentDate = null;
+	do {
+		currentDate = Date.now();
+	} while (currentDate - date < milliseconds);
+}
 export function signOut(){
 	auth.signOut()
 	.then(() => {
@@ -35,36 +44,52 @@ export function signOut(){
 	});
 }
 
-export function authStateObserver(user){
-
-	var profilePicUrl;
-	var userName;
-
-	if(user){// signed in
-
-		profilePicUrl = getProfilePicUrl();
-		userName = getUserName();
-
-		$('.showOnSignIn').css('visibility','visible');
-		$('.showWhenSignedOut').css('visibility','hidden');
-
-	} else {// signed out
-
-		profilePicUrl = 'Pictures/anonymous icon.png';
-		userName = 'not signed In';
-
-		$('.showOnSignIn').css('visibility','hidden');
-		$('.showWhenSignedOut').css('visibility','visible');
-	}
-
-	$('#profilePic').href = profilePicUrl;
-	
-}
-
 // Initiate firebase auth.
 export function initFirebaseAuth() {
+	
+	console.log("<-----------------------------------------------------initFirebaseAuth------------------------------------------>>>");
+
+	sleep(2000);
+
+	firebase.auth().onAuthStateChanged((user) => {
+
+		console.log("<-----------------------------------------------------AuthState Change------------------------------------------>>>");
+		var profilePicUrl;
+		var userName;
+	
+		if(user){
+			console.log('signed in');
+			
+			// signed in
+	
+			profilePicUrl = getProfilePicUrl();
+			userName = getUserName();
+			console.log(userName);
+	
+			$('.showOnSignIn').css('visibility','visible');
+			$('.showWhenSignedOut').css('visibility','hidden');
+	
+		} else {
+			verify();
+			// signed out
+			console.log('signed out');
+	
+			profilePicUrl = 'Pictures/anonymous icon.png';
+			userName = 'not signed In';
+	
+			$('.showOnSignIn').css('visibility','hidden');
+			$('.showWhenSignedOut').css('visibility','visible');
+		}
+	
+		$('#profilePic').href = profilePicUrl;
+		
+	});
+	console.log('init firebase auth complete');
+
+	sleep(2000);
+
 	// Listen to auth state changes.
-	firebase.auth().onAuthStateChanged(authStateObserver);
+	//firebase.auth().onAuthStateChanged(authStateObserver);
 }
 
 // Returns the signed-in user's profile Pic URL.
@@ -112,7 +137,70 @@ export function verify(){
 	
 }*/
 
-export function verify(onSuccess){
+export function verify(){
+	sleep(2000);
+
+	if (user) {
+		console.log('user signed in');
+		sleep(2000);
+	} else {
+		console.log("SSSSSHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTTTTTTTTTTTTTTTTTTTT");
+		console.log("noone fucking Signed in");
+		sleep(2000);
+	  // No user is signed in.
+	
+
+		firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+		.then(() => {
+			var provider = new firebase.auth.GoogleAuthProvider();
+			// In memory persistence will be applied to the signed in Google user
+			// even though the persistence was set to 'none' and a page redirect
+			// occurred.
+			return firebase.auth().signInWithRedirect(provider);
+		})
+		.catch((error) => {
+			// Handle Errors here.
+			console.log(error);
+			var errorCode = error.code;
+			var errorMessage = error.message;
+		});
+
+		firebase.auth()
+		.getRedirectResult()
+		.then((result) => {
+			if (result.credential) {
+				/** @type {firebase.auth.OAuthCredential} */
+				var credential = result.credential;
+
+				// This gives you a Google Access Token. You can use it to access the Google API.
+				var token = credential.accessToken;
+				// ...
+			}
+			// The signed-in user info.
+			user = result.user;
+		}).catch((error) => {
+			// Handle Errors here.
+			var errorCode = error.code;
+			console.log(error);
+			var errorMessage = error.message;
+			// The email of the user's account used.
+			var email = error.email;
+			// The firebase.auth.AuthCredential type that was used.
+			var credential = error.credential;
+			// ...
+		});
+	}
+
+}
+	
+	
+	
+	
+	
+	
+
+	
+	/*
 
 	document.getElementById("signOutButton").click(signOut);
 
@@ -122,7 +210,7 @@ export function verify(onSuccess){
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
 
 				onSuccess();
-				/*
+				*//*
 				var profilePicUrl;
 				var user = auth.currentUser;
 				padding: 14px 16px;
@@ -138,14 +226,13 @@ export function verify(onSuccess){
 
 				$('#profilePic').html('<img class = "profPic" src = "'+ profilePicUrl+'">');
 				*/
-
-				$('#authStatus').html('signed In');
+//				$('#authStatus').html('signed In');
 
 				// User successfully signed in.
 				// Return type determines whether we continue the redirect automatically
 				// or whether we leave that to developer to handle.
-				return false;
-			},
+				//return false;
+/*			},
 			uiShown: function() {
 				// The widget is rendered.
 				// Hide the loader.
@@ -167,14 +254,14 @@ export function verify(onSuccess){
 					// Forces password re-entry.
 					auth_type: 'reauthenticate'
 				}
-			}*/
+			}*//*
 		]
 		
 	};
 
 	ui.start('#firebaseui-auth-container', config);
-	
-}
+	*/
+//}
 
 /**function logIDFirestore(
   IDNumber,

@@ -12,11 +12,11 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 */
 
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
+//var ui = new firebaseui.auth.AuthUI(firebase.auth());
 
 function setup(){
 	console.log('header.js loaded');
-
+/*
 	ui.start('#firebaseui-auth-container', {
 		callbacks: {
 			signInSuccessWithAuthResult: function(authResult, redirectUrl) {
@@ -40,7 +40,7 @@ function setup(){
 		],
 		// Other config options...
 	});
-
+*/
 }
 
 setup();

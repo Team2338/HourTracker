@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth } from './Scripts.js';
+import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -564,11 +564,13 @@ function setup(){
 	console.log('admin.js loaded');
 
 	//pageInit();
+	//verify();
+
+	initFirebaseAuth();
 
 	loadExternalHTML();
 
-	verify(onSignIn);
-
+	onSignIn();
 }
 
 function onSignIn(){

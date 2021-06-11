@@ -1,5 +1,5 @@
 //JS for scanIn.html
-import { loadExternalHTML, ui, people, auth, signOut, verify } from './Scripts.js';
+import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
 
 /** html docrefs */
 const resultBox = $('#result');
@@ -208,8 +208,10 @@ function setup(){
 	loadExternalHTML();
 
 	console.log('scan.js loaded');
-	verify(onSignIn);
 	
+	initFirebaseAuth();
+	
+	onSignIn();
 	
 	// to future programmers
 	// the scanning library uses getUserMedia()
