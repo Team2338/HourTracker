@@ -28,13 +28,14 @@ function signIn() {
 
 // Signs-out of application
 
-function sleep(milliseconds) {
+export function sleep(milliseconds) {
 	const date = Date.now();
 	let currentDate = null;
 	do {
 		currentDate = Date.now();
 	} while (currentDate - date < milliseconds);
 }
+
 export function signOut(){
 	auth.signOut()
 	.then(() => {
@@ -49,7 +50,7 @@ export function initFirebaseAuth() {
 	
 	console.log("<-----------------------------------------------------initFirebaseAuth------------------------------------------>>>");
 
-	sleep(2000);
+	
 
 	firebase.auth().onAuthStateChanged((user) => {
 
@@ -58,38 +59,31 @@ export function initFirebaseAuth() {
 		var userName;
 	
 		if(user){
-			console.log('signed in');
-			
 			// signed in
-	
-			profilePicUrl = getProfilePicUrl();
+
+			console.log('signed in');
+			$("#signOutButton").click(signOut);
+
 			userName = getUserName();
+			$("#userName").html(userName);
 			console.log(userName);
-	
-			$('.showOnSignIn').css('visibility','visible');
-			$('.showWhenSignedOut').css('visibility','hidden');
-	
+			
+			profilePicUrl = getProfilePicUrl();
+			console.log(profilePicUrl);
+			$('#profilePic').attr('src',profilePicUrl);
+
 		} else {
 			verify();
 			// signed out
-			console.log('signed out');
-	
-			profilePicUrl = 'Pictures/anonymous icon.png';
-			userName = 'not signed In';
-	
-			$('.showOnSignIn').css('visibility','hidden');
-			$('.showWhenSignedOut').css('visibility','visible');
 		}
-	
-		$('#profilePic').href = profilePicUrl;
 		
 	});
 	console.log('init firebase auth complete');
 
-	sleep(2000);
+	//sleep(2000);
 
 	// Listen to auth state changes.
-	//firebase.auth().onAuthStateChanged(authStateObserver);
+	
 }
 
 // Returns the signed-in user's profile Pic URL.
@@ -138,17 +132,12 @@ export function verify(){
 }*/
 
 export function verify(){
-	sleep(2000);
+	
 
 	if (user) {
 		console.log('user signed in');
-		sleep(2000);
+		//sleep(2000);
 	} else {
-		console.log("SSSSSHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIITTTTTTTTTTTTTTTTTTTTTTTTTT");
-		console.log("noone fucking Signed in");
-		sleep(2000);
-	  // No user is signed in.
-	
 
 		firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 		.then(() => {
