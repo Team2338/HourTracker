@@ -1,5 +1,5 @@
 // js for checkIn.html
-import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
+import { people, realTimeDataBase, loadExternalHTML, initFirebaseAuth} from './Scripts.js';
 /** html docrefs **/
 const toggle = $('#toggle');
 const typeToggle = $('#typeSwitchToggle');
@@ -162,25 +162,25 @@ function submitData(event){
 
 function setup(){
 
-	loadExternalHTML();
+	console.log('checkIn.js loaded');
 	
 	initFirebaseAuth();
 	
-	onSignIn();
-
-	console.log('checkIn.js loaded');
+	loadExternalHTML();
 	
-}
-
-function onSignIn(){
+	//fill name selector in alphabetical order
 	var optsList= [];
-
 	people.get()
 	.then(function(querySnapshot) {
-		
+
 		querySnapshot.forEach(function(doc) {
+			
 			console.log(doc.id, " => ", doc.data());
-			optsList.push(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
+
+			if(doc.data().lastName != undefined && doc.data().firstName != undefined){
+				optsList.push(new Option(doc.data().lastName+", "+doc.data().firstName, doc.id));
+			}
+			
 		});
 		optsList.sort(function (a, b) {
 			return $(a).text() > $(b).text() ? 1 : -1;
@@ -188,12 +188,13 @@ function onSignIn(){
 		optsList.forEach(function(element) {
 			nameSelect.append(element);
 		});
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 	form.submit(submitData);
-}
 
+}
 
 setup();

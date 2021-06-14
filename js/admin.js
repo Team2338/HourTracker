@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
+import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -22,7 +22,6 @@ const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
-const signOutButton = $('#signOutButton');
 
 var rowTemp;
 
@@ -155,7 +154,9 @@ function deleteStudent(){
 					docRef.delete().then(function() {
 						console.log("Document successfully deleted!");
 					}).catch(function(error) {
-						console.error("Error removing document: ", error);
+						checkPermissions(error, function(err){
+							console.error(err);
+						});
 					});
 				} else{
 					console.log('delete canceled');
@@ -336,10 +337,10 @@ function expandRow(row){
 		});
 		
 		row.appendChild(hourTable);
-	
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 	
 }
@@ -369,7 +370,8 @@ function search(){
 	
 	if(selectedID.length === 8){
 		console.log('ID search');
-		filteredPeople = people.doc(selectedID).get().then(
+		filteredPeople = people.doc(selectedID).get()
+		.then(
 			function(doc){
 				if(doc.exists){
 					renderRowHTML(doc);
@@ -378,7 +380,12 @@ function search(){
 					dataTableBody.innerHTML = dataTableHTML;
 				}
 			}
-		);
+		).catch(function(error) {
+			checkPermissions(error, function(err){
+				console.error(err);
+			});
+		});
+		;
 	
 	} else if(selectedID.length === 0){
 	
@@ -405,9 +412,10 @@ function search(){
 			});
 
 			//dataTableBody.innerHTML = dataTableHTML;
-		})
-		.catch(function(error) {
-			console.log("Error getting documents: ", error);
+		}).catch(function(error) {
+			checkPermissions(error, function(err){
+				console.error(err);
+			});
 		});
 	} else {
 		alert('invalid ID');
@@ -419,6 +427,8 @@ function checkoutAll(){
 	console.log('checkoutAll');
 
 	realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+
+		console.log('start checkout');
 
 		var time = new Date();
 
@@ -438,11 +448,12 @@ function checkoutAll(){
 
 		var docName = month + day + year;
 
+		console.log('shiiit');
 		peopleList.forEach(function(element){
 			var studentID = element[0];
 			
-			var docRefStudent = people.doc(studentID);
-			var docRefLog = docRefStudent.collection("logs").doc(docName);
+			//var docRefStudent = ;
+			var docRefLog = people.doc(studentID).collection("logs").doc(docName);	
 
 			docRefLog.get().then(function(logDoc){
 				if(logDoc.exists){
@@ -458,14 +469,15 @@ function checkoutAll(){
 		
 		});
 
-		peopleList = [["N/A","N/A","N/A"]];
+		peopleList = [["null","null","null"]];
 
 		realTimeDataBase.ref('users/').set({
 			here: peopleList
 		});
-	}).catch(function(err){
-		
-		console.log('an err happened at checkoutAll',err);
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 
 }
@@ -483,14 +495,18 @@ function refreshRealTime(snapshot){
 
 	console.log('realTime list change');
 	
+	console.log(snapshot.val());
+	//console.log(snapshot.ref('here/').val());
+
 	hereTableBody.empty();
 	
 	var peopleList = snapshot.val().here;
+	console.log("peopleList log");
 	console.log(peopleList);
 	
 	peopleList.forEach(function(element){
 		
-		if(element[0] === "N/A"){
+		if(element[0] === "null"){
 			console.log('nobody here');
 			
 			hereTable.css('display', 'none');
@@ -518,62 +534,30 @@ function refreshRealTime(snapshot){
 	});
 	
 }
-
+/*
 function createAdmin(email,password){
 
 	auth.createUserWithEmailAndPassword(email, password)
-		.then((userCredential) => {
+	.then((userCredential) => {
 		// Signed in 
 		var user = userCredential.user;
 		// ...
 		console.log(userCredential);
-	})
-	.catch((error) => {
-		console.log(error);
-		//var errorCode = error.code;
-		//var errorMessage = error.message;
-		// ..
+	
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 }
-
-function adminSignIn(email,password){
-	auth.signInWithEmailAndPassword(email, password)
-	.then((userCredential) => {
-		// Signed in
-		var user = userCredential.user;
-		// ...
-		console.log(userCredential);
-	})
-	.catch((error) => {
-		//var errorCode = error.code;
-		//var errorMessage = error.message;
-		console.log(error);
-	});
-}
-
-function adminSignOut(){
-	firebase.auth().signOut().then(() => {
-		console.log('signed out');
-	}).catch((error) => {
-		console.log('adminSignOut error');
-	});
-}
-
+*/
 function setup(){
 	
 	console.log('admin.js loaded');
 
-	//pageInit();
-	//verify();
-
 	initFirebaseAuth();
 
 	loadExternalHTML();
-
-	onSignIn();
-}
-
-function onSignIn(){
 
 	searchButton.click(search);
 	newButton.click(newStudent);
@@ -582,11 +566,6 @@ function onSignIn(){
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
 	checkoutAllButton.click(checkoutAll);
-	//signOutButton.click(signOut);
-
-	//$('#top').css('visibility', 'visible');
-	//$('#middle').css('visibility', 'visible');
-	//$('#bottom').css('visibility', 'visible');
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
