@@ -1,5 +1,5 @@
 //JS for scanIn.html
-import { people, realTimeDataBase, verify, loadExternalHTML, initFirebaseAuth, auth, user } from './Scripts.js';
+import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions,} from './Scripts.js';
 
 /** html docrefs */
 const resultBox = $('#result');
@@ -7,7 +7,7 @@ const toggle = $('#checkInSwitchToggle');
 const typeToggle = $('#typeSwitchToggle');
 const switchDisplay = $('#switchDisplay');
 const greenBox = $('#greenBox');
-
+const IDinput = $('#IDselect');
 /** scanning */
 var codeReader;
 let deviceId;
@@ -16,40 +16,6 @@ let deviceId;
 const studentIDLength = 8;
 const greenBoxVisibilityDelay = 3000;
 var scanBlock = false;
-
-function processBarcode(result,err){
-	// essentially checks for barcode validity
-
-	if (err) {
-		var different = true;
-		// other errors break loop <= need to find fix for broken loops
-		if (err instanceof ZXing.NotFoundException) {
-			//console.log('No code found.');
-			different = false;
-		}
-		if (err instanceof ZXing.ChecksumException) {
-			different = false;
-			console.log('A code was found, but it\'s read value was not valid.');
-		}
-		if (err instanceof ZXing.FormatException) {
-			different = false;
-			console.log('A code was found, but it was in a invalid format.');
-		}
-		if (different === true) {
-			console.log('we got an interesting error\n',err);
-		}
-	} else if ((result.text.length == studentIDLength) && !scanBlock) {
-		onFoundBarcode(result.text);
-	} else if (scanBlock){
-		//console.log('scan to early, scan was blocked');
-	} else {
-		// I theorize this case breaks above loop maybe find a reset instead
-		//codeReader.reset();
-		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
-	}
-	
-}
 
 function onFoundBarcode(IdNumber){
 	var time = new Date();
@@ -101,31 +67,42 @@ function onFoundBarcode(IdNumber){
 						hourType: type
 					});
 					
+					
 					realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+						console.log('RTDB logging')
 	
 						var peopleList = snapshot.val().here;
+						console.log("peopleList RTDB:");
 						console.log(peopleList);
-						if (peopleList === [["N/A","N/A","N/A"]]){
+						//this if statement is broken
+						if (peopleList === [["null", "null", "null"]]){
 							peopleList = [];
+							console.log("nulls cleared");
 						}
 						peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
-						console.log(peopleList);							
+						console.log("peopleList before write");
+						console.log(peopleList);						
 						
 						realTimeDataBase.ref('users/').set({
 							here: peopleList
 						});
-					}).catch(function(err){
-						// purges the database and adds the person
-						console.log(err);
-						var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
-						realTimeDataBase.ref('users/').set({
-							here: peopleList
+					}).catch(function(error) {
+						checkPermissions(error, function(err){
+						
+							console.log("purge RTDB");
+							// purges the database and adds the person
+							console.log(err);
+							var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
+							realTimeDataBase.ref('users/').set({
+								here: peopleList
+							});
 						});
 					});
 
 					reset();
 
 				} else if(Logdoc.exists && checkOut){
+					console.log("checkout");
 					// checkout
 					greenBox.css('visibility', 'visible');
 					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
@@ -152,7 +129,7 @@ function onFoundBarcode(IdNumber){
 							
 						});
 						if (peopleList.length === 0){
-							peopleList = [["N/A","N/A","N/A"]];
+							peopleList = [["null","null","null"]];
 						}
 						console.log(peopleList);
 						
@@ -190,6 +167,10 @@ function onFoundBarcode(IdNumber){
 			resultBox.html('Error: ID #'+studentID+' not found');
 		}
 			
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 }
 
@@ -202,37 +183,39 @@ function reset(){
 }
 
 function setup(){
-	
-// goes to system default
 
-	
+	console.log('handHeldScanner.js loaded');
 
-	console.log('scan.js loaded');
-	
 	initFirebaseAuth();
 
 	loadExternalHTML();
-	
-	codeReader = new ZXing.BrowserBarcodeReader();
-	
-	codeReader
-	.getVideoInputDevices()
-	.then(videoInputDevices => {
-		deviceId = videoInputDevices[0].deviceId;
-		videoInputDevices.forEach(device =>
-			console.log(`${device.label}, ${device.deviceId}`)
-		);
-	})
-	.catch(err => console.error(err));
-	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
-		processBarcode(result,err);
-	});
-	
-	// to future programmers
-	// the scanning library uses getUserMedia()
-	// if it breaks without good reason check the corresponding security rules for above method
-	// and check for updates
 
+	IDinput.select();
+
+	//reselects input so you dont have to click it after changing check in/out or shop/service
+	
+	typeToggle.change(function(){
+		IDinput.select();
+	});
+
+	toggle.change(function(){
+		IDinput.select();
+	});
+
+	function updateValue(e) {
+		console.log(e.target.value);
+
+		if(e.target.value.length == 8){
+			console.log('logging');
+			onFoundBarcode(e.target.value);
+			IDinput.val('');
+			IDinput.select();
+		}
+		
+	}
+
+	IDinput.on('input', updateValue);
+	
 }
 
 setup();

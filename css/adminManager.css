@@ -1,0 +1,29 @@
+/* our colors
+    grey = #BABFB7
+    blue = #02243E
+    orange = #FE5000
+*/
+
+h2{
+	font-size: 20px;
+}
+/*
+.switch{
+	padding: 5px;
+	padding-right: 40px;
+}*/
+
+#uidBox{
+	width: 250px;
+	/*margin-right:15px ;
+	/margin-left: 15px;*/
+}
+/*
+#spacyBox{
+	width: 250px;
+}*/
+
+.switchBox{
+	display: flex;
+	padding-bottom: 15px;
+}

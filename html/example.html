@@ -30,7 +30,25 @@
 		<!--import styles specific to this webpage-->
 		<link rel = "stylesheet" type = "text/css" href = "css/manual.css">
 
-	
+		<!--
+			a JS web development library
+			necessary for more intricate control
+			of elements especially in admin, where things dissapear and reapear often
+		 -->
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+		<!--firebase libraries, allows for control and access to the server where we store and retrieve data-->
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+		<!--the above libraries should be updated once in a while to ensure we have access to the server-->
+		
+		<!--the page script to import-->
+		<script type = "module" src = "js/admin.js"></script>
+
+		 <!--firebase libraries must be imported before admin.js
+			functions from scripts.js is imported directly from JS-->
 	</head>
 
 </html>

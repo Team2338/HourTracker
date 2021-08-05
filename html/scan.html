@@ -14,15 +14,16 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!--	
 		this library is for finding barcodes from a camera, 
-		effective only in decent lighting but very reliable only on smartphones
+		very reliable only on smartphones
+		but also works with other devices in decent lighting
 		<script type="text/javascript" src="https://unpkg.com/@zxing/library@0.18.4/umd/index.js"></script>
 -->
-		<script src = "https://www.gstatic.com/firebasejs/8.6.7/firebase-app.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.6.7/firebase-firestore.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.6.7/firebase-database.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.6.7/firebase-auth.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
 
-		<script type = "module" src="js/handHeldScanner.js"></script>
+		<script type = "module" src="js/scan.js"></script>
 		
 	</head>
 
@@ -53,7 +54,7 @@
 
 				<input id = "checkInSwitchToggle" type="checkbox" value="true">
 				<span class="slider round"></span>
-				</label>
+			</label>
 			Check Out
 		</span>
 
@@ -63,7 +64,7 @@
 			<label class="switch">
 				<input id = "typeSwitchToggle" type = "checkbox" value = "service">
 				<span class = "slider round"></span>
-				</label>
+			</label>
 			Service
 		</span>
 

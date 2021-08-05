@@ -49,8 +49,6 @@ export function initFirebaseAuth() {
 	
 	console.log("<-----------------------------------------------------initFirebaseAuth------------------------------------------>>>");
 
-	
-
 	firebase.auth().onAuthStateChanged((user) => {
 
 		console.log("<-----------------------------------------------------AuthState Change------------------------------------------>>>");
@@ -112,7 +110,38 @@ export function checkPermissions(error,after){
 	
 	if(error.message == "Missing or insufficient permissions."){
 		//console.log(error);
-		alert("Your Account has Missing or insufficient permissions. You will be signed Out.Please sign in using an admin account.");
+		alert("Your Account has Missing or insufficient permissions. You will be signed Out.Please sign in using an admin account.\n or contact an admin to verify your account as a user");
+		//create possible Admin file
+		console.log('boop');
+		sleep(2000);
+		
+		var currentUID = firebase.auth().currentUser.uid;
+		console.log(currentUID);
+		sleep(2000);
+		
+		var docRef = firestore.collection("googleSignIn").doc(currentUID);
+
+		docRef.get().then(function(doc){
+			console.log('get');
+			if(doc.exists){
+				console.log('exists');
+				//alert('Cannot create new student, Student exists');
+			}else{
+				docRef.set({
+					email: firebase.auth().currentUser.email,
+					Name: firebase.auth().currentUser.displayName,
+					admin: "false"
+				});
+				console.log('fileWrite');
+			}
+		
+		}).catch(function(error){
+			console.log(error);
+			sleep(2000);
+		});
+		sleep(2000);
+		console.log('end');
+
 		after(error);
 		signOut();
 	} else {
@@ -171,3 +200,12 @@ function verify(){
 	}
 
 }
+/*
+function sleep(milliseconds) {
+	const date = Date.now();
+	let currentDate = null;
+	do {
+		currentDate = Date.now();
+	} while (currentDate - date < milliseconds);
+}
+*/
