@@ -385,7 +385,6 @@ function search(){
 				console.error(err);
 			});
 		});
-		;
 	
 	} else if(selectedID.length === 0){
 	

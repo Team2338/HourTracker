@@ -113,11 +113,9 @@ export function checkPermissions(error,after){
 		alert("Your Account has Missing or insufficient permissions. You will be signed Out.Please sign in using an admin account.\n or contact an admin to verify your account as a user");
 		//create possible Admin file
 		console.log('boop');
-		sleep(2000);
 		
 		var currentUID = firebase.auth().currentUser.uid;
 		console.log(currentUID);
-		sleep(2000);
 		
 		var docRef = firestore.collection("googleSignIn").doc(currentUID);
 
@@ -125,6 +123,7 @@ export function checkPermissions(error,after){
 			console.log('get');
 			if(doc.exists){
 				console.log('exists');
+				sleep(2000);
 				//alert('Cannot create new student, Student exists');
 			}else{
 				docRef.set({
@@ -137,11 +136,11 @@ export function checkPermissions(error,after){
 		
 		}).catch(function(error){
 			console.log(error);
-			sleep(2000);
+			
 		});
-		sleep(2000);
+		
 		console.log('end');
-
+		sleep(5000);
 		after(error);
 		signOut();
 	} else {
