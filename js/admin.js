@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
+import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -39,20 +39,22 @@ function newStudent() {
 	var selectedTeam = teamSelect.val();
 
 	if ((selectedID.length == 8) &&
-		(selectedFirstName.length > 0) &&
+		(selectedFirstName.length > 0
+			) &&
 		(selectedLastName.length > 0)
 	   ){
 		
-		var docRef = db.collection("Users").doc(selectedID);
+		var docRef = firestore.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
 				alert('Cannot create new student, Student exists');
 			}else{
+				alert('New Student Created');
 				docRef.set({
 					firstName: selectedFirstName,
 					lastName: selectedLastName,
-					teamNumber: selectedTeam,
+					teamNumber:"2338", //selectedTeam,
 					shopHours: 0,
 					serviceHours: 0
 				});
@@ -84,7 +86,7 @@ function editStudent() {
 	
 	if (selectedID.length == 8){
 		
-		var docRef = db.collection("Users").doc(selectedID);
+		var docRef = firestore.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
@@ -451,6 +453,9 @@ function checkoutAll(){
 		peopleList.forEach(function(element){
 			var studentID = element[0];
 			
+			if(studentID != "N/A"){
+
+
 			//var docRefStudent = ;
 			var docRefLog = people.doc(studentID).collection("logs").doc(docName);	
 
@@ -465,7 +470,7 @@ function checkoutAll(){
 					});
 				}
 			});
-		
+			}
 		});
 
 		peopleList = [["null","null","null"]];
