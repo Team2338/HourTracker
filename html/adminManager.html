@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+ 	
+	<head>
+		<title>HourLogger | AdminManager</title>
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+		<base href = "../">
+		
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/adminManager.css">
+
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+
+		<!--
+		
+		<script async = "" src = "https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
+		-->
+		
+		<script type = "module" src = "js/adminManager.js"></script>
+		
+	</head>
+
+    <body id = "background">
+		
+		<div data-includeHTML = "html/HTMLImports/header.html"></div>
+	<!--
+		<div id = "googleSignIn">
+			<div id = "firebaseui-auth-container"></div>
+			<div id = "loader" >Loading...</div>
+			<div id = "profilePic"><img></div>
+			<div id = "authStatus"><div>
+			<button id = "signOutButton" class = "showOnSignIn">Sign Out</button>
+		</div>
+	-->
+
+		<h1>Admin Manager</h1>
+		
+		<div class = "showOnSignIn" id = "bottom">
+
+			<table id = "peopleData">
+				<thead id= "tableHead">
+					<tr>
+						<th>Email</th>
+						<th>Name</th>
+						<th>UID</th>
+						<th>Admin</th>
+						<!--
+						<th>Service Hours</th>
+						<th>Shop Hours</th>
+						-->
+					</tr>
+					<tr>
+						<th><input type = "text" id = "emailBox" placeholder= "email"></th>
+						<th><input type = "text" id = "nameBox" placeholder = "Name"></th>
+						<th><input type = "text" id = "uidBox" placeholder = "UID"></th>
+						<th id = "spacyBox">
+						</th>
+						<th><button type = "button" id = "searchButton">Search</button></th>
+						<th><button type = "button" id = "saveButton" >Save</button></th>
+					</tr>
+				</thead>
+				
+				<tbody id = "tableBody">
+				</tbody>
+
+			</table>
+
+		</div>
+
+		<span></span>
+
+		<span ><br><br></span>
+
+		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
+		
+	</body>
+</html>

@@ -4,23 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-var firebaseConfig = {
-    apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
-    authDomain: "hourtracker-2b6f8.firebaseapp.com",
-    projectId: "hourtracker-2b6f8",
-    storageBucket: "hourtracker-2b6f8.appspot.com",
-    messagingSenderId: "82969866110",
-    appId: "1:82969866110:web:5a089299065444cbea0d2f",
-    measurementId: "G-DS4GRL509N"
-};
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-
-var db = firebase.firestore();
-var fbRTDB = firebase.database();
-//var auth = firebase.auth();
-
-var people = db.collection("Users");
+import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -44,7 +28,6 @@ var rowTemp;
 const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
 
-//creation of a new student
 function newStudent() {
 	
 	console.log('newStudent');
@@ -56,20 +39,22 @@ function newStudent() {
 	var selectedTeam = teamSelect.val();
 
 	if ((selectedID.length == 8) &&
-		(selectedFirstName.length > 0) &&
+		(selectedFirstName.length > 0
+			) &&
 		(selectedLastName.length > 0)
 	   ){
 		
-		var docRef = db.collection("Users").doc(selectedID);
+		var docRef = firestore.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
 				alert('Cannot create new student, Student exists');
 			}else{
+				alert('New Student Created');
 				docRef.set({
 					firstName: selectedFirstName,
 					lastName: selectedLastName,
-					teamNumber: selectedTeam,
+					teamNumber:"2338", //selectedTeam,
 					shopHours: 0,
 					serviceHours: 0
 				});
@@ -89,15 +74,6 @@ function newStudent() {
 	
 }
 
-function clearTextBoxes(){
-	
-	console.log('clearTextBoxes');
-	teamSelect.val("none");
-	IDBox.val("");
-	firstNameBox.val("");
-	lastNameBox.val("");
-}
-
 function editStudent() {
 	
 	console.log('edit');
@@ -110,7 +86,7 @@ function editStudent() {
 	
 	if (selectedID.length == 8){
 		
-		var docRef = db.collection("Users").doc(selectedID);
+		var docRef = firestore.collection("Users").doc(selectedID);
 		docRef.get().then(function(doc){
 
 			if(doc.exists){
@@ -180,7 +156,9 @@ function deleteStudent(){
 					docRef.delete().then(function() {
 						console.log("Document successfully deleted!");
 					}).catch(function(error) {
-						console.error("Error removing document: ", error);
+						checkPermissions(error, function(err){
+							console.error(err);
+						});
 					});
 				} else{
 					console.log('delete canceled');
@@ -361,10 +339,10 @@ function expandRow(row){
 		});
 		
 		row.appendChild(hourTable);
-	
-	})
-	.catch(function(error) {
-		console.log("Error getting documents: ", error);
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 	
 }
@@ -394,7 +372,8 @@ function search(){
 	
 	if(selectedID.length === 8){
 		console.log('ID search');
-		filteredPeople = people.doc(selectedID).get().then(
+		filteredPeople = people.doc(selectedID).get()
+		.then(
 			function(doc){
 				if(doc.exists){
 					renderRowHTML(doc);
@@ -403,7 +382,11 @@ function search(){
 					dataTableBody.innerHTML = dataTableHTML;
 				}
 			}
-		);
+		).catch(function(error) {
+			checkPermissions(error, function(err){
+				console.error(err);
+			});
+		});
 	
 	} else if(selectedID.length === 0){
 	
@@ -424,13 +407,16 @@ function search(){
 			//dataTableHTML = '';
 			querySnapshot.forEach(function(doc) {
 				console.log(doc.id, " => ", doc.data());
-				renderRowHTML(doc);
+				if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
+					renderRowHTML(doc);
+				}
 			});
 
 			//dataTableBody.innerHTML = dataTableHTML;
-		})
-		.catch(function(error) {
-			console.log("Error getting documents: ", error);
+		}).catch(function(error) {
+			checkPermissions(error, function(err){
+				console.error(err);
+			});
 		});
 	} else {
 		alert('invalid ID');
@@ -441,7 +427,9 @@ function search(){
 function checkoutAll(){
 	console.log('checkoutAll');
 
-	firebase.database().ref('users/').once('value').then((snapshot) => {
+	realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+
+		console.log('start checkout');
 
 		var time = new Date();
 
@@ -461,11 +449,15 @@ function checkoutAll(){
 
 		var docName = month + day + year;
 
+		console.log('shiiit');
 		peopleList.forEach(function(element){
 			var studentID = element[0];
 			
-			var docRefStudent = people.doc(studentID);
-			var docRefLog = docRefStudent.collection("logs").doc(docName);
+			if(studentID != "N/A"){
+
+
+			//var docRefStudent = ;
+			var docRefLog = people.doc(studentID).collection("logs").doc(docName);	
 
 			docRefLog.get().then(function(logDoc){
 				if(logDoc.exists){
@@ -478,33 +470,47 @@ function checkoutAll(){
 					});
 				}
 			});
-		
+			}
 		});
 
-		peopleList = [["N/A","N/A","N/A"]];
+		peopleList = [["null","null","null"]];
 
-		firebase.database().ref('users/').set({
+		realTimeDataBase.ref('users/').set({
 			here: peopleList
 		});
-	}).catch(function(err){
-		
-		console.log('an err happened at checkoutAll',err);
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 
+}
+
+function clearTextBoxes(){
+	
+	console.log('clearTextBoxes');
+	teamSelect.val("none");
+	IDBox.val("");
+	firstNameBox.val("");
+	lastNameBox.val("");
 }
 
 function refreshRealTime(snapshot){
 
 	console.log('realTime list change');
 	
+	console.log(snapshot.val());
+	//console.log(snapshot.ref('here/').val());
+
 	hereTableBody.empty();
 	
 	var peopleList = snapshot.val().here;
+	console.log("peopleList log");
 	console.log(peopleList);
 	
 	peopleList.forEach(function(element){
 		
-		if(element[0] === "N/A"){
+		if(element[0] === "null"){
 			console.log('nobody here');
 			
 			hereTable.css('display', 'none');
@@ -532,16 +538,30 @@ function refreshRealTime(snapshot){
 	});
 	
 }
+/*
+function createAdmin(email,password){
 
+	auth.createUserWithEmailAndPassword(email, password)
+	.then((userCredential) => {
+		// Signed in 
+		var user = userCredential.user;
+		// ...
+		console.log(userCredential);
+	
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
+	});
+}
+*/
 function setup(){
 	
 	console.log('admin.js loaded');
 
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
-	});
+	initFirebaseAuth();
+
+	loadExternalHTML();
 
 	searchButton.click(search);
 	newButton.click(newStudent);
@@ -551,10 +571,9 @@ function setup(){
 	downloadButton.click(downloadCSV);
 	checkoutAllButton.click(checkoutAll);
 
-	fbRTDB.ref('users/').on('value', (snapshot) => {
+	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
 	});
-
 }
 
 setup();

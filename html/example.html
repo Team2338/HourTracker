@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+	
+	<head>
+
+		<!--
+			for more information on how this works or how to edit this follow this link
+			https://docs.google.com/document/d/1AoigxseNlgWwtYPKdy5akvFymbgpldgcD22f3jZEEoM/edit?usp=sharing
+		-->
+
+		<!--The webpage title viewed from the tabs-->
+		<title>HourLogger | HTML example</title>
+
+		<!--Comments in this page explain what lines of code are doing-->
+		
+		<!--controls page's dimensions and scaling
+
+		width=device-width sets page width to follow the screen-width of the device
+
+		initial-scale=1.0 sets initial zoom level
+		-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!--sets all relative to start in HourTracker/ or root directory-->
+		<base href = "../">
+
+		<!-- imports basic styles, used as a base in all webpages-->
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		
+		<!--import styles specific to this webpage-->
+		<link rel = "stylesheet" type = "text/css" href = "css/manual.css">
+
+		<!--
+			a JS web development library
+			necessary for more intricate control
+			of elements especially in admin, where things dissapear and reapear often
+		 -->
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+		<!--firebase libraries, allows for control and access to the server where we store and retrieve data-->
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+		<!--the above libraries should be updated once in a while to ensure we have access to the server-->
+		
+		<!--the page script to import-->
+		<script type = "module" src = "js/admin.js"></script>
+
+		 <!--firebase libraries must be imported before admin.js
+			functions from scripts.js is imported directly from JS-->
+	</head>
+
+</html>

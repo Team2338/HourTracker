@@ -1,19 +1,5 @@
 //JS for scanIn.html
-/** firebase */
-var firebaseConfig = {
-	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
-	authDomain: "hourtracker-2b6f8.firebaseapp.com",
-	projectId: "hourtracker-2b6f8",
-	storageBucket: "hourtracker-2b6f8.appspot.com",
-	messagingSenderId: "82969866110",
-	appId: "1:82969866110:web:5a089299065444cbea0d2f",
-	measurementId: "G-DS4GRL509N"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-var db = firebase.firestore();
-var people = db.collection("Users");
+import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions,} from './Scripts.js';
 
 /** html docrefs */
 const resultBox = $('#result');
@@ -21,50 +7,15 @@ const toggle = $('#checkInSwitchToggle');
 const typeToggle = $('#typeSwitchToggle');
 const switchDisplay = $('#switchDisplay');
 const greenBox = $('#greenBox');
-
+const IDinput = $('#IDselect');
 /** scanning */
+var codeReader;
 let deviceId;
-var codeReader = new ZXing.BrowserBarcodeReader();
 
 /** processing and logging*/
 const studentIDLength = 8;
 const greenBoxVisibilityDelay = 3000;
 var scanBlock = false;
-
-
-function processBarcode(result,err){
-	// essentially checks for barcode validity
-
-	if (err) {
-		var different = true;
-		// other errors break loop <= need to find fix for broken loops
-		if (err instanceof ZXing.NotFoundException) {
-			//console.log('No code found.');
-			different = false;
-		}
-		if (err instanceof ZXing.ChecksumException) {
-			different = false;
-			console.log('A code was found, but it\'s read value was not valid.');
-		}
-		if (err instanceof ZXing.FormatException) {
-			different = false;
-			console.log('A code was found, but it was in a invalid format.');
-		}
-		if (different === true) {
-			console.log('we got an interesting error\n',err);
-		}
-	} else if ((result.text.length == studentIDLength) && !scanBlock) {
-		onFoundBarcode(result.text);
-	} else if (scanBlock){
-		//console.log('scan to early, scan was blocked');
-	} else {
-		// I theorize this case breaks above loop maybe find a reset instead
-		//codeReader.reset();
-		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
-	}
-	
-}
 
 function onFoundBarcode(IdNumber){
 	var time = new Date();
@@ -116,31 +67,42 @@ function onFoundBarcode(IdNumber){
 						hourType: type
 					});
 					
-					firebase.database().ref('users/').once('value').then((snapshot) => {
+					
+					realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+						console.log('RTDB logging')
 	
 						var peopleList = snapshot.val().here;
+						console.log("peopleList RTDB:");
 						console.log(peopleList);
-						if (peopleList === [["N/A","N/A","N/A"]]){
+						//this if statement is broken
+						if (peopleList === [["null", "null", "null"]]){
 							peopleList = [];
+							console.log("nulls cleared");
 						}
 						peopleList.push([Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]);
-						console.log(peopleList);							
+						console.log("peopleList before write");
+						console.log(peopleList);						
 						
-						firebase.database().ref('users/').set({
+						realTimeDataBase.ref('users/').set({
 							here: peopleList
 						});
-					}).catch(function(err){
-						// purges the database and adds the person
-						console.log(err);
-						var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
-						firebase.database().ref('users/').set({
-							here: peopleList
+					}).catch(function(error) {
+						checkPermissions(error, function(err){
+						
+							console.log("purge RTDB");
+							// purges the database and adds the person
+							console.log(err);
+							var peopleList = [[Studentdoc.id, Studentdoc.data().firstName, Studentdoc.data().lastName]];
+							realTimeDataBase.ref('users/').set({
+								here: peopleList
+							});
 						});
 					});
 
 					reset();
 
 				} else if(Logdoc.exists && checkOut){
+					console.log("checkout");
 					// checkout
 					greenBox.css('visibility', 'visible');
 					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
@@ -153,7 +115,7 @@ function onFoundBarcode(IdNumber){
 						hourType: type
 					});
 
-					firebase.database().ref('users/').once('value').then((snapshot) => {
+					realTimeDataBase.ref('users/').once('value').then((snapshot) => {
 						var peopleList = snapshot.val().here;
 						console.log(peopleList);
 						
@@ -167,11 +129,11 @@ function onFoundBarcode(IdNumber){
 							
 						});
 						if (peopleList.length === 0){
-							peopleList = [["N/A","N/A","N/A"]];
+							peopleList = [["null","null","null"]];
 						}
 						console.log(peopleList);
 						
-						firebase.database().ref('users/').set({
+						realTimeDataBase.ref('users/').set({
 							here: peopleList
 						});
 					});
@@ -205,6 +167,10 @@ function onFoundBarcode(IdNumber){
 			resultBox.html('Error: ID #'+studentID+' not found');
 		}
 			
+	}).catch(function(error) {
+		checkPermissions(error, function(err){
+			console.error(err);
+		});
 	});
 }
 
@@ -216,215 +182,40 @@ function reset(){
 	}, greenBoxVisibilityDelay);
 }
 
-/** ancient technologies
-	
-	if (() && (scanBlock == false)){
-		toggle.checked ?  logClockOut(result): logClockIn(result);
-	} else if (scanBlock){
-		// block scan to prevent immediate rescan of same id
-		console.log('ScanBlocked');
-	} else {
-		
-		console.log("Faulty scan: "+result+"\n reload may be necessary");
-		location.reload();
-	}
-}
-
-function logClockIn(ID){
-	
-	timeIn = new Date();
-	console.log('logging Check In'+ ID+ ' at:\n'+timeIn);
-
-	var yearString = String(timeIn.getFullYear());
-	var monthString = String(timeIn.getMonth() +1);
-	// month +1 because index starts at 0
-	var dayString = String(timeIn.getDate());
-	
-
-	monthString = (monthString.length === 1)? '0' + monthString : monthString;
-	dayString = (dayString.length === 1)? '0' + dayString : dayString;
-	
-	var CLOCK_IN_HOUR= String(timeIn.getHours());
-	var CLOCK_IN_MINUTE = String(timeIn.getMinutes());
-
-	var studentID = ID;
-	var type = "shop";
-	
-	var docName = monthString + dayString + yearString;
-	var docRefStudent = db.collection("Users").doc(studentID);
-	var docRefLog = docRefStudent.collection("logs").doc(docName);
-
-	docRefStudent.get().then(function(Studentdoc){
-
-		if(Studentdoc.exists){
-			
-			greenBox.style.visibility = "visible";
-			resultBox.innerHTML = "Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
-
-			docRefLog.get().then(function(docLog){
-
-				if(docLog.exists){
-					resultBox.innerHTML = "You already clocked in today.";	
-				} else {
-
-					docRefLog.set({
-						clockInHour: CLOCK_IN_HOUR,
-						clockInMinute: CLOCK_IN_MINUTE,
-						
-						clockOutHour: "N/A",
-						clockOutMinute: "N/A",
-						
-						hourType: type
-					});
-				}
-			});
-		}else{
-			
-			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
-		}
-	});
-			
-	console.log('data in Firebase');
-	
-}
-
-function logClockOut(ID){
-
-	timeOut = new Date();
-	console.log('logging Check Out'+ ID+ ' at:\n'+timeOut);
-
-	var yearString = String(timeOut.getFullYear());
-	var monthString = String(timeOut.getMonth() +1);
-	// month +1 because index starts at 0
-	var dayString = String(timeOut.getDate());
-
-	monthString = (monthString.length === 1)? '0' + monthString : monthString;
-	dayString = (dayString.length === 1)? '0' + dayString : dayString;
-	
-
-	var CLOCK_OUT_HOUR = String(timeOut.getHours());
-	var CLOCK_OUT_MINUTE = String(timeOut.getMinutes());
-	var CLOCK_IN_HOUR;
-	var CLOCK_IN_MINUTE;
-
-	var studentID = ID;
-	var type = "shop";
-
-	var docName = monthString + dayString + yearString;
-	var docRefStudent = db.collection("Users").doc(studentID);
-	var docRefLog = docRefStudent.collection("logs").doc(docName);
-
-	docRefStudent.get().then(function(Studentdoc){
-
-		if(Studentdoc.exists){
-
-			greenBox.style.visibility = "visible";
-			resultBox.innerHTML = "Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName;
-
-			docRefLog.get().then(function(Logdoc){
-			
-				if(Logdoc.exists){
-
-					CLOCK_IN_HOUR = Logdoc.data().clockInHour;
-					CLOCK_IN_MINUTE = Logdoc.data().clockInMinute;
-
-					docRefLog.set({
-						clockInHour: CLOCK_IN_HOUR,
-						clockInMinute: CLOCK_IN_MINUTE,
-						
-						clockOutHour: CLOCK_OUT_HOUR,
-						clockOutMinute: CLOCK_OUT_MINUTE,
-						
-						hourType: type
-					});
-
-				}else{
-
-					resultBox.innerHTML = 'You forgot to clock in😔';
-
-					console.log('you never clocked in');
-					docRefLog.set({
-						clockInHour: "N/A",
-						clockInMinute: "N/A",
-						
-						clockOutHour: CLOCK_OUT_HOUR,
-						clockOutMinute: CLOCK_OUT_MINUTE,
-						
-						hourType: type
-					});
-				
-				}
-			
-			});
-
-		}else{
-			
-			resultBox.innerHTML = 'Error: ID #'+studentID+' not found';
-		
-		}
-
-	});
-		
-	console.log('data in Firebase');
-	
-}
-/*
-window.addEventListener('load', function(){
-    codeReader
-        .listVideoInputDevices()
-        .then((videoInputDevices) => {
-            deviceId = videoInputDevices[0].deviceId;
-            if (videoInputDevices.length > 1) {
-                videoInputDevices.forEach((element) => {
-                    deviceId = [1].deviceId;
-                    console.log(element.label);
-					console.log(element.deviceId);
-					
-				});
-				
-            }
-        })
-        .catch(err => {
-            console.log("err");
-            console.error(err);
-        });
-	decodeContinuously();
-	
-});
-*/
-
 function setup(){
 
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
+	console.log('handHeldScanner.js loaded');
+
+	initFirebaseAuth();
+
+	loadExternalHTML();
+
+	IDinput.select();
+
+	//reselects input so you dont have to click it after changing check in/out or shop/service
+	
+	typeToggle.change(function(){
+		IDinput.select();
 	});
 
-	console.log('scan.js loaded');
-
-	/** Barcode Scanner init */
-
-	// list our all camera devices
-	codeReader
-		.listVideoInputDevices()
-		.then(videoInputDevices => {
-			videoInputDevices.forEach(device =>
-				console.log(`${device.label}, ${device.deviceId}`)
-			);
-		})
-		.catch(err => console.error(err));
-	
-	// goes to system default
-	deviceId = undefined;
-
-	// pick a device and start continous scan
-	
-	codeReader.decodeFromInputVideoDeviceContinuously(deviceId, 'videoStream',(result, err) =>{
-		processBarcode(result,err);
+	toggle.change(function(){
+		IDinput.select();
 	});
-	
 
+	function updateValue(e) {
+		console.log(e.target.value);
+
+		if(e.target.value.length == 8){
+			console.log('logging');
+			onFoundBarcode(e.target.value);
+			IDinput.val('');
+			IDinput.select();
+		}
+		
+	}
+
+	IDinput.on('input', updateValue);
+	
 }
 
 setup();

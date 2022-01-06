@@ -4,35 +4,46 @@
 	<head>
 		<title>HourLogger | Admin</title>
 		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+		<base href = "../">
 		
-		<link rel = "stylesheet" type = "text/css" href = "../css/styles.css">
-		<link rel = "stylesheet" type = "text/css" href = "../css/admin.css">
-		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/admin.css">
+
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-app.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-firestore.js"></script>
-		<script src = "https://www.gstatic.com/firebasejs/8.2.8/firebase-database.js"></script>		
-		
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
 
-		<script async="" src="https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
+		<script async = "" src = "https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
 
-		<script type = "module" src = "../js/admin.js"></script>
+		<script type = "module" src = "js/admin.js"></script>
 		
 	</head>
 
     <body id = "background">
+		
+		<div data-includeHTML = "html/HTMLImports/header.html"></div>
+	<!--
+		<div id = "googleSignIn">
+			<div id = "firebaseui-auth-container"></div>
+			<div id = "loader" >Loading...</div>
+			<div id = "profilePic"><img></div>
+			<div id = "authStatus"><div>
+			<button id = "signOutButton" class = "showOnSignIn">Sign Out</button>
+		</div>
+	-->
 
-		<div data-includeHTML = "../html/header.html"></div>
+		<h1>Admin</h1>
 
-        <div id ="top">
-			<h1>Admin</h1>
+        <div class = "showOnSignIn" id ="top" >
 			<h2>Reporting</h2>
 			<button type = "button" id = "downloadButton">Download Raw</button>
-			
 		</div>
 
-		<div id = "middle">
+		<div class = "showOnSignIn" id = "middle">
 			<h2>Users present</h2>
 			<span id = "noOneHereBox">
 				no one is present
@@ -48,23 +59,9 @@
 				</thead>
 				<tbody id = "hereTableBody"></tbody>
 			</table>
-			<!--
-			<table>
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>first Name</th>
-						<th>last Name</th>
-						<th><button type = "button" id = "checkOutAll">Checkout All</button></th>
-					</tr>
-				</thead>
-				<tbody id = "hereTableBody">
-
-				</tbody>
-			</table>-->
 		</div>
 		
-		<div id = "bottom">
+		<div class = "showOnSignIn" id = "bottom">
 
 			<table id = "peopleData">
 				<thead id= "tableHead">
@@ -104,30 +101,21 @@
 						<th><button type = "button" id = "editButton" >Edit</button></th>
 						<th><button type = "button" id = "deleteButton">Delete</button></th>
 						<th><button type = "button" id = "clearButton">Clear</button></th>
-					</tr>				
+					</tr>
 				</thead>
 				
 				<tbody id = "tableBody">
 				</tbody>
 
 			</table>
-			<!--
-			<table id = "personData">
-				<thead id = "personDataHead">
-					<th>
-						<span id = "personDataIDBox"><em>ID: </em></span><br>
-						<span id = "personDataBox"><em>Last Name: </em></span><br>
-						<span id = "personDataIDBox"><em>First Name: </em></span><br>
-					</th>
-				</thead>
-			</table>
-			-->
 
 		</div>
 
+		<span></span>
+
 		<span ><br><br></span>
 
-		<div id = "footer" data-includeHTML = "../html/footer.html"></div>
+		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
 		
-    </body>
+	</body>
 </html>

@@ -1,6 +1,5 @@
 // JS for index.html
-// this file is empty but just here by convention
-
+import { loadExternalHTML, initFirebaseAuth} from './Scripts.js';
 // !!Warning!! read this
 /*
 !!Warning!!
@@ -8,14 +7,12 @@ you are about to use javascript you may end up throwing your device out the wind
 */
 
 function setup(){
-	
-	console.log('index.js');
 
-	$(document).ready(function () {
-		$("div[data-includeHTML]").each(function () {
-			$(this).load($(this).attr("data-includeHTML"));
-		});
-	});
+	console.log('index.js loaded');
+
+	initFirebaseAuth();
+	loadExternalHTML();
+	
 }
 
 setup();

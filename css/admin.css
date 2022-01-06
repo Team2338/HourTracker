@@ -2,15 +2,12 @@
     grey = #BABFB7
     blue = #02243E
     orange = #FE5000
-
 */
 /*
 #peopleData{
 	border: 5px;
 	border-color: #BABFB7;
 }
-*/
-/*
 #peopleData th{
 	border: 2px;
 	border-color: #BABFB7;
@@ -30,9 +27,9 @@ h2{
 }
 
 #tableBody {
-}
-/*
-#footer {
-	position: bottom;
 
-}*/
+}
+
+#hereTable, #noOneHereBox{
+	display: none;
+}
