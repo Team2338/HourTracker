@@ -7,6 +7,8 @@ const toggle = $('#checkInSwitchToggle');
 const typeToggle = $('#typeSwitchToggle');
 const switchDisplay = $('#switchDisplay');
 const greenBox = $('#greenBox');
+const yellowBox = $('#yellowBox');
+const redBox = $('#redBox');
 const IDinput = $('#IDselect');
 /** scanning */
 var codeReader;
@@ -104,50 +106,57 @@ function onFoundBarcode(IdNumber){
 				} else if(Logdoc.exists && checkOut){
 					console.log("checkout");
 					// checkout
-					greenBox.css('visibility', 'visible');
-					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
+					if(Logdoc.data().clockInHour != "N/A"){
+                        greenBox.css('visibility', 'visible');
+                        resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
-					docRefLog.set({
-						clockInHour: Logdoc.data().clockInHour,
-						clockInMinute: Logdoc.data().clockInMinute,
-						clockOutHour: HOUR,
-						clockOutMinute: MINUTE,
-						hourType: type
-					});
+                        docRefLog.set({
+                            clockInHour: Logdoc.data().clockInHour,
+                            clockInMinute: Logdoc.data().clockInMinute,
+                            clockOutHour: HOUR,
+                            clockOutMinute: MINUTE,
+                            hourType: type
+                        });
 
-					realTimeDataBase.ref('users/').once('value').then((snapshot) => {
-						var peopleList = snapshot.val().here;
-						console.log(peopleList);
-						
-						// remove that element
-						peopleList = peopleList.filter(function(el) {
-							if(el[0] === Studentdoc.id){
-								return;
-							}else{
-								return el
-							}
-							
-						});
-						if (peopleList.length === 0){
-							peopleList = [["null","null","null"]];
-						}
-						console.log(peopleList);
-						
-						realTimeDataBase.ref('users/').set({
-							here: peopleList
-						});
-					});
+                        realTimeDataBase.ref('users/').once('value').then((snapshot) => {
+                            var peopleList = snapshot.val().here;
+                            console.log(peopleList);
+
+                            // remove that element
+                            peopleList = peopleList.filter(function(el) {
+                                if(el[0] === Studentdoc.id){
+                                    return;
+                                }else{
+                                    return el
+                                }
+
+                            });
+                            if (peopleList.length === 0){
+                                peopleList = [["null","null","null"]];
+                            }
+                            console.log(peopleList);
+
+                            realTimeDataBase.ref('users/').set({
+                                here: peopleList
+                            });
+                        });
+
+                    } else {
+                        // user attempted to clock out again but still hasn't clocked in
+                        redBox.css('visibility', 'visible');
+                    	resultBox.html("You still haven't clocked in, " + Studentdoc.data().firstName + ". Please see coach.");
+                    }
 
 					reset();
 
 				} else if(!Logdoc.exists && checkOut){
 					// you never clocked in
-					greenBox.css('visibility', 'visible');
-					resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ", you forgot to clock in 😔");
+					redBox.css('visibility', 'visible');
+					resultBox.html("You forgot to clock in, " + Studentdoc.data().firstName + ". Please see coach.");
 
 					docRefLog.set({
 						clockInHour: "N/A",
-						clockInMinute: "N/A",
+						clockInMinute: 0,
 						clockOutHour: HOUR,
 						clockOutMinute: MINUTE,
 						hourType: type
@@ -155,16 +164,22 @@ function onFoundBarcode(IdNumber){
 
 					reset();
 				} else if(Logdoc.exists && !checkOut){
-					// you already clocked in
-					greenBox.css('visibility', 'visible');
-					resultBox.html("Welcome "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ " you already clocked in today");
-
+					// you already clocked in -or- you are trying to clock in after clocking out w/o previously clocking in
+					if(Logdoc.data().clockInHour != "N/A"){
+    					yellowBox.css('visibility', 'visible');
+	    				resultBox.html("Hello "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ". You already clocked in today.");
+                    } else {
+                    	redBox.css('visibility', 'visible');
+                    	resultBox.html("Hello "+Studentdoc.data().firstName+ ". Need to manually enter clock-in time. Please see coach.");
+                    }
 					reset();
 				}
 			});
 	
 		}else{
-			resultBox.html('Error: ID #'+studentID+' not found');
+			resultBox.html('Error: ID #'+studentID+' not found. Please inform your coach.');
+			redBox.css('visibility', 'visible');
+			reset();
 		}
 			
 	}).catch(function(error) {
@@ -178,6 +193,8 @@ function reset(){
 	setTimeout(function(){
 		resultBox.html('<em>Scanning ...</em>');
 		greenBox.css('visibility', 'hidden');
+		yellowBox.css('visibility', 'hidden');
+		redBox.css('visibility', 'hidden');
 		scanBlock = false;
 	}, greenBoxVisibilityDelay);
 }

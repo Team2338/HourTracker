@@ -16,6 +16,20 @@ orange = #FE5000
 
 #greenBox{
 	display: inline-block;
+	position: relative;
+	left:0;
+	visibility: hidden;
+}
+
+#yellowBox{
+	position: absolute;
+	left:0;
+	visibility: hidden;
+}
+
+#redBox{
+	position: absolute;
+	left:0;
 	visibility: hidden;
 }
 
