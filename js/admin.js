@@ -18,6 +18,7 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
+const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
@@ -234,6 +235,39 @@ function downloadCSV(){
 		var blob = new Blob([myString], { type: 'text/plain' });
 		saveAs(blob, "data.csv");
 	}	
+}
+
+function importCSV(){
+	console.log('importing data');
+	const selectedFile = document.getElementById('importFile').files[0];
+
+	// need to make sure file is not undefined
+	if(selectedFile){
+        let reader = new FileReader();
+        reader.readAsText(selectedFile);
+
+        reader.onload = function(progressEvent){
+            var entryArray = this.result.split(/\r\n|\n/);
+            for(var lineNumber = 0; lineNumber < entryArray.length; lineNumber++){
+                //console.log(lineNumber + " --> "+ entryArray[lineNumber]);
+                var entryRecord = entryArray[lineNumber].split(",");
+                console.log("ID " + entryRecord[0]);
+                console.log("FirstName " + entryRecord[1]);
+                console.log("LastName " + entryRecord[2]);
+                console.log("Team " + entryRecord[3]);
+                if(entryRecord.length > 4){
+                    console.log("date " + entryRecord[4]);
+                    console.log("clockInHour " + entryRecord[5]);
+                    console.log("clockInMinute " + entryRecord[6]);
+                    console.log("clockOutHour " + entryRecord[7]);
+                    console.log("clockOutMinute " + entryRecord[8]);
+                    console.log("hourType " + entryRecord[9])
+                }
+            }
+        };
+    } else {
+        alert("Please select a file for import")
+    }
 }
 
 function renderRowHTML(doc) {
@@ -569,6 +603,7 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+    importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
