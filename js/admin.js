@@ -241,15 +241,19 @@ function importCSV(){
 	console.log('importing data');
 	const selectedFile = document.getElementById('importFile').files[0];
 
-	// need to make sure file is not undefined
+	// Check to make sure a file was selected
 	if(selectedFile){
         let reader = new FileReader();
         reader.readAsText(selectedFile);
 
         reader.onload = function(progressEvent){
+            //split the file into an array of entries
             var entryArray = this.result.split(/\r\n|\n/);
+
+            // for each entry, create the user or add the data
             for(var lineNumber = 0; lineNumber < entryArray.length; lineNumber++){
                 //console.log(lineNumber + " --> "+ entryArray[lineNumber]);
+                // split the entry into an array of fields
                 var entryRecord = entryArray[lineNumber].split(",");
                 console.log("ID " + entryRecord[0]);
                 console.log("FirstName " + entryRecord[1]);
