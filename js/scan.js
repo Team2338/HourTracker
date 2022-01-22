@@ -64,8 +64,8 @@ function onFoundBarcode(IdNumber){
 					docRefLog.set({
 						clockInHour: HOUR,
 						clockInMinute: MINUTE,
-						clockOutHour: "N/A",
-						clockOutMinute: "N/A",
+						clockOutHour: 99,
+						clockOutMinute: 99,
 						hourType: type
 					});
 					
@@ -106,7 +106,7 @@ function onFoundBarcode(IdNumber){
 				} else if(Logdoc.exists && checkOut){
 					console.log("checkout");
 					// checkout
-					if(Logdoc.data().clockInHour != "N/A"){
+					if(Logdoc.data().clockInHour != 99){
                         greenBox.css('visibility', 'visible');
                         resultBox.html("Goodbye "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName);
 
@@ -155,7 +155,7 @@ function onFoundBarcode(IdNumber){
 					resultBox.html("You forgot to clock in, " + Studentdoc.data().firstName + ". Please see coach.");
 
 					docRefLog.set({
-						clockInHour: "N/A",
+						clockInHour: 99,
 						clockInMinute: 0,
 						clockOutHour: HOUR,
 						clockOutMinute: MINUTE,
@@ -165,7 +165,7 @@ function onFoundBarcode(IdNumber){
 					reset();
 				} else if(Logdoc.exists && !checkOut){
 					// you already clocked in -or- you are trying to clock in after clocking out w/o previously clocking in
-					if(Logdoc.data().clockInHour != "N/A"){
+					if(Logdoc.data().clockInHour != 99){
     					yellowBox.css('visibility', 'visible');
 	    				resultBox.html("Hello "+Studentdoc.data().firstName+ " "+ Studentdoc.data().lastName+ ". You already clocked in today.");
                     } else {
