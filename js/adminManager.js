@@ -56,60 +56,11 @@ function renderRowHTML(doc) {
 
 	idList.push("typeSwitchToggle"+doc.id);
 
-	console.log('sooome valuuue');
-
-	//tempInnerSpan.attr("class","slider round");
-	//tempInput.attr("type","checkbox");
-	//tempInput.attr("value",doc.data().admin);
-	//tempInput.prop( "checked", doc.data().admin );
-/*
-	tempLabel.addClass("switch");
-	tempOuterSpan.addClass("switchBox");
-
-	tempLabel.append(tempInput);
-	tempLabel.append(tempInnerSpan);
-
-	tempOuterSpan.append(tempLabel);
-
-	tableAdmin.append(tempOuterSpan);
-*/
-/*
-	tableAdmin.innerHTML = 
-	"<span class = \"switchBox\">"+
-		"<label class=\"switch\">"+
-			"<input id = \"typeSwitchToggle"+doc.id+"\" type = \"checkbox\" value =\""+doc.data().admin +"\""+(doc.data().admin?"checked":"") +">"+
-			"<span class = \"slider round\"></span>"+
-		"</label>"+
-	"</span>";
-*/
-
-
-	//console.log(tableAdmin.innerHTML);
-	//row.appendChild(tableAdmin);
-	/*
-	$("typeSwitchToggle"+doc.id).change(function(){
-		console.log('temp');
-		firestore.collection("googleSignIn").doc(doc.id).set({
-			email: doc.data().email,
-			name: doc.data().name,
-			admin:$("typeSwitchToggle"+doc.id).val()
-		});
-	});
-*/
 	dataTableBody.append(row);
-
 }
 
 function resetTable(){
-	//dataTableBody.innerHTML = originalTableHTML;
-	/*
-	while(dataTableBody.firstChild){
-		dataTableBody.removeChild(dataTableBody.firstChild);
-	}*/
-	console.log('clear');
 	$("#tableBody > tr").remove();
-	//$("#dataTableBody tr").remove();
-	
 }
 
 function removeAllChildren(thing){
@@ -119,26 +70,26 @@ function removeAllChildren(thing){
 }
 
 function search(){
-	
 	console.log('search');
 	resetTable();
 
 	var selectedEmail = emailBox.val();
-	var selectedname = nameBox.val();
-	//var selectedAdmin = adminToggle.val();
+	var selectedName = nameBox.val();
 	var selectedUID = uidBox.val();
 	
 	var filteredPeople;
+    var peeps;
 
 	console.log(selectedEmail);
-	console.log(selectedname);
+	console.log(selectedName);
 	//console.log(selectedAdmin);
 	console.log(selectedUID);
 
 	var googleSignedInRef = firestore.collection("googleSignIn");
-	
+	console.log("SignedIn");
 	if(selectedUID.length > 0){
 		console.log('ID search');
+
 		filteredPeople = googleSignedInRef.doc(selectedUID).get()
 		.then(
 			function(doc){
@@ -156,25 +107,22 @@ function search(){
 		});
 	
 	} else if(selectedUID.length === 0){
-	
+
 		filteredPeople = googleSignedInRef;
-		
-	
-		if(selectedname.length >0){
-			
-			filteredPeople = filteredPeople.where("name","==", selectedname);
+
+	console.log("1");
+		if(selectedName.length >0){
+			filteredPeople = filteredPeople.where("name","==", selectedName);
 		}
 		if(selectedEmail.length > 0){
-			
 			filteredPeople = filteredPeople.where("email","==", selectedEmail);		
 		}
-		
-		
+
 		filteredPeople.get()
 		.then(function(querySnapshot) {
 			//dataTableHTML = '';
 			querySnapshot.forEach(function(doc) {
-				console.log(doc.id, " => ", doc.data());				
+				console.log(doc.id, " => ", doc.data());
 				renderRowHTML(doc);		
 			});
 			$(".fancyToggle").click(function () {
