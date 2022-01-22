@@ -110,7 +110,6 @@ function search(){
 
 		filteredPeople = googleSignedInRef;
 
-	console.log("1");
 		if(selectedName.length >0){
 			filteredPeople = filteredPeople.where("name","==", selectedName);
 		}

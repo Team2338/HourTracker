@@ -178,7 +178,7 @@ function deleteStudent(){
 function downloadCSV(){
 	console.log('download');
 
-	var titleString ="Id,first name,last name,team#,date,HourIn,MinuteIn,HourOut,MinuteOut,type, elapsed\r\n";
+	var titleString ="ID,First Name,Last Name,Team,Date,HourIn,MinuteIn,HourOut,MinuteOut,Type,Elapsed\r\n";
 	var saveString = titleString;
 
 	var isComplete = false;
@@ -195,14 +195,22 @@ function downloadCSV(){
 
 					var startDate = new Date();
 					var endDate = new Date();
-					
-					startDate.setHours(logDoc.data().clockInHour);
-					startDate.setMinutes(logDoc.data().clockInMinute);
-					endDate.setHours(logDoc.data().clockOutHour);
-					endDate.setMinutes(logDoc.data().clockOutMinute);
+                    var elapsed = 0;
 
-					var elapsed = endDate - startDate;
-					elapsed /= 60000;
+                    startDate.setHours(logDoc.data().clockInHour);
+                    startDate.setMinutes(logDoc.data().clockInMinute);
+                    endDate.setHours(logDoc.data().clockOutHour);
+                    endDate.setMinutes(logDoc.data().clockOutMinute);
+
+					if(  logDoc.data().clockInHour    != 99 &&
+					     logDoc.data().clockInMinute  != 99 &&
+					     logDoc.data().clockOutHour   != 99 &&
+					     logDoc.data().clockOutMinute != 99 ){
+					    elapsed = ( endDate - startDate ) / 60000;
+                    } else {
+                        elapsed = 0;
+                    }
+
 
 					var logString = studentDoc.id + ','
 					+ studentDoc.data().firstName
@@ -238,7 +246,7 @@ function downloadCSV(){
 }
 
 function importCSV(){
-	console.log('importing data');
+	console.log('importing data feature');
 	const selectedFile = document.getElementById('importFile').files[0];
 
 	// Check to make sure a file was selected
@@ -247,27 +255,43 @@ function importCSV(){
         reader.readAsText(selectedFile);
 
         reader.onload = function(progressEvent){
+            var recordCount = 0;
             //split the file into an array of entries
             var entryArray = this.result.split(/\r\n|\n/);
 
-            // for each entry, create the user or add the data
-            for(var lineNumber = 0; lineNumber < entryArray.length; lineNumber++){
-                //console.log(lineNumber + " --> "+ entryArray[lineNumber]);
-                // split the entry into an array of fields
-                var entryRecord = entryArray[lineNumber].split(",");
-                console.log("ID " + entryRecord[0]);
-                console.log("FirstName " + entryRecord[1]);
-                console.log("LastName " + entryRecord[2]);
-                console.log("Team " + entryRecord[3]);
-                if(entryRecord.length > 4){
-                    console.log("date " + entryRecord[4]);
-                    console.log("clockInHour " + entryRecord[5]);
-                    console.log("clockInMinute " + entryRecord[6]);
-                    console.log("clockOutHour " + entryRecord[7]);
-                    console.log("clockOutMinute " + entryRecord[8]);
-                    console.log("hourType " + entryRecord[9])
+            entryArray.forEach( function (entryLine){
+                var entryRecord = entryLine.split(",");
+
+                if(entryRecord[0] != "ID" && entryRecord[0] != ""){
+                    recordCount++;
+                    var docRefStudent = firestore.collection("Users").doc(entryRecord[0]);
+                    docRefStudent.get().then(function(doc){
+                        docRefStudent.set({
+                            firstName:    entryRecord[1],
+                            lastName:     entryRecord[2],
+                            teamNumber:   entryRecord[3],
+                            shopHours:    0,
+                            serviceHours: 0
+                        });
+
+                        docRefStudent.collection("logs").doc("init").set({
+                            thing: "empty"
+                        });
+
+                        if(entryRecord.length > 4 && entryRecord[4] != "init"){
+
+                            docRefStudent.collection("logs").doc(entryRecord[4]).set({
+                                clockInHour:    Number(entryRecord[5]),
+                                clockInMinute:  Number(entryRecord[6]),
+                                clockOutHour:   Number(entryRecord[7]),
+                                clockOutMinute: Number(entryRecord[8]),
+                                hourType:       entryRecord[9]
+                            });
+                        }
+                    })
                 }
-            }
+            });
+            alert(recordCount + " records updated.")
         };
     } else {
         alert("Please select a file for import")
@@ -487,15 +511,12 @@ function checkoutAll(){
 
 		var docName = month + day + year;
 
-		console.log('shiiit');
 		peopleList.forEach(function(element){
 			var studentID = element[0];
 			
 			if(studentID != "N/A"){
 
-
-			//var docRefStudent = ;
-			var docRefLog = people.doc(studentID).collection("logs").doc(docName);	
+			var docRefLog = people.doc(studentID).collection("logs").doc(docName);
 
 			docRefLog.get().then(function(logDoc){
 				if(logDoc.exists){
