@@ -1,13 +1,4 @@
-/** firebase */
-var firebaseConfig = {
-	apiKey: "AIzaSyBQiIjrNDtP2A5-gNAOakkaeieoLWvpwqQ",
-	authDomain: "hourtracker-2b6f8.firebaseapp.com",
-	projectId: "hourtracker-2b6f8",
-	storageBucket: "hourtracker-2b6f8.appspot.com",
-	messagingSenderId: "82969866110",
-	appId: "1:82969866110:web:5a089299065444cbea0d2f",
-	measurementId: "G-DS4GRL509N"
-};
+import { firebaseConfig } from './databaseConfig.js';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -47,11 +38,11 @@ export function signOut(){
 // Initiate firebase auth.
 export function initFirebaseAuth() {
 	
-	console.log("<-----------------------------------------------------initFirebaseAuth------------------------------------------>>>");
+	console.log("<---------------initFirebaseAuth-------------------->>>");
 
 	firebase.auth().onAuthStateChanged((user) => {
 
-		console.log("<-----------------------------------------------------AuthState Change------------------------------------------>>>");
+		console.log("<-------------------AuthState Change---------------->>>");
 		var profilePicUrl;
 		var userName;
 	
@@ -63,10 +54,8 @@ export function initFirebaseAuth() {
 
 			userName = getUserName();
 			$("#userName").html(userName);
-			console.log(userName);
-			
+
 			profilePicUrl = getProfilePicUrl();
-			console.log(profilePicUrl);
 			$('#profilePic').attr('src',profilePicUrl);
 
 		} else {
@@ -110,7 +99,7 @@ export function checkPermissions(error,after){
 	
 	if(error.message == "Missing or insufficient permissions."){
 		//console.log(error);
-		alert("Your Account has Missing or insufficient permissions. You will be signed Out.Please sign in using an admin account.\n or contact an admin to verify your account as a user");
+		alert("Your account has missing or insufficient permissions. You will be signed Out. Please sign in using an admin account \n or contact an admin to verify your account as a user.");
 		//create possible Admin file
 		console.log('boop');
 		
@@ -151,10 +140,8 @@ export function checkPermissions(error,after){
 
 function verify(){
 	
-
 	if (user) {
 		console.log('user signed in');
-		//sleep(2000);
 	} else {
 
 		firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
