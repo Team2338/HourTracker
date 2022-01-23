@@ -38,7 +38,8 @@
 
 		<h1>Admin</h1>
 
-        <div class = "showOnSignIn" id ="top" >
+		<button type="button" class="toolsCollapsible">Tools</button>
+        <div class = "toolsContent" id ="top" >
 			<h2>Reporting</h2>
 			<button type = "button" id = "downloadButton">Download Raw</button>
 			<h2>Import CSV</h2>
@@ -119,6 +120,21 @@
 		<span ><br><br></span>
 
 		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
-		
+		<script>
+			var coll = document.getElementsByClassName("toolsCollapsible");
+			var i;
+
+			for (i = 0; i < coll.length; i++) {
+			  coll[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				var content = this.nextElementSibling;
+				if (content.style.display === "block") {
+				  content.style.display = "none";
+				} else {
+				  content.style.display = "block";
+				}
+			  });
+			}
+		</script>
 	</body>
 </html>
