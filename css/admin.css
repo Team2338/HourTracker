@@ -33,3 +33,43 @@ h2{
 #hereTable, #noOneHereBox{
 	display: none;
 }
+
+/****************************/
+/* CSS for collapsible area */
+/****************************/
+.toolsCollapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 8px;
+  width: 25%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+/* Add background color to the button if it is clicked, and on mouse over (hover) */
+.active, .toolsCollapsible:hover {
+  background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.toolsContent {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #02243E;
+}
+
+.toolsCollapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: white;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
