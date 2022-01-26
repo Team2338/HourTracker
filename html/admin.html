@@ -17,6 +17,7 @@
 		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
 		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
 
+		<script src = "js/sorttable.js"></script>
 		<script async = "" src = "https://cdn.rawgit.com/eligrey/FileSaver.js/5ed507ef8aa53d8ecfea96d96bc7214cd2476fd2/FileSaver.min.js"></script>
 
 		<script type = "module" src = "js/admin.js"></script>
@@ -64,48 +65,45 @@
 				<tbody id = "hereTableBody"></tbody>
 			</table>
 		</div>
-		
-		<div class = "showOnSignIn" id = "bottom">
 
-			<table id = "peopleData">
+		<div class = "showOnSignIn" id = "bottom">
+			<table>
+				<tr>
+					<td ><input type = "text" id = "studentIdBox" placeholder= "student ID"></td>
+					<td ><input type = "text" id = "firstNameBox" placeholder = "First Name"></td>
+					<td ><input type = "text" id = "lastNameBox" placeholder = "Last Name"></td>
+					<td >
+						<select id = "teamSelect">
+							<option value = "none">
+								N/A
+							</option>
+							<option value = "2338">
+								2338
+							</option>
+							<option value = "16565">
+								16565
+							</option>
+						</select>
+					</td>
+					<!--
+                    <th>Service Hours</th>
+                    <th>Shop Hours</th>
+                    -->
+					<td><button type = "button" id = "searchButton">Search</button></td>
+					<td><button type = "button" id = "newButton" >Add</button></td>
+					<td><button type = "button" id = "editButton" >Edit</button></td>
+					<td><button type = "button" id = "deleteButton">Delete</button></td>
+					<td><button type = "button" id = "clearButton">Clear</button></td>
+				</tr>
+			</table>
+			<table id = "peopleData" class="sortable">
 				<thead id= "tableHead">
-					<tr>
-						<th>Student ID</th>
-						<th>First name</th>
-						<th>Last name</th>
-						<th>Team</th>
-						<!--
-						<th>Service Hours</th>
-						<th>Shop Hours</th>
-						-->
-					</tr>
-					<tr>
-						<th><input type = "text" id = "studentIdBox" placeholder= "student ID"></th>
-						<th><input type = "text" id = "firstNameBox" placeholder = "First Name"></th>
-						<th><input type = "text" id = "lastNameBox" placeholder = "Last Name"></th>
-						<th>
-							<select id = "teamSelect">
-								<option value = "none">
-									N/A
-								</option>
-								<option value = "2338">
-									2338
-								</option>						
-								<option value = "16565">
-									16565
-								</option>
-							</select>
-						</th>
-						<!--
-						<th>Service Hours</th>
-						<th>Shop Hours</th>
-						-->
-						<th><button type = "button" id = "searchButton">Search</button></th>
-						<th><button type = "button" id = "newButton" >Add</button></th>
-						<th><button type = "button" id = "editButton" >Edit</button></th>
-						<th><button type = "button" id = "deleteButton">Delete</button></th>
-						<th><button type = "button" id = "clearButton">Clear</button></th>
-					</tr>
+				<tr>
+					<th class="userTable">Student ID</th>
+					<th class="userTable">First name</th>
+					<th class="userTable">Last name</th>
+					<th class="userTable">Team</th>
+				</tr>
 				</thead>
 				
 				<tbody id = "tableBody">
