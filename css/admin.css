@@ -26,6 +26,11 @@ h2{
 	float: right;
 }
 
+.userTable{
+    width:170px;
+    text-align:left;
+}
+
 #tableBody {
 
 }
