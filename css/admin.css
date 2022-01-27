@@ -35,7 +35,7 @@ h2{
 
 }
 
-#hereTable, #noOneHereBox{
+#hereTable, #noOneHereBox, #notAuthorizedBox{
 	display: none;
 }
 

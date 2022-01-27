@@ -4,7 +4,8 @@ firebase.initializeApp(firebaseConfig);
 
 export var firestore = firebase.firestore();
 export var people = firestore.collection("Users");
-export var user = firebase.auth().currentUser; 
+export var admins = firestore.collection("googleSignIn");
+export var user = firebase.auth().currentUser;
 
 export var auth = firebase.auth();
 export var realTimeDataBase = firebase.database();
@@ -99,13 +100,11 @@ export function checkPermissions(error,after){
 	
 	if(error.message == "Missing or insufficient permissions."){
 		//console.log(error);
-		alert("Your account has missing or insufficient permissions. You will be signed Out. Please sign in using an admin account \n or contact an admin to verify your account as a user.");
+		alert("Your account has missing or insufficient permissions. You will be signed out. Please sign in using an admin account or contact an admin to verify your account as a user.");
 		//create possible Admin file
-		console.log('boop');
-		
+
 		var currentUID = firebase.auth().currentUser.uid;
-		console.log(currentUID);
-		
+
 		var docRef = firestore.collection("googleSignIn").doc(currentUID);
 
 		docRef.get().then(function(doc){
@@ -128,8 +127,7 @@ export function checkPermissions(error,after){
 			
 		});
 		
-		console.log('end');
-		sleep(5000);
+		sleep(2000);
 		after(error);
 		signOut();
 	} else {
