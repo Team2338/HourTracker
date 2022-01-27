@@ -107,7 +107,6 @@ function search(){
 		});
 	
 	} else if(selectedUID.length === 0){
-
 		filteredPeople = googleSignedInRef;
 
 		if(selectedName.length >0){
@@ -126,8 +125,6 @@ function search(){
 			});
 			$(".fancyToggle").click(function () {
 				var admin = !this.checked;
-				console.log('isAdmin');
-				console.log(admin);
 				var adminID = this.id;
 				firestore.collection("googleSignIn").doc(adminID).get().then(function(doc){
 					if(admin){
@@ -151,15 +148,19 @@ function search(){
 						}
 					}
 
-				});
+				}).catch(function(error) {
+                    checkPermissions(error, function(err){
+                        console.error(err);
+                    });
+                });
             });
 			
 			//dataTableBody.innerHTML = dataTableHTML;
-		})/*.catch(function(error) {
+		}).catch(function(error) {
 			checkPermissions(error, function(err){
 				console.error(err);
 			});
-		})*/;
+		});
 	} else {
 		alert('invalid ID');
 	}
