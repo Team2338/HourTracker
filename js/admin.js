@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
+import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -23,6 +23,7 @@ const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
+const notAuthorizedBox = $('#notAuthorizedBox');
 
 var rowTemp;
 
@@ -30,154 +31,165 @@ const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
 
 function newStudent() {
-	
-	console.log('newStudent');
-	resetTable();
-	
-	var selectedID = IDBox.val();
-	var selectedFirstName = firstNameBox.val();
-	var selectedLastName = lastNameBox.val();
-	var selectedTeam = teamSelect.val();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        resetTable();
 
-	if ((selectedID.length == 8) &&
-		(selectedFirstName.length > 0
-			) &&
-		(selectedLastName.length > 0)
-	   ){
-		
-		var docRef = firestore.collection("Users").doc(selectedID);
-		docRef.get().then(function(doc){
+        var selectedID = IDBox.val();
+        var selectedFirstName = firstNameBox.val();
+        var selectedLastName = lastNameBox.val();
+        var selectedTeam = teamSelect.val();
 
-			if(doc.exists){
-				alert('Cannot create new student, Student exists');
-			}else{
-				alert('New Student Created');
-				docRef.set({
-					firstName: selectedFirstName,
-					lastName: selectedLastName,
-					teamNumber:"2338", //selectedTeam,
-					shopHours: 0,
-					serviceHours: 0
-				});
-				docRef.collection("logs").doc("init").set({
-					thing: "empty"
-				});
-				// TODO:
-				// add individual hour logs here
-			}
-				
-		});
+        if ((selectedID.length == 8) &&
+            (selectedFirstName.length > 0
+                ) &&
+            (selectedLastName.length > 0)
+           ){
+
+            var docRef = firestore.collection("Users").doc(selectedID);
+            docRef.get().then(function(doc){
+
+                if(doc.exists){
+                    alert('Cannot create new student, Student exists');
+                }else{
+                    alert('New Student Created');
+                    docRef.set({
+                        firstName: selectedFirstName,
+                        lastName: selectedLastName,
+                        teamNumber:"2338", //selectedTeam,
+                        shopHours: 0,
+                        serviceHours: 0
+                    });
+                    docRef.collection("logs").doc("init").set({
+                        thing: "empty"
+                    });
+                    // TODO:
+                    // add individual hour logs here
+                }
+
+            });
 
 
-	} else {
-		alert('new student parameters invalid');
-	}
-	
+        } else {
+            alert('new student parameters invalid');
+        }
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
 }
 
 function editStudent() {
-	
-	console.log('edit');
-	resetTable();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
 
-	var selectedID = IDBox.val();
-	var selectedFirstName = firstNameBox.val();
-	var selectedLastName = lastNameBox.val();
-	var selectedTeam = teamSelect.val();
-	
-	if (selectedID.length == 8){
-		
-		var docRef = firestore.collection("Users").doc(selectedID);
-		docRef.get().then(function(doc){
+        resetTable();
 
-			if(doc.exists){
-				
-				var newFirstName;
-				var newLastName;
-				var newTeamNumber;
+        var selectedID = IDBox.val();
+        var selectedFirstName = firstNameBox.val();
+        var selectedLastName = lastNameBox.val();
+        var selectedTeam = teamSelect.val();
 
-				if(selectedFirstName.length >0){
-					newFirstName = selectedFirstName;				
-				} else {
-					newFirstName = doc.data().firstName;
-				}
+        if (selectedID.length == 8){
 
-				if(selectedLastName.length > 0){
-					newLastName = selectedLastName;
-				} else {
-					newLastName = doc.data().lastName;
-				}
+            var docRef = firestore.collection("Users").doc(selectedID);
+            docRef.get().then(function(doc){
 
-				if(selectedTeam != "none"){
-					newTeamNumber = selectedTeam;					
-				} else {
-					newTeamNumber = doc.data().teamNumber;
-				}
-				
-				docRef.set({
-					firstName: newFirstName,
-					lastName: newLastName,
-					teamNumber: newTeamNumber,
-					shopHours: doc.data().shopHours,
-					serviceHours: doc.data().serviceHours
-				});
+                if(doc.exists){
 
-			}else{
-				alert('Student with ID'+selectedID+'not found');
-			}
-				
-		});
+                    var newFirstName;
+                    var newLastName;
+                    var newTeamNumber;
+
+                    if(selectedFirstName.length >0){
+                        newFirstName = selectedFirstName;
+                    } else {
+                        newFirstName = doc.data().firstName;
+                    }
+
+                    if(selectedLastName.length > 0){
+                        newLastName = selectedLastName;
+                    } else {
+                        newLastName = doc.data().lastName;
+                    }
+
+                    if(selectedTeam != "none"){
+                        newTeamNumber = selectedTeam;
+                    } else {
+                        newTeamNumber = doc.data().teamNumber;
+                    }
+
+                    docRef.set({
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        teamNumber: newTeamNumber,
+                        shopHours: doc.data().shopHours,
+                        serviceHours: doc.data().serviceHours
+                    });
+
+                }else{
+                    alert('Student with ID'+selectedID+'not found');
+                }
+
+            });
 
 
-	} else {
-		alert('fields invalid');
+        } else {
+            alert('fields invalid');
 
-	}
-	
-	// create a new collection/doc for hours that are logged
+        }
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
 }
 
 function deleteStudent(){
-	console.log('delete');
-	
-	var selectedID = IDBox.val();
-	//var selectedFirstName = firstNameBox.val();
-	//var selectedLastName = lastNameBox.val();
-	//var selectedTeam = teamSelect.val();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
 
-	var docRef = people.doc(selectedID);
+        var selectedID = IDBox.val();
+        //var selectedFirstName = firstNameBox.val();
+        //var selectedLastName = lastNameBox.val();
+        //var selectedTeam = teamSelect.val();
 
-	var answer;
-	
-	if (selectedID.length == 8){
-		docRef.get().then(function(Studentdoc){
-			if(Studentdoc.exists){
-				answer = window.confirm("You are about to delete "+Studentdoc.data().firstName+". Are you sure about this?");
-				if (answer){
-					docRef.delete().then(function() {
-						console.log("Document successfully deleted!");
-					}).catch(function(error) {
-						checkPermissions(error, function(err){
-							console.error(err);
-						});
-					});
-				} else{
-					console.log('delete canceled');
-				}
-			} else{
-				console.log('cannot delete, student not found');
-			}
-				
-		});
-	} else{
-		console.log('Id not 8 chars');
-	}
-	
+        var docRef = people.doc(selectedID);
+
+        var answer;
+
+        if (selectedID.length == 8){
+            docRef.get().then(function(Studentdoc){
+                if(Studentdoc.exists){
+                    answer = window.confirm("You are about to delete "+Studentdoc.data().firstName+". Are you sure about this?");
+                    if (answer){
+                        docRef.delete().then(function() {
+                            console.log("Document successfully deleted!");
+                        }).catch(function(error) {
+                            checkPermissions(error, function(err){
+                                console.error(err);
+                            });
+                        });
+                    } else{
+                        console.log('delete canceled');
+                    }
+                } else{
+                    console.log('cannot delete, student not found');
+                }
+
+            });
+        } else{
+            console.log('Id not 8 chars');
+        }
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
 }
 
 function downloadCSV(){
-	console.log('download');
-
 	var titleString ="ID,First Name,Last Name,Team,Date,HourIn,MinuteIn,HourOut,MinuteOut,Type,Elapsed\r\n";
 	var saveString = titleString;
 
@@ -236,66 +248,75 @@ function downloadCSV(){
 			
 		});		
 
-	});
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
 
 	function save(myString){
-		console.log('saving',myString);
 		var blob = new Blob([myString], { type: 'text/plain' });
 		saveAs(blob, "data.csv");
 	}	
 }
 
 function importCSV(){
-	console.log('importing data feature');
 	const selectedFile = document.getElementById('importFile').files[0];
 
-	// Check to make sure a file was selected
-	if(selectedFile){
-        let reader = new FileReader();
-        reader.readAsText(selectedFile);
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        // Check to make sure a file was selected
+        if(selectedFile){
+            let reader = new FileReader();
+            reader.readAsText(selectedFile);
 
-        reader.onload = function(progressEvent){
-            var recordCount = 0;
-            //split the file into an array of entries
-            var entryArray = this.result.split(/\r\n|\n/);
+            reader.onload = function(progressEvent){
+                var recordCount = 0;
+                //split the file into an array of entries
+                var entryArray = this.result.split(/\r\n|\n/);
 
-            entryArray.forEach( function (entryLine){
-                var entryRecord = entryLine.split(",");
+                entryArray.forEach( function (entryLine){
+                    var entryRecord = entryLine.split(",");
 
-                if(entryRecord[0] != "ID" && entryRecord[0] != ""){
-                    recordCount++;
-                    var docRefStudent = firestore.collection("Users").doc(entryRecord[0]);
-                    docRefStudent.get().then(function(doc){
-                        docRefStudent.set({
-                            firstName:    entryRecord[1],
-                            lastName:     entryRecord[2],
-                            teamNumber:   entryRecord[3],
-                            shopHours:    0,
-                            serviceHours: 0
-                        });
-
-                        docRefStudent.collection("logs").doc("init").set({
-                            thing: "empty"
-                        });
-
-                        if(entryRecord.length > 4 && entryRecord[4] != "init"){
-
-                            docRefStudent.collection("logs").doc(entryRecord[4]).set({
-                                clockInHour:    Number(entryRecord[5]),
-                                clockInMinute:  Number(entryRecord[6]),
-                                clockOutHour:   Number(entryRecord[7]),
-                                clockOutMinute: Number(entryRecord[8]),
-                                hourType:       entryRecord[9]
+                    if(entryRecord[0] != "ID" && entryRecord[0] != ""){
+                        recordCount++;
+                        var docRefStudent = firestore.collection("Users").doc(entryRecord[0]);
+                        docRefStudent.get().then(function(doc){
+                            docRefStudent.set({
+                                firstName:    entryRecord[1],
+                                lastName:     entryRecord[2],
+                                teamNumber:   entryRecord[3],
+                                shopHours:    0,
+                                serviceHours: 0
                             });
-                        }
-                    })
-                }
-            });
-            alert(recordCount + " records updated.")
-        };
-    } else {
-        alert("Please select a file for import")
-    }
+
+                            docRefStudent.collection("logs").doc("init").set({
+                                thing: "empty"
+                            });
+
+                            if(entryRecord.length > 4 && entryRecord[4] != "init"){
+
+                                docRefStudent.collection("logs").doc(entryRecord[4]).set({
+                                    clockInHour:    Number(entryRecord[5]),
+                                    clockInMinute:  Number(entryRecord[6]),
+                                    clockOutHour:   Number(entryRecord[7]),
+                                    clockOutMinute: Number(entryRecord[8]),
+                                    hourType:       entryRecord[9]
+                                });
+                            }
+                        })
+                    }
+                });
+                alert(recordCount + " records updated.")
+            };
+        } else {
+            alert("Please select a file for import")
+        }
+    }).catch(function(error) {
+       checkPermissions(error, function(err){
+           console.error(err);
+       });
+    });
 }
 
 function renderRowHTML(doc) {
@@ -344,15 +365,12 @@ function resetTable(){
 	while(dataTableBody.firstChild){
 		dataTableBody.removeChild(dataTableBody.firstChild);
 	}*/
-	console.log('clear');
 	$("#tableBody > tr").remove();
 	//$("#dataTableBody tr").remove();
 	
 }
 
 function expandRow(row){
-	console.log('expandRow'+row.id);
-
 	try{
 		rowTemp.removeChild(hourTable);
 	}catch(err){
@@ -380,9 +398,7 @@ function expandRow(row){
 	studentLogRef.get()
 	.then(function(querySnapshot) {
 		querySnapshot.forEach(function(doc) {
-			
-			console.log(doc.id, " => ", doc.data());
-			
+
 			var log = document.createElement('tr');
 			
 			var clockInData = document.createElement('td');
@@ -416,8 +432,6 @@ function removeAllChildren(thing){
 }
 
 function search(){
-	
-	console.log('search');
 	resetTable();
 
 	var selectedID = IDBox.val();
@@ -431,67 +445,69 @@ function search(){
 	console.log(selectedLastName);
 	console.log(selectedLastName);
 	console.log(selectedTeam);
-	
-	if(selectedID.length === 8){
-		console.log('ID search');
-		filteredPeople = people.doc(selectedID).get()
-		.then(
-			function(doc){
-				if(doc.exists){
-					renderRowHTML(doc);
-				} else {
-					dataTableHTML = '<tr><td>not found</td></tr>';
-					dataTableBody.innerHTML = dataTableHTML;
-				}
-			}
-		).catch(function(error) {
-			checkPermissions(error, function(err){
-				console.error(err);
-			});
-		});
-	
-	} else if(selectedID.length === 0){
-	
-		filteredPeople = people;
-	
-		if(selectedFirstName.length >0){
-			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
-		}
-		if(selectedLastName.length > 0){
-			filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
-		}
-		if(selectedTeam != "none"){
-			filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);		
-		}
-		
-		filteredPeople.get()
-		.then(function(querySnapshot) {
-			//dataTableHTML = '';
-			querySnapshot.forEach(function(doc) {
-				console.log(doc.id, " => ", doc.data());
-				if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
-					renderRowHTML(doc);
-				}
-			});
 
-			//dataTableBody.innerHTML = dataTableHTML;
-		}).catch(function(error) {
-			checkPermissions(error, function(err){
-				console.error(err);
-			});
-		});
-	} else {
-		alert('invalid ID');
-	}
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        if(selectedID.length === 8){
+            console.log('ID search');
+            filteredPeople = people.doc(selectedID).get()
+            .then(
+                function(doc){
+                    if(doc.exists){
+                        renderRowHTML(doc);
+                    } else {
+                        dataTableHTML = '<tr><td>not found</td></tr>';
+                        dataTableBody.innerHTML = dataTableHTML;
+                    }
+                }
+            ).catch(function(error) {
+                checkPermissions(error, function(err){
+                    console.error(err);
+                });
+            });
 
+        } else if(selectedID.length === 0){
+
+            filteredPeople = people;
+
+            if(selectedFirstName.length >0){
+                filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
+            }
+            if(selectedLastName.length > 0){
+                filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
+            }
+            if(selectedTeam != "none"){
+                filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);
+            }
+
+            filteredPeople.get()
+            .then(function(querySnapshot) {
+                //dataTableHTML = '';
+                querySnapshot.forEach(function(doc) {
+                    console.log(doc.id, " => ", doc.data());
+                    if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
+                        renderRowHTML(doc);
+                    }
+                });
+
+                //dataTableBody.innerHTML = dataTableHTML;
+            }).catch(function(error) {
+                checkPermissions(error, function(err){
+                    console.error(err);
+                });
+            });
+        } else {
+            alert('invalid ID');
+        }
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
 }
 
 function checkoutAll(){
-	console.log('checkoutAll');
-
 	realTimeDataBase.ref('users/').once('value').then((snapshot) => {
-
-		console.log('start checkout');
 
 		var time = new Date();
 
@@ -507,7 +523,6 @@ function checkoutAll(){
 		day = (day.length == 1)? '0' + day : day;
 
 		var peopleList = snapshot.val().here;
-		console.log(peopleList);
 
 		var docName = month + day + year;
 
@@ -542,12 +557,9 @@ function checkoutAll(){
 			console.error(err);
 		});
 	});
-
 }
 
 function clearTextBoxes(){
-	
-	console.log('clearTextBoxes');
 	teamSelect.val("none");
 	IDBox.val("");
 	firstNameBox.val("");
@@ -556,46 +568,43 @@ function clearTextBoxes(){
 
 function refreshRealTime(snapshot){
 
-	console.log('realTime list change');
-	
-	console.log(snapshot.val());
-	//console.log(snapshot.ref('here/').val());
-
 	hereTableBody.empty();
 	
 	var peopleList = snapshot.val().here;
-	console.log("peopleList log");
-	console.log(peopleList);
-	
-	peopleList.forEach(function(element){
-		
-		if(element[0] === "null"){
-			console.log('nobody here');
-			
-			hereTable.css('display', 'none');
-			noOneHereBox.css('display', 'block');
-		
-		} else {
-			noOneHereBox.css('display', 'none');
-			hereTable.css('display', 'block');
-			
-			var row = document.createElement('tr');
-			var ID = document.createElement('td');
-			var firstName = document.createElement('td');
-			var lastName = document.createElement('td');
-			
-			ID.innerHTML = element[0];
-			firstName.innerHTML = element[1];
-			lastName.innerHTML = element[2];
-			
-			row.appendChild(ID);
-			row.appendChild(firstName);
-			row.appendChild(lastName);
-			
-			hereTableBody.append(row);
-		}
-	});
-	
+
+	admins.get().then(function(){
+        peopleList.forEach(function(element){
+
+            if(element[0] === "null"){
+                hereTable.css('display', 'none');
+                noOneHereBox.css('display', 'block');
+                notAuthorizedBox.css('display', 'none');
+            } else {
+                hereTable.css('display', 'block');
+                noOneHereBox.css('display', 'none');
+                notAuthorizedBox.css('display', 'none');
+
+                var row = document.createElement('tr');
+                var ID = document.createElement('td');
+                var firstName = document.createElement('td');
+                var lastName = document.createElement('td');
+
+                ID.innerHTML = element[0];
+                firstName.innerHTML = element[1];
+                lastName.innerHTML = element[2];
+
+                row.appendChild(ID);
+                row.appendChild(firstName);
+                row.appendChild(lastName);
+
+                hereTableBody.append(row);
+            }
+        });
+	}).catch(function(error) {
+        hereTable.css('display', 'none');
+        noOneHereBox.css('display', 'none');
+        notAuthorizedBox.css('display', 'block');
+    });
 }
 /*
 function createAdmin(email,password){
@@ -616,8 +625,6 @@ function createAdmin(email,password){
 */
 function setup(){
 	
-	console.log('admin.js loaded');
-
 	initFirebaseAuth();
 
 	loadExternalHTML();
