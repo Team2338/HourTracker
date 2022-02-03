@@ -253,7 +253,7 @@ function updateStudentSubmit(){
                         hourType: "shop"
                     });
                 });
-                alert("Student " + selectedID + " has been updated for " + updateDay + "/" + updateMonth + "/" + updateYear)
+                alert("Student " + selectedID + " has been updated for " + updateMonth + "/" + updateDay + "/" + updateYear)
                 updateStudentInfoFromRecord();
             }else{
                 alert("Database Error: Student does not exist.");
