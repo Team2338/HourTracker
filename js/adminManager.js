@@ -128,7 +128,7 @@ function search(){
 				var adminID = this.id;
 				firestore.collection("googleSignIn").doc(adminID).get().then(function(doc){
 					if(admin){
-						if(confirm("you are about to make"+doc.data().name+"not an admin")){
+						if(confirm("You are about to remove admin privileges for "+doc.data().name)){
 
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,
@@ -137,7 +137,7 @@ function search(){
 							});
 						}
 					} else {
-						if(confirm("you are about to make"+doc.data().name+"an admin")){
+						if(confirm("You are about to make "+doc.data().name+" an admin")){
 
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,

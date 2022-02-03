@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
+import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -24,6 +24,13 @@ const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
 const notAuthorizedBox = $('#notAuthorizedBox');
+const updateSelectDate = $('#selectDate');
+const updateStudentIDSelected = $('#selectIDList');
+const updateStudentSubmitButton = $('#updateStudentSubmit');
+const updateTimeInField  = $('#selectTimeIn');
+const updateTimeOutField = $('#selectTimeOut');
+const timeInActual = $("#timeInActual");
+const timeOutActual = $("#timeOutActual");
 
 var rowTemp;
 
@@ -187,6 +194,86 @@ function deleteStudent(){
           console.error(err);
         });
     });
+}
+
+function updateStudentSubmit(){
+    // get values from screen
+    var selectedID    = document.getElementById("selectIDList").value;
+    var updateDate    = document.getElementById("selectDate").value;
+    var updateInTime  = document.getElementById("selectTimeIn").value;
+    var updateOutTime = document.getElementById("selectTimeOut").value;
+
+    admins.get().then(function(){
+        // validate data
+
+        // get individual fields to create record
+        var updateYear  = updateDate.substring(0,4); // 0 based
+        var updateMonth = updateDate.substring(5,7);// 0 based
+        var updateDay   = updateDate.substring(8); // 0 based
+        var docName = updateMonth + updateDay + updateYear;
+
+        var updateInHour    = updateInTime.substring(0,2);
+        var updateInMinute  = updateInTime.substring(3);
+        var updateOutHour   = updateOutTime.substring(0,2);
+        var updateOutMinute = updateOutTime.substring(3);
+
+        // do some data validation
+        if( updateDate > today() ){
+            alert('Date must be today or earlier.');
+            return;
+        }
+
+        if( updateDate < "2022-01-08"){
+            alert('Date must be on or after Jan 8, 2022');
+            return;
+        }
+
+        if(updateOutTime < updateInTime){
+            alert('Out Time must be later than In Time. Please check your selection.');
+            return;
+        }
+
+        if( updateInTime.length == 0 || updateOutTime.length == 0){
+            alert('Time fields must not be empty');
+            return;
+        }
+
+        // update database
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+        docRefStudent.get().then(function(Studentdoc){
+            if(Studentdoc.exists){
+                docRefLog.get().then(function(Logdoc){
+                    docRefLog.set({
+                        clockInHour:    Number(updateInHour),
+                        clockInMinute:  Number(updateInMinute),
+                        clockOutHour:   Number(updateOutHour),
+                        clockOutMinute: Number(updateOutMinute),
+                        hourType: "shop"
+                    });
+                });
+                alert("Student " + selectedID + " has been updated for " + updateDay + "/" + updateMonth + "/" + updateYear)
+                updateStudentInfoFromRecord();
+            }else{
+                alert("Database Error: Student does not exist.");
+            }
+        });
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+        console.error(err);
+        });
+    });
+}
+
+function updateTimeIn(){
+    // Hide actual indication
+    timeInActual.css('visibility', 'hidden');
+}
+
+function updateTimeOut(){
+    // Hide actual indication
+    timeOutActual.css('visibility', 'hidden');
 }
 
 function downloadCSV(){
@@ -431,6 +518,122 @@ function removeAllChildren(thing){
 	}
 }
 
+function prepareUpdateFields(){
+    // set initial, max, and min dates
+    document.getElementById('selectDate').setAttribute("min", '2022-01-08');
+
+    document.getElementById('selectDate').setAttribute("max", today());
+    document.getElementById('selectDate').setAttribute("value", today());
+
+    // set Time In to a common start time
+    document.getElementById('selectTimeIn').setAttribute("value", "18:00");
+
+    // load list of IDs to dropdown
+    var select = document.getElementById('selectIDList');
+
+    admins.get().then(function(){
+        people.get()
+        .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
+                    var opt = document.createElement('option');
+                    opt.value = doc.id;
+                    opt.innerHTML = doc.id;
+                    select.appendChild(opt);
+                }
+            });
+        })
+    }).catch(function(error) {
+        // do not show user list if not signed in as an admin
+    });
+}
+
+function updateStudentInfoFromRecord(){
+
+    var selectedID = document.getElementById("selectIDList").value;
+    var updateDate = document.getElementById("selectDate").value;
+
+    admins.get().then(function(){
+        // split selected date to YYYY, MM, DD in order to get record from DB
+        var updateYear  = updateDate.substring(0,4); // 0 based
+        var updateMonth = updateDate.substring(5,7);// 0 based
+        var updateDay   = updateDate.substring(8); // 0 based
+        var docName = updateMonth + updateDay + updateYear; // format to database doc format
+
+        // if empty string was selected, do nothing and reset all fields
+        if( selectedID == ""){
+            // reset fields
+            resetUpdateFields();
+            return;
+        }
+
+        // read database and populate in and out times
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+        docRefStudent.get().then(function(Studentdoc){
+            if(Studentdoc.exists){
+                docRefLog.get().then(function(logDoc){
+                    if(logDoc.exists){
+                        if (logDoc.data().clockInHour != 99){
+                            // convert database fields to usable date in YYYY-MM-DD format
+                            var time = new Date();
+                            time.setUTCHours(logDoc.data().clockInHour);
+                            time.setUTCMinutes(logDoc.data().clockInMinute);
+                            // update UI
+                            document.getElementById('selectTimeIn').value = time.toISOString().substr(11, 5);
+
+                            // Show actual indication
+                            timeInActual.css('visibility', 'visible');
+                        } else {
+                            // Field contains 99. This is a placeholder in the DB and should be ignored
+                            document.getElementById('selectTimeIn').value = "";
+                            // Hide actual indication
+                            timeInActual.css('visibility', 'hidden');
+                        }
+
+                        if (logDoc.data().clockOutHour != 99){
+                            // convert database fields to usable date in YYYY-MM-DD format
+                            var time = new Date();
+                            time.setUTCHours(logDoc.data().clockOutHour);
+                            time.setUTCMinutes(logDoc.data().clockOutMinute);
+                            // update UI
+                            document.getElementById('selectTimeOut').value = time.toISOString().substr(11, 5);
+
+                            // Show actual indication
+                            timeOutActual.css('visibility', 'visible');
+                        } else {
+                            // Field contains 99. This is a placeholder in the DB and should be ignored
+                            document.getElementById('selectTimeOut').value = "";
+                            // Hide actual indication
+                            timeOutActual.css('visibility', 'hidden');
+                        }
+                    } else {
+                        // reset fields
+                        resetUpdateFields();
+                    }
+                });
+
+            }else{
+                alert("Database Error: Student does not exist.");
+            }
+        });
+
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+        console.error(err);
+        });
+    });
+}
+
+function resetUpdateFields(){
+    // reset all the fields (leaving the date field alone for now)
+    document.getElementById('selectTimeIn').value = "18:00";
+    document.getElementById('selectTimeOut').value = "";
+    timeInActual.css('visibility', 'hidden');
+    timeOutActual.css('visibility', 'hidden');
+}
+
 function search(){
 	resetTable();
 
@@ -629,6 +832,8 @@ function setup(){
 
 	loadExternalHTML();
 
+	prepareUpdateFields();
+
 	searchButton.click(search);
 	newButton.click(newStudent);
 	editButton.click(editStudent);
@@ -637,6 +842,12 @@ function setup(){
 	downloadButton.click(downloadCSV);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
+
+	updateStudentIDSelected.change(updateStudentInfoFromRecord);
+	updateSelectDate.change(updateStudentInfoFromRecord);
+	updateTimeInField.change(updateTimeIn);
+	updateTimeOutField.change(updateTimeOut);
+    updateStudentSubmitButton.click(updateStudentSubmit);
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);

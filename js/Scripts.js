@@ -3,7 +3,7 @@ import { firebaseConfig } from './databaseConfig.js';
 firebase.initializeApp(firebaseConfig);
 
 export var firestore = firebase.firestore();
-export var people = firestore.collection("Users");
+export var people = firestore.collection("Users"); // .orderBy("studentID"); would need to add studentID field to each doc
 export var admins = firestore.collection("googleSignIn");
 export var user = firebase.auth().currentUser;
 
@@ -182,8 +182,18 @@ function verify(){
 			// ...
 		});
 	}
-
 }
+
+/*
+*   returns local date in YYYY-MM-DD format
+*/
+export function today(){
+    // need to convert to local time
+    let utcDate = new Date();
+    var yourDate = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset()*60*1000));
+    return yourDate.toISOString().split('T')[0];
+}
+
 /*
 function sleep(milliseconds) {
 	const date = Date.now();

@@ -43,6 +43,35 @@
         <div class = "toolsContent" id ="top" >
 			<h2>Reporting</h2>
 			<button type = "button" id = "downloadButton">Download Raw</button>
+
+			<h2>Update Student Record</h2>
+
+			<table>
+				<th align="left">Student</th>
+				<th>Date</th>
+				<th>In</th>
+				<th>Out</th>
+				<tr>
+					<td>
+						<div>
+							<select class="selectID" id="selectIDList">
+								<option></option>
+							</select>
+						</div>
+					</td>
+					<td><input type="date" id="selectDate" name="selectDate"></td>
+					<td><input type="time" id="selectTimeIn" name="selectTimeIn"></td>
+					<td><input type="time" id="selectTimeOut" name="selectTimeOut"></td>
+					<td><input type="submit" class="selectSubmit" id="updateStudentSubmit"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td class="timeActual" id="timeInActual">actual</td>
+					<td class="timeActual" id="timeOutActual">actual</td>
+				</tr>
+			</table>
+
 			<h2>Import CSV</h2>
 			<button type = "button" id = "importButton">Import</button>
 			<input type="file" id="importFile">
