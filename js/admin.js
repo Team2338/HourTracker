@@ -528,6 +528,9 @@ function prepareUpdateFields(){
     // set Time In to a common start time
     document.getElementById('selectTimeIn').setAttribute("value", "18:00");
 
+    // initialize StudentName to empty
+    document.getElementById('updateStudentName').innerHTML = "";
+
     // load list of IDs to dropdown
     var select = document.getElementById('selectIDList');
 
@@ -564,6 +567,7 @@ function updateStudentInfoFromRecord(){
         if( selectedID == ""){
             // reset fields
             resetUpdateFields();
+            document.getElementById('updateStudentName').innerHTML = "";
             return;
         }
 
@@ -573,6 +577,7 @@ function updateStudentInfoFromRecord(){
 
         docRefStudent.get().then(function(Studentdoc){
             if(Studentdoc.exists){
+                document.getElementById('updateStudentName').innerHTML = Studentdoc.data().firstName + " " + Studentdoc.data().lastName;
                 docRefLog.get().then(function(logDoc){
                     if(logDoc.exists){
                         if (logDoc.data().clockInHour != 99){
