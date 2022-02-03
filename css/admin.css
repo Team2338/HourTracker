@@ -38,6 +38,12 @@ h2{
     visibility: hidden;
 }
 
+.updateStudentName {
+    text-align: left;
+    color: #FF0000;
+    font-size: 12px;
+}
+
 #personData{
 	float: right;
 }
