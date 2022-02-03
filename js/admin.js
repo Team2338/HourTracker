@@ -31,6 +31,7 @@ const updateTimeInField  = $('#selectTimeIn');
 const updateTimeOutField = $('#selectTimeOut');
 const timeInActual = $("#timeInActual");
 const timeOutActual = $("#timeOutActual");
+const successCheckmarkItem = $("#successCheckmark");
 
 var rowTemp;
 
@@ -253,8 +254,9 @@ function updateStudentSubmit(){
                         hourType: "shop"
                     });
                 });
-                alert("Student " + selectedID + " has been updated for " + updateMonth + "/" + updateDay + "/" + updateYear)
+                //alert("Student " + selectedID + " has been updated for " + updateMonth + "/" + updateDay + "/" + updateYear)
                 updateStudentInfoFromRecord();
+                successCheckmarkItem.css('visibility','visible');
             }else{
                 alert("Database Error: Student does not exist.");
             }
@@ -269,11 +271,13 @@ function updateStudentSubmit(){
 function updateTimeIn(){
     // Hide actual indication
     timeInActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
 }
 
 function updateTimeOut(){
     // Hide actual indication
     timeOutActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
 }
 
 function downloadCSV(){
@@ -551,6 +555,16 @@ function prepareUpdateFields(){
     });
 }
 
+/*
+* This function will clear the success checkmark and then load the student info.
+* Need this because after submitting, the updateStudentInfoFromRecord is called
+* and if the hidden was placed there, the checkmark would only show for a brief second
+*/
+function updateStudentInfoFromRecordReset(){
+    successCheckmarkItem.css('visibility','hidden');
+    updateStudentInfoFromRecord();
+}
+
 function updateStudentInfoFromRecord(){
 
     var selectedID = document.getElementById("selectIDList").value;
@@ -637,6 +651,7 @@ function resetUpdateFields(){
     document.getElementById('selectTimeOut').value = "";
     timeInActual.css('visibility', 'hidden');
     timeOutActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
 }
 
 function search(){
@@ -848,8 +863,8 @@ function setup(){
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 
-	updateStudentIDSelected.change(updateStudentInfoFromRecord);
-	updateSelectDate.change(updateStudentInfoFromRecord);
+	updateSelectDate.change(updateStudentInfoFromRecordReset);
+	updateStudentIDSelected.change(updateStudentInfoFromRecordReset);
 	updateTimeInField.change(updateTimeIn);
 	updateTimeOutField.change(updateTimeOut);
     updateStudentSubmitButton.click(updateStudentSubmit);
