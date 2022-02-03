@@ -41,7 +41,13 @@ h2{
 .updateStudentName {
     text-align: left;
     color: #FF0000;
-    font-size: 12px;
+    font-size: 14px;
+}
+
+.successCheckmark{
+    color: green;
+    font-size: 24px;
+    visibility: hidden;
 }
 
 #personData{
