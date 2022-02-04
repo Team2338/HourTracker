@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore} from './Scripts.js';
+import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -18,10 +18,20 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
+const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
+const notAuthorizedBox = $('#notAuthorizedBox');
+const updateSelectDate = $('#selectDate');
+const updateStudentIDSelected = $('#selectIDList');
+const updateStudentSubmitButton = $('#updateStudentSubmit');
+const updateTimeInField  = $('#selectTimeIn');
+const updateTimeOutField = $('#selectTimeOut');
+const timeInActual = $("#timeInActual");
+const timeOutActual = $("#timeOutActual");
+const successCheckmarkItem = $("#successCheckmark");
 
 var rowTemp;
 
@@ -29,155 +39,249 @@ const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
 
 function newStudent() {
-	
-	console.log('newStudent');
-	resetTable();
-	
-	var selectedID = IDBox.val();
-	var selectedFirstName = firstNameBox.val();
-	var selectedLastName = lastNameBox.val();
-	var selectedTeam = teamSelect.val();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        resetTable();
 
-	if ((selectedID.length == 8) &&
-		(selectedFirstName.length > 0
-			) &&
-		(selectedLastName.length > 0)
-	   ){
-		
-		var docRef = firestore.collection("Users").doc(selectedID);
-		docRef.get().then(function(doc){
+        var selectedID = IDBox.val();
+        var selectedFirstName = firstNameBox.val();
+        var selectedLastName = lastNameBox.val();
+        var selectedTeam = teamSelect.val();
 
-			if(doc.exists){
-				alert('Cannot create new student, Student exists');
-			}else{
-				alert('New Student Created');
-				docRef.set({
-					firstName: selectedFirstName,
-					lastName: selectedLastName,
-					teamNumber:"2338", //selectedTeam,
-					shopHours: 0,
-					serviceHours: 0
-				});
-				docRef.collection("logs").doc("init").set({
-					thing: "empty"
-				});
-				// TODO:
-				// add individual hour logs here
-			}
-				
-		});
+        if ((selectedID.length == 8) &&
+            (selectedFirstName.length > 0
+                ) &&
+            (selectedLastName.length > 0)
+           ){
+
+            var docRef = firestore.collection("Users").doc(selectedID);
+            docRef.get().then(function(doc){
+
+                if(doc.exists){
+                    alert('Cannot create new student, Student exists');
+                }else{
+                    alert('New Student Created');
+                    docRef.set({
+                        firstName: selectedFirstName,
+                        lastName: selectedLastName,
+                        teamNumber:"2338", //selectedTeam,
+                        shopHours: 0,
+                        serviceHours: 0
+                    });
+                    docRef.collection("logs").doc("init").set({
+                        thing: "empty"
+                    });
+                    // TODO:
+                    // add individual hour logs here
+                }
+
+            });
 
 
-	} else {
-		alert('new student parameters invalid');
-	}
-	
+        } else {
+            alert('new student parameters invalid');
+        }
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
 }
 
 function editStudent() {
-	
-	console.log('edit');
-	resetTable();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
 
-	var selectedID = IDBox.val();
-	var selectedFirstName = firstNameBox.val();
-	var selectedLastName = lastNameBox.val();
-	var selectedTeam = teamSelect.val();
-	
-	if (selectedID.length == 8){
-		
-		var docRef = firestore.collection("Users").doc(selectedID);
-		docRef.get().then(function(doc){
+        resetTable();
 
-			if(doc.exists){
-				
-				var newFirstName;
-				var newLastName;
-				var newTeamNumber;
+        var selectedID = IDBox.val();
+        var selectedFirstName = firstNameBox.val();
+        var selectedLastName = lastNameBox.val();
+        var selectedTeam = teamSelect.val();
 
-				if(selectedFirstName.length >0){
-					newFirstName = selectedFirstName;				
-				} else {
-					newFirstName = doc.data().firstName;
-				}
+        if (selectedID.length == 8){
 
-				if(selectedLastName.length > 0){
-					newLastName = selectedLastName;
-				} else {
-					newLastName = doc.data().lastName;
-				}
+            var docRef = firestore.collection("Users").doc(selectedID);
+            docRef.get().then(function(doc){
 
-				if(selectedTeam != "none"){
-					newTeamNumber = selectedTeam;					
-				} else {
-					newTeamNumber = doc.data().teamNumber;
-				}
-				
-				docRef.set({
-					firstName: newFirstName,
-					lastName: newLastName,
-					teamNumber: newTeamNumber,
-					shopHours: doc.data().shopHours,
-					serviceHours: doc.data().serviceHours
-				});
+                if(doc.exists){
 
-			}else{
-				alert('Student with ID'+selectedID+'not found');
-			}
-				
-		});
+                    var newFirstName;
+                    var newLastName;
+                    var newTeamNumber;
+
+                    if(selectedFirstName.length >0){
+                        newFirstName = selectedFirstName;
+                    } else {
+                        newFirstName = doc.data().firstName;
+                    }
+
+                    if(selectedLastName.length > 0){
+                        newLastName = selectedLastName;
+                    } else {
+                        newLastName = doc.data().lastName;
+                    }
+
+                    if(selectedTeam != "none"){
+                        newTeamNumber = selectedTeam;
+                    } else {
+                        newTeamNumber = doc.data().teamNumber;
+                    }
+
+                    docRef.set({
+                        firstName: newFirstName,
+                        lastName: newLastName,
+                        teamNumber: newTeamNumber,
+                        shopHours: doc.data().shopHours,
+                        serviceHours: doc.data().serviceHours
+                    });
+
+                }else{
+                    alert('Student with ID'+selectedID+'not found');
+                }
+
+            });
 
 
-	} else {
-		alert('fields invalid');
+        } else {
+            alert('fields invalid');
 
-	}
-	
-	// create a new collection/doc for hours that are logged
+        }
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
 }
 
 function deleteStudent(){
-	console.log('delete');
-	
-	var selectedID = IDBox.val();
-	//var selectedFirstName = firstNameBox.val();
-	//var selectedLastName = lastNameBox.val();
-	//var selectedTeam = teamSelect.val();
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
 
-	var docRef = people.doc(selectedID);
+        var selectedID = IDBox.val();
+        //var selectedFirstName = firstNameBox.val();
+        //var selectedLastName = lastNameBox.val();
+        //var selectedTeam = teamSelect.val();
 
-	var answer;
-	
-	if (selectedID.length == 8){
-		docRef.get().then(function(Studentdoc){
-			if(Studentdoc.exists){
-				answer = window.confirm("You are about to delete "+Studentdoc.data().firstName+". Are you sure about this?");
-				if (answer){
-					docRef.delete().then(function() {
-						console.log("Document successfully deleted!");
-					}).catch(function(error) {
-						checkPermissions(error, function(err){
-							console.error(err);
-						});
-					});
-				} else{
-					console.log('delete canceled');
-				}
-			} else{
-				console.log('cannot delete, student not found');
-			}
-				
-		});
-	} else{
-		console.log('Id not 8 chars');
-	}
-	
+        var docRef = people.doc(selectedID);
+
+        var answer;
+
+        if (selectedID.length == 8){
+            docRef.get().then(function(Studentdoc){
+                if(Studentdoc.exists){
+                    answer = window.confirm("You are about to delete "+Studentdoc.data().firstName+". Are you sure about this?");
+                    if (answer){
+                        docRef.delete().then(function() {
+                            console.log("Document successfully deleted!");
+                        }).catch(function(error) {
+                            checkPermissions(error, function(err){
+                                console.error(err);
+                            });
+                        });
+                    } else{
+                        console.log('delete canceled');
+                    }
+                } else{
+                    console.log('cannot delete, student not found');
+                }
+
+            });
+        } else{
+            console.log('Id not 8 chars');
+        }
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+          console.error(err);
+        });
+    });
+}
+
+function updateStudentSubmit(){
+    // get values from screen
+    var selectedID    = document.getElementById("selectIDList").value;
+    var updateDate    = document.getElementById("selectDate").value;
+    var updateInTime  = document.getElementById("selectTimeIn").value;
+    var updateOutTime = document.getElementById("selectTimeOut").value;
+
+    admins.get().then(function(){
+        // validate data
+
+        // get individual fields to create record
+        var updateYear  = updateDate.substring(0,4); // 0 based
+        var updateMonth = updateDate.substring(5,7);// 0 based
+        var updateDay   = updateDate.substring(8); // 0 based
+        var docName = updateMonth + updateDay + updateYear;
+
+        var updateInHour    = updateInTime.substring(0,2);
+        var updateInMinute  = updateInTime.substring(3);
+        var updateOutHour   = updateOutTime.substring(0,2);
+        var updateOutMinute = updateOutTime.substring(3);
+
+        // do some data validation
+        if( updateDate > today() ){
+            alert('Date must be today or earlier.');
+            return;
+        }
+
+        if( updateDate < "2022-01-08"){
+            alert('Date must be on or after Jan 8, 2022');
+            return;
+        }
+
+        if(updateOutTime < updateInTime){
+            alert('Out Time must be later than In Time. Please check your selection.');
+            return;
+        }
+
+        if( updateInTime.length == 0 || updateOutTime.length == 0){
+            alert('Time fields must not be empty');
+            return;
+        }
+
+        // update database
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+        docRefStudent.get().then(function(Studentdoc){
+            if(Studentdoc.exists){
+                docRefLog.get().then(function(Logdoc){
+                    docRefLog.set({
+                        clockInHour:    Number(updateInHour),
+                        clockInMinute:  Number(updateInMinute),
+                        clockOutHour:   Number(updateOutHour),
+                        clockOutMinute: Number(updateOutMinute),
+                        hourType: "shop"
+                    });
+                });
+                //alert("Student " + selectedID + " has been updated for " + updateMonth + "/" + updateDay + "/" + updateYear)
+                updateStudentInfoFromRecord();
+                successCheckmarkItem.css('visibility','visible');
+            }else{
+                alert("Database Error: Student does not exist.");
+            }
+        });
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+        console.error(err);
+        });
+    });
+}
+
+function updateTimeIn(){
+    // Hide actual indication
+    timeInActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
+}
+
+function updateTimeOut(){
+    // Hide actual indication
+    timeOutActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
 }
 
 function downloadCSV(){
-	console.log('download');
-
-	var titleString ="Id,first name,last name,team#,date,HourIn,MinuteIn,HourOut,MinuteOut,type, elapsed\r\n";
+	var titleString ="ID,First Name,Last Name,Team,Date,HourIn,MinuteIn,HourOut,MinuteOut,Type,Elapsed\r\n";
 	var saveString = titleString;
 
 	var isComplete = false;
@@ -194,14 +298,22 @@ function downloadCSV(){
 
 					var startDate = new Date();
 					var endDate = new Date();
-					
-					startDate.setHours(logDoc.data().clockInHour);
-					startDate.setMinutes(logDoc.data().clockInMinute);
-					endDate.setHours(logDoc.data().clockOutHour);
-					endDate.setMinutes(logDoc.data().clockOutMinute);
+                    var elapsed = 0;
 
-					var elapsed = endDate - startDate;
-					elapsed /= 60000;
+                    startDate.setHours(logDoc.data().clockInHour);
+                    startDate.setMinutes(logDoc.data().clockInMinute);
+                    endDate.setHours(logDoc.data().clockOutHour);
+                    endDate.setMinutes(logDoc.data().clockOutMinute);
+
+					if(  logDoc.data().clockInHour    != 99 &&
+					     logDoc.data().clockInMinute  != 99 &&
+					     logDoc.data().clockOutHour   != 99 &&
+					     logDoc.data().clockOutMinute != 99 ){
+					    elapsed = ( endDate - startDate ) / 60000;
+                    } else {
+                        elapsed = 0;
+                    }
+
 
 					var logString = studentDoc.id + ','
 					+ studentDoc.data().firstName
@@ -227,13 +339,75 @@ function downloadCSV(){
 			
 		});		
 
-	});
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
 
 	function save(myString){
-		console.log('saving',myString);
 		var blob = new Blob([myString], { type: 'text/plain' });
 		saveAs(blob, "data.csv");
 	}	
+}
+
+function importCSV(){
+	const selectedFile = document.getElementById('importFile').files[0];
+
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        // Check to make sure a file was selected
+        if(selectedFile){
+            let reader = new FileReader();
+            reader.readAsText(selectedFile);
+
+            reader.onload = function(progressEvent){
+                var recordCount = 0;
+                //split the file into an array of entries
+                var entryArray = this.result.split(/\r\n|\n/);
+
+                entryArray.forEach( function (entryLine){
+                    var entryRecord = entryLine.split(",");
+
+                    if(entryRecord[0] != "ID" && entryRecord[0] != ""){
+                        recordCount++;
+                        var docRefStudent = firestore.collection("Users").doc(entryRecord[0]);
+                        docRefStudent.get().then(function(doc){
+                            docRefStudent.set({
+                                firstName:    entryRecord[1],
+                                lastName:     entryRecord[2],
+                                teamNumber:   entryRecord[3],
+                                shopHours:    0,
+                                serviceHours: 0
+                            });
+
+                            docRefStudent.collection("logs").doc("init").set({
+                                thing: "empty"
+                            });
+
+                            if(entryRecord.length > 4 && entryRecord[4] != "init"){
+
+                                docRefStudent.collection("logs").doc(entryRecord[4]).set({
+                                    clockInHour:    Number(entryRecord[5]),
+                                    clockInMinute:  Number(entryRecord[6]),
+                                    clockOutHour:   Number(entryRecord[7]),
+                                    clockOutMinute: Number(entryRecord[8]),
+                                    hourType:       entryRecord[9]
+                                });
+                            }
+                        })
+                    }
+                });
+                alert(recordCount + " records updated.")
+            };
+        } else {
+            alert("Please select a file for import")
+        }
+    }).catch(function(error) {
+       checkPermissions(error, function(err){
+           console.error(err);
+       });
+    });
 }
 
 function renderRowHTML(doc) {
@@ -282,15 +456,12 @@ function resetTable(){
 	while(dataTableBody.firstChild){
 		dataTableBody.removeChild(dataTableBody.firstChild);
 	}*/
-	console.log('clear');
 	$("#tableBody > tr").remove();
 	//$("#dataTableBody tr").remove();
 	
 }
 
 function expandRow(row){
-	console.log('expandRow'+row.id);
-
 	try{
 		rowTemp.removeChild(hourTable);
 	}catch(err){
@@ -318,9 +489,7 @@ function expandRow(row){
 	studentLogRef.get()
 	.then(function(querySnapshot) {
 		querySnapshot.forEach(function(doc) {
-			
-			console.log(doc.id, " => ", doc.data());
-			
+
 			var log = document.createElement('tr');
 			
 			var clockInData = document.createElement('td');
@@ -353,9 +522,139 @@ function removeAllChildren(thing){
 	}
 }
 
+function prepareUpdateFields(){
+    // set initial, max, and min dates
+    document.getElementById('selectDate').setAttribute("min", '2022-01-08');
+
+    document.getElementById('selectDate').setAttribute("max", today());
+    document.getElementById('selectDate').setAttribute("value", today());
+
+    // set Time In to a common start time
+    document.getElementById('selectTimeIn').setAttribute("value", "18:00");
+
+    // initialize StudentName to empty
+    document.getElementById('updateStudentName').innerHTML = "";
+
+    // load list of IDs to dropdown
+    var select = document.getElementById('selectIDList');
+
+    admins.get().then(function(){
+        people.get()
+        .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
+                    var opt = document.createElement('option');
+                    opt.value = doc.id;
+                    opt.innerHTML = doc.id;
+                    select.appendChild(opt);
+                }
+            });
+        })
+    }).catch(function(error) {
+        // do not show user list if not signed in as an admin
+    });
+}
+
+/*
+* This function will clear the success checkmark and then load the student info.
+* Need this because after submitting, the updateStudentInfoFromRecord is called
+* and if the hidden was placed there, the checkmark would only show for a brief second
+*/
+function updateStudentInfoFromRecordReset(){
+    successCheckmarkItem.css('visibility','hidden');
+    updateStudentInfoFromRecord();
+}
+
+function updateStudentInfoFromRecord(){
+
+    var selectedID = document.getElementById("selectIDList").value;
+    var updateDate = document.getElementById("selectDate").value;
+
+    admins.get().then(function(){
+        // split selected date to YYYY, MM, DD in order to get record from DB
+        var updateYear  = updateDate.substring(0,4); // 0 based
+        var updateMonth = updateDate.substring(5,7);// 0 based
+        var updateDay   = updateDate.substring(8); // 0 based
+        var docName = updateMonth + updateDay + updateYear; // format to database doc format
+
+        // if empty string was selected, do nothing and reset all fields
+        if( selectedID == ""){
+            // reset fields
+            resetUpdateFields();
+            document.getElementById('updateStudentName').innerHTML = "";
+            return;
+        }
+
+        // read database and populate in and out times
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+        docRefStudent.get().then(function(Studentdoc){
+            if(Studentdoc.exists){
+                document.getElementById('updateStudentName').innerHTML = Studentdoc.data().firstName + " " + Studentdoc.data().lastName;
+                docRefLog.get().then(function(logDoc){
+                    if(logDoc.exists){
+                        if (logDoc.data().clockInHour != 99){
+                            // convert database fields to usable date in YYYY-MM-DD format
+                            var time = new Date();
+                            time.setUTCHours(logDoc.data().clockInHour);
+                            time.setUTCMinutes(logDoc.data().clockInMinute);
+                            // update UI
+                            document.getElementById('selectTimeIn').value = time.toISOString().substr(11, 5);
+
+                            // Show actual indication
+                            timeInActual.css('visibility', 'visible');
+                        } else {
+                            // Field contains 99. This is a placeholder in the DB and should be ignored
+                            document.getElementById('selectTimeIn').value = "";
+                            // Hide actual indication
+                            timeInActual.css('visibility', 'hidden');
+                        }
+
+                        if (logDoc.data().clockOutHour != 99){
+                            // convert database fields to usable date in YYYY-MM-DD format
+                            var time = new Date();
+                            time.setUTCHours(logDoc.data().clockOutHour);
+                            time.setUTCMinutes(logDoc.data().clockOutMinute);
+                            // update UI
+                            document.getElementById('selectTimeOut').value = time.toISOString().substr(11, 5);
+
+                            // Show actual indication
+                            timeOutActual.css('visibility', 'visible');
+                        } else {
+                            // Field contains 99. This is a placeholder in the DB and should be ignored
+                            document.getElementById('selectTimeOut').value = "";
+                            // Hide actual indication
+                            timeOutActual.css('visibility', 'hidden');
+                        }
+                    } else {
+                        // reset fields
+                        resetUpdateFields();
+                    }
+                });
+
+            }else{
+                alert("Database Error: Student does not exist.");
+            }
+        });
+
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+        console.error(err);
+        });
+    });
+}
+
+function resetUpdateFields(){
+    // reset all the fields (leaving the date field alone for now)
+    document.getElementById('selectTimeIn').value = "18:00";
+    document.getElementById('selectTimeOut').value = "";
+    timeInActual.css('visibility', 'hidden');
+    timeOutActual.css('visibility', 'hidden');
+    successCheckmarkItem.css('visibility','hidden');
+}
+
 function search(){
-	
-	console.log('search');
 	resetTable();
 
 	var selectedID = IDBox.val();
@@ -369,67 +668,69 @@ function search(){
 	console.log(selectedLastName);
 	console.log(selectedLastName);
 	console.log(selectedTeam);
-	
-	if(selectedID.length === 8){
-		console.log('ID search');
-		filteredPeople = people.doc(selectedID).get()
-		.then(
-			function(doc){
-				if(doc.exists){
-					renderRowHTML(doc);
-				} else {
-					dataTableHTML = '<tr><td>not found</td></tr>';
-					dataTableBody.innerHTML = dataTableHTML;
-				}
-			}
-		).catch(function(error) {
-			checkPermissions(error, function(err){
-				console.error(err);
-			});
-		});
-	
-	} else if(selectedID.length === 0){
-	
-		filteredPeople = people;
-	
-		if(selectedFirstName.length >0){
-			filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
-		}
-		if(selectedLastName.length > 0){
-			filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
-		}
-		if(selectedTeam != "none"){
-			filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);		
-		}
-		
-		filteredPeople.get()
-		.then(function(querySnapshot) {
-			//dataTableHTML = '';
-			querySnapshot.forEach(function(doc) {
-				console.log(doc.id, " => ", doc.data());
-				if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
-					renderRowHTML(doc);
-				}
-			});
 
-			//dataTableBody.innerHTML = dataTableHTML;
-		}).catch(function(error) {
-			checkPermissions(error, function(err){
-				console.error(err);
-			});
-		});
-	} else {
-		alert('invalid ID');
-	}
+    // make sure we're an admin to perform this function
+	admins.get().then(function(){
+        if(selectedID.length === 8){
+            console.log('ID search');
+            filteredPeople = people.doc(selectedID).get()
+            .then(
+                function(doc){
+                    if(doc.exists){
+                        renderRowHTML(doc);
+                    } else {
+                        dataTableHTML = '<tr><td>not found</td></tr>';
+                        dataTableBody.innerHTML = dataTableHTML;
+                    }
+                }
+            ).catch(function(error) {
+                checkPermissions(error, function(err){
+                    console.error(err);
+                });
+            });
 
+        } else if(selectedID.length === 0){
+
+            filteredPeople = people;
+
+            if(selectedFirstName.length >0){
+                filteredPeople = filteredPeople.where("firstName","==", selectedFirstName);
+            }
+            if(selectedLastName.length > 0){
+                filteredPeople = filteredPeople.where("lastName", "==", selectedLastName);
+            }
+            if(selectedTeam != "none"){
+                filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);
+            }
+
+            filteredPeople.get()
+            .then(function(querySnapshot) {
+                //dataTableHTML = '';
+                querySnapshot.forEach(function(doc) {
+                    console.log(doc.id, " => ", doc.data());
+                    if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
+                        renderRowHTML(doc);
+                    }
+                });
+
+                //dataTableBody.innerHTML = dataTableHTML;
+            }).catch(function(error) {
+                checkPermissions(error, function(err){
+                    console.error(err);
+                });
+            });
+        } else {
+            alert('invalid ID');
+        }
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
 }
 
 function checkoutAll(){
-	console.log('checkoutAll');
-
 	realTimeDataBase.ref('users/').once('value').then((snapshot) => {
-
-		console.log('start checkout');
 
 		var time = new Date();
 
@@ -445,19 +746,15 @@ function checkoutAll(){
 		day = (day.length == 1)? '0' + day : day;
 
 		var peopleList = snapshot.val().here;
-		console.log(peopleList);
 
 		var docName = month + day + year;
 
-		console.log('shiiit');
 		peopleList.forEach(function(element){
 			var studentID = element[0];
 			
 			if(studentID != "N/A"){
 
-
-			//var docRefStudent = ;
-			var docRefLog = people.doc(studentID).collection("logs").doc(docName);	
+			var docRefLog = people.doc(studentID).collection("logs").doc(docName);
 
 			docRefLog.get().then(function(logDoc){
 				if(logDoc.exists){
@@ -483,12 +780,9 @@ function checkoutAll(){
 			console.error(err);
 		});
 	});
-
 }
 
 function clearTextBoxes(){
-	
-	console.log('clearTextBoxes');
 	teamSelect.val("none");
 	IDBox.val("");
 	firstNameBox.val("");
@@ -497,46 +791,43 @@ function clearTextBoxes(){
 
 function refreshRealTime(snapshot){
 
-	console.log('realTime list change');
-	
-	console.log(snapshot.val());
-	//console.log(snapshot.ref('here/').val());
-
 	hereTableBody.empty();
 	
 	var peopleList = snapshot.val().here;
-	console.log("peopleList log");
-	console.log(peopleList);
-	
-	peopleList.forEach(function(element){
-		
-		if(element[0] === "null"){
-			console.log('nobody here');
-			
-			hereTable.css('display', 'none');
-			noOneHereBox.css('display', 'block');
-		
-		} else {
-			noOneHereBox.css('display', 'none');
-			hereTable.css('display', 'block');
-			
-			var row = document.createElement('tr');
-			var ID = document.createElement('td');
-			var firstName = document.createElement('td');
-			var lastName = document.createElement('td');
-			
-			ID.innerHTML = element[0];
-			firstName.innerHTML = element[1];
-			lastName.innerHTML = element[2];
-			
-			row.appendChild(ID);
-			row.appendChild(firstName);
-			row.appendChild(lastName);
-			
-			hereTableBody.append(row);
-		}
-	});
-	
+
+	admins.get().then(function(){
+        peopleList.forEach(function(element){
+
+            if(element[0] === "null"){
+                hereTable.css('display', 'none');
+                noOneHereBox.css('display', 'block');
+                notAuthorizedBox.css('display', 'none');
+            } else {
+                hereTable.css('display', 'block');
+                noOneHereBox.css('display', 'none');
+                notAuthorizedBox.css('display', 'none');
+
+                var row = document.createElement('tr');
+                var ID = document.createElement('td');
+                var firstName = document.createElement('td');
+                var lastName = document.createElement('td');
+
+                ID.innerHTML = element[0];
+                firstName.innerHTML = element[1];
+                lastName.innerHTML = element[2];
+
+                row.appendChild(ID);
+                row.appendChild(firstName);
+                row.appendChild(lastName);
+
+                hereTableBody.append(row);
+            }
+        });
+	}).catch(function(error) {
+        hereTable.css('display', 'none');
+        noOneHereBox.css('display', 'none');
+        notAuthorizedBox.css('display', 'block');
+    });
 }
 /*
 function createAdmin(email,password){
@@ -557,11 +848,11 @@ function createAdmin(email,password){
 */
 function setup(){
 	
-	console.log('admin.js loaded');
-
 	initFirebaseAuth();
 
 	loadExternalHTML();
+
+	prepareUpdateFields();
 
 	searchButton.click(search);
 	newButton.click(newStudent);
@@ -569,7 +860,14 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+    importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
+
+	updateSelectDate.change(updateStudentInfoFromRecordReset);
+	updateStudentIDSelected.change(updateStudentInfoFromRecordReset);
+	updateTimeInField.change(updateTimeIn);
+	updateTimeOutField.change(updateTimeOut);
+    updateStudentSubmitButton.click(updateStudentSubmit);
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);
