@@ -21,6 +21,7 @@ const downloadButton = $('#downloadButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
+const checkoutTimeField = $('checkoutTime')
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
 const notAuthorizedBox = $('#notAuthorizedBox');
@@ -734,12 +735,18 @@ function checkoutAll(){
 
 		var time = new Date();
 
-		var HOUR = time.getHours();
-		var MINUTE = time.getMinutes();
+		var checkoutHour = time.getHours();
+		var checkoutMinute = time.getMinutes();
+
+        // if the clock field is set, use that value
+        var checkoutTime  = document.getElementById("checkoutTime").value;
+        if( checkoutTime != ""){
+            checkoutHour   = Number( checkoutTime.substring(0,2));
+            checkoutMinute = Number( checkoutTime.substring(3));
+        }
 
 		var year = String(time.getFullYear());
-		var month = String(time.getMonth() +1);
-		// month +1 because index starts at 0
+		var month = String(time.getMonth() +1); // month +1 because index starts at 0
 		var day = String(time.getDate());
 		
 		month = (month.length == 1)? '0' + month : month;
@@ -761,8 +768,8 @@ function checkoutAll(){
 					docRefLog.set({
 						clockInHour: logDoc.data().clockInHour,
 						clockInMinute: logDoc.data().clockInMinute,
-						clockOutHour: HOUR,
-						clockOutMinute: MINUTE,
+						clockOutHour: checkoutHour,
+						clockOutMinute: checkoutMinute,
 						hourType: logDoc.data().hourType
 					});
 				}
@@ -775,6 +782,7 @@ function checkoutAll(){
 		realTimeDataBase.ref('users/').set({
 			here: peopleList
 		});
+		updateStudentInfoFromRecordReset();
 	}).catch(function(error) {
 		checkPermissions(error, function(err){
 			console.error(err);
