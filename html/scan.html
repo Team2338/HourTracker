@@ -30,11 +30,22 @@
 	<body id = "background">
 		
 		<div data-includeHTML = "html/HTMLImports/header.html"></div>
-		
+
+
 		<div id ="top">
  			<h1>Scan</h1>
  			<body id = "topBody" style="font-size:30px;">
-				Place your student ID under the scanner
+			<span class = "switchBox">
+			Check In
+			<label class="switch">
+
+				<input id = "checkInSwitchToggle" type="checkbox" value="true">
+				<span class="slider round"></span>
+			</label> Check Out
+
+		</span>
+
+			Place your student ID under the scanner
  			</body>
 		</div>
 		
@@ -49,16 +60,7 @@
 
 		</div>
 
-		<span class = "switchBox">
-			
-			Check In
-			<label class="switch">
-
-				<input id = "checkInSwitchToggle" type="checkbox" value="true">
-				<span class="slider round"></span>
-			</label>
-			Check Out
-		</span>
+		</div>
 
 		<span class = "switchBox">
 	
