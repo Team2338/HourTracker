@@ -10,6 +10,9 @@ const greenBox = $('#greenBox');
 const yellowBox = $('#yellowBox');
 const redBox = $('#redBox');
 const IDinput = $('#IDselect');
+const checkInText = $('#checkInSelected');
+const checkOutText = $('#checkOutSelected');
+
 /** scanning */
 var codeReader;
 let deviceId;
@@ -216,7 +219,18 @@ function setup(){
 	});
 
 	toggle.change(function(){
-		IDinput.select();
+		if(toggle.is(':checked')){ // checkout is selected
+		    checkInText.css('color', 'grey');
+		    checkInText.css('opacity','0.3');
+		    checkOutText.css('color', '#FFFF00');
+		    checkOutText.css('opacity','1.0');
+		}else{
+		    checkInText.css('color', '#00FF00');
+		    checkInText.css('opacity','1.0');
+		    checkOutText.css('color', 'grey');
+		    checkOutText.css('opacity','0.3');
+        }
+        IDinput.select();
 	});
 
 	function updateValue(e) {

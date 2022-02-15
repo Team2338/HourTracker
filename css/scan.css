@@ -42,6 +42,15 @@ h1{
 	font-size: 30px;
 }
 
+.checkInSelected{
+    color: #00FF00;
+    opacity: 1.0;
+}
+
+.checkOutSelected{
+    color: grey;
+    opacity: 0.2;
+}
 /*
 #topBody{
 	font-size: 20px;
