@@ -27,6 +27,7 @@ const noOneHereBox = $('#noOneHereBox');
 const notAuthorizedBox = $('#notAuthorizedBox');
 const updateSelectDate = $('#selectDate');
 const updateStudentIDSelected = $('#selectIDList');
+const updateStudentNameSelected = $('#selectNameList');
 const updateStudentSubmitButton = $('#updateStudentSubmit');
 const updateTimeInField  = $('#selectTimeIn');
 const updateTimeOutField = $('#selectTimeOut');
@@ -538,6 +539,7 @@ function prepareUpdateFields(){
 
     // load list of IDs to dropdown
     var select = document.getElementById('selectIDList');
+    var selectName = document.getElementById('selectNameList');
 
     admins.get().then(function(){
         people.get()
@@ -548,6 +550,11 @@ function prepareUpdateFields(){
                     opt.value = doc.id;
                     opt.innerHTML = doc.id;
                     select.appendChild(opt);
+
+                    var optName = document.createElement('option');
+                    optName.value = doc.id;
+                    optName.innerHTML = doc.data().firstName + " " + doc.data().lastName;
+                    selectName.appendChild(optName);
                 }
             });
         })
@@ -563,6 +570,11 @@ function prepareUpdateFields(){
 */
 function updateStudentInfoFromRecordReset(){
     successCheckmarkItem.css('visibility','hidden');
+    updateStudentInfoFromRecord();
+}
+
+function updateStudentIDFromName(){
+    document.getElementById('selectIDList').value = document.getElementById('selectNameList').value;
     updateStudentInfoFromRecord();
 }
 
@@ -593,6 +605,7 @@ function updateStudentInfoFromRecord(){
         docRefStudent.get().then(function(Studentdoc){
             if(Studentdoc.exists){
                 document.getElementById('updateStudentName').innerHTML = Studentdoc.data().firstName + " " + Studentdoc.data().lastName;
+                document.getElementById('selectNameList').value = selectedID;
                 docRefLog.get().then(function(logDoc){
                     if(logDoc.exists){
                         if (logDoc.data().clockInHour != 99){
@@ -648,6 +661,7 @@ function updateStudentInfoFromRecord(){
 
 function resetUpdateFields(){
     // reset all the fields (leaving the date field alone for now)
+    document.getElementById('selectNameList').value = document.getElementById('selectIDList').value;
     document.getElementById('selectTimeIn').value = "18:00";
     document.getElementById('selectTimeOut').value = "";
     timeInActual.css('visibility', 'hidden');
@@ -873,6 +887,7 @@ function setup(){
 
 	updateSelectDate.change(updateStudentInfoFromRecordReset);
 	updateStudentIDSelected.change(updateStudentInfoFromRecordReset);
+    updateStudentNameSelected.change(updateStudentIDFromName);
 	updateTimeInField.change(updateTimeIn);
 	updateTimeOutField.change(updateTimeOut);
     updateStudentSubmitButton.click(updateStudentSubmit);
