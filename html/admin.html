@@ -47,7 +47,8 @@
 			<h2>Update Student Record</h2>
 
 			<table>
-				<th align="left">Student</th>
+				<th align="left">Student ID</th>
+				<th align="left">Name</th>
 				<th>Date</th>
 				<th>In</th>
 				<th>Out</th>
@@ -59,6 +60,11 @@
 							</select>
 						</div>
 					</td>
+					<td>
+						<select class="selectName" id="selectNameList">
+								<option></option>
+						</select>
+					</td>
 					<td><input type="date" id="selectDate" name="selectDate"></td>
 					<td><input type="time" id="selectTimeIn" name="selectTimeIn"></td>
 					<td><input type="time" id="selectTimeOut" name="selectTimeOut"></td>
@@ -66,7 +72,7 @@
 					<td class="successCheckmark" id="successCheckmark">&#10004</td>
 				</tr>
 				<tr>
-					<td class="updateStudentName" id="updateStudentName" colspan="2">Name goes here</td>
+					<td class="updateStudentName" id="updateStudentName" colspan="3">Name goes here</td>
 					<td class="timeActual" id="timeInActual">actual</td>
 					<td class="timeActual" id="timeOutActual">actual</td>
 				</tr>

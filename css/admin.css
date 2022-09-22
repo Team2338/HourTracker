@@ -27,6 +27,11 @@ h2{
     height: 23px;
 }
 
+.selectName {
+    width: 180px;
+    height: 23px;
+}
+
 .selectSubmit {
     height: 23px;
 }
