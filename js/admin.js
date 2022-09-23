@@ -34,11 +34,15 @@ const updateTimeOutField = $('#selectTimeOut');
 const timeInActual = $("#timeInActual");
 const timeOutActual = $("#timeOutActual");
 const successCheckmarkItem = $("#successCheckmark");
+const sortIDButton = $('#sortIDButton');
+const sortNameButton = $('#sortNameButton');
 
 var rowTemp;
 
 const originalTableHTML = dataTableBody.innerHTML;
 var dataTableHTML = '';
+
+var studentList = [];
 
 function newStudent() {
     // make sure we're an admin to perform this function
@@ -527,8 +531,8 @@ function removeAllChildren(thing){
 function prepareUpdateFields(){
     // set initial, max, and min dates
     document.getElementById('selectDate').setAttribute("min", '2022-01-08');
-
     document.getElementById('selectDate').setAttribute("max", today());
+
     document.getElementById('selectDate').setAttribute("value", today());
 
     // set Time In to a common start time
@@ -541,28 +545,58 @@ function prepareUpdateFields(){
     var select = document.getElementById('selectIDList');
     var selectName = document.getElementById('selectNameList');
 
+    // clear the drop down list (except for the first blank entry)
+    select.length=1;
+    selectName.length=1;
+
+    studentList.forEach(student => {
+        var opt = document.createElement('option');
+        opt.value = student[0];
+        opt.innerHTML = student[0];
+        select.appendChild(opt);
+
+        var optName = document.createElement('option');
+        optName.value = student[0];
+        optName.innerHTML = student[1];
+        selectName.appendChild(optName);
+    });
+}
+
+// Creates the student list from the DB (and populates the dropdown fields initially)
+// The querySnapshot utilizes a callback function so
+// in order to populate the student list to the dropdown
+// fields when the page first loads, need to also call
+// the prepareUpdateFields function from within the callback function
+function createStudentList(){
     admins.get().then(function(){
         people.get()
         .then(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
                 if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
-                    var opt = document.createElement('option');
-                    opt.value = doc.id;
-                    opt.innerHTML = doc.id;
-                    select.appendChild(opt);
-
-                    var optName = document.createElement('option');
-                    optName.value = doc.id;
-                    optName.innerHTML = doc.data().firstName + " " + doc.data().lastName;
-                    selectName.appendChild(optName);
-                }
+                    studentList.push([
+                        doc.id,
+                        doc.data().firstName + " " + doc.data().lastName]);
+                    };
+                });
+                prepareUpdateFields();
             });
-        })
+
     }).catch(function(error) {
         // do not show user list if not signed in as an admin
     });
 }
 
+function sortStudentListName(){
+    studentList.sort(function(a,b){ return a[1] > b[1] ? 1 : -1;});
+    prepareUpdateFields();
+    resetUpdateFields();
+}
+
+function sortStudentListID(){
+    studentList.sort(function(a,b){ return a[0] - b[0]});
+    prepareUpdateFields();
+    resetUpdateFields();
+}
 /*
 * This function will clear the success checkmark and then load the student info.
 * Need this because after submitting, the updateStudentInfoFromRecord is called
@@ -874,7 +908,7 @@ function setup(){
 
 	loadExternalHTML();
 
-	prepareUpdateFields();
+    createStudentList();
 
 	searchButton.click(search);
 	newButton.click(newStudent);
@@ -884,6 +918,8 @@ function setup(){
 	downloadButton.click(downloadCSV);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
+	sortIDButton.click(sortStudentListID);
+	sortNameButton.click(sortStudentListName);
 
 	updateSelectDate.change(updateStudentInfoFromRecordReset);
 	updateStudentIDSelected.change(updateStudentInfoFromRecordReset);
