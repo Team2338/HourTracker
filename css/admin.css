@@ -23,13 +23,33 @@ h2{
 }
 
 .selectID {
-    width: 90px;
+    width: 120px;
     height: 23px;
 }
 
 .selectName {
     width: 180px;
     height: 23px;
+}
+
+.sortButton {
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  margin: 4px 2px;
+  border-radius: 12px;
+}
+
+.sortButton:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.sortButton:active {
+  background-color: #000000;
+  color: white;
 }
 
 .selectSubmit {
