@@ -18,6 +18,7 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
+const dataHealthButton = $('#healthButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
@@ -885,6 +886,37 @@ function refreshRealTime(snapshot){
         notAuthorizedBox.css('display', 'block');
     });
 }
+
+function dataHealthReport(){
+
+	var i = 0;
+	people.get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(studentDoc) {
+			people.doc(studentDoc.id).collection('logs').get()
+			.then(function(queryLog){
+				queryLog.forEach(function(logDoc){
+
+                    if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99){
+                        // found at least 1 error
+    					open('./html/dataHealthReport.html');
+                        return;
+                    }
+
+				});
+				i += 1;
+				if(i >= querySnapshot.size){
+                    alert("Data is healthy!");
+				}
+			});
+		});
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
+}
+
 /*
 function createAdmin(email,password){
 
@@ -902,6 +934,8 @@ function createAdmin(email,password){
 	});
 }
 */
+
+
 function setup(){
 	
 	initFirebaseAuth();
@@ -916,6 +950,7 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+	dataHealthButton.click(dataHealthReport);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 	sortIDButton.click(sortStudentListID);
