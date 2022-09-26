@@ -889,6 +889,7 @@ function refreshRealTime(snapshot){
 
 function dataHealthReport(){
 
+    var errorFound = false;
 	var i = 0;
 	people.get()
 	.then(function(querySnapshot) {
@@ -899,13 +900,14 @@ function dataHealthReport(){
 
                     if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99){
                         // found at least 1 error
+                        errorFound = true;
     					open('./html/dataHealthReport.html');
                         return;
                     }
 
 				});
 				i += 1;
-				if(i >= querySnapshot.size){
+				if(i >= querySnapshot.size && !errorFound){
                     alert("Data is healthy!");
 				}
 			});
