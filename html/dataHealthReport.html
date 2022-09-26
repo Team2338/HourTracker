@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+ 	
+	<head>
+		<title>HourLogger | Data Health Report</title>
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+		<base href = "../">
+		
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/admin.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/dataHealthReport.css">
+
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+
+		<script type = "module" src = "js/dataHealthReport.js"></script>
+		
+	</head>
+
+    <body id = "background">
+		
+		<div data-includeHTML = "html/HTMLImports/header.html"></div>
+	<!--
+		<div id = "googleSignIn">
+			<div id = "firebaseui-auth-container"></div>
+			<div id = "loader" >Loading...</div>
+			<div id = "profilePic"><img></div>
+			<div id = "authStatus"><div>
+			<button id = "signOutButton" class = "showOnSignIn">Sign Out</button>
+		</div>
+	-->
+
+		<h1>Data Health Report - Errors</h1>
+
+		<div class = "showOnSignIn" id = "bottom">
+			<table id = "peopleData" class="sortable">
+				<thead id= "tableHead">
+				<tr>
+					<th class="userTable">ID</th>
+					<th class="userTable">First name</th>
+					<th class="userTable">Last name</th>
+					<th class="userTable">Date</th>
+					<th class="userTable">Hour In</th>
+					<th class="userTable">Min In</th>
+					<th class="userTable">Hour Out</th>
+					<th class="userTable">Min Out</th>
+				</tr>
+				</thead>
+				
+				<tbody id = "tableBody">
+				</tbody>
+			</table>
+		</div>
+
+		<span></span>
+
+		<span ><br><br></span>
+
+		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
+	</body>
+</html>
