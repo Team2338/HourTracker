@@ -18,6 +18,7 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
+const dataHealthButton = $('#healthButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
@@ -947,6 +948,8 @@ function createAdmin(email,password){
 	});
 }
 */
+
+
 function setup(){
 	
 	initFirebaseAuth();
@@ -961,6 +964,7 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+	dataHealthButton.click(dataHealthReport);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 	sortIDButton.click(sortStudentListID);
