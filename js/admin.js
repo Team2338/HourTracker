@@ -889,34 +889,46 @@ function refreshRealTime(snapshot){
 
 function dataHealthReport(){
 
-    var errorFound = false;
-	var i = 0;
+    open('./html/dataHealthReport.html');
+
+    return;
+
+    // The following works but requires a full read of the database just
+    // to determine if there is a single error in the database. Given our
+    // account has a quota, it is too costly to run this here and then
+    // again on the report page.
+    // Kept it here to show the usage of the 'where' clause and limit()
+
+/*
+    var count = 0;
+    var peopleCount = 0;
+    var dataSize = 0;
+
 	people.get()
-	.then(function(querySnapshot) {
-		querySnapshot.forEach(function(studentDoc) {
-			people.doc(studentDoc.id).collection('logs').get()
-			.then(function(queryLog){
-				queryLog.forEach(function(logDoc){
-
-                    if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99){
-                        // found at least 1 error
-                        errorFound = true;
-    					open('./html/dataHealthReport.html');
-                        return;
+	.then( (querySnapshot) => {
+	    dataSize = querySnapshot.size;
+	    console.log("datasize " , dataSize );
+		querySnapshot.forEach((studentDoc) => {
+			var missingIn = people.doc(studentDoc.id).collection('logs').where("clockInHour", "==", 99).limit(1);
+			missingIn.get()
+                .then((querySnapshot) => {
+                    if( querySnapshot.size > 0){
+                        count++;
                     }
-
-				});
-				i += 1;
-				if(i >= querySnapshot.size && !errorFound){
-                    alert("Data is healthy!");
-				}
-			});
-		});
-	}).catch(function(error) {
-        checkPermissions(error, function(err){
-            console.error(err);
-        });
+                    peopleCount++;
+                    console.log("index " , peopleCount , " " , querySnapshot.size);
+                }).then((alertIfZero) => {
+                    if( peopleCount == dataSize ) {
+                        if( count == 0 ) {
+                            alert("Database is healthy");
+                        } else {
+                            alert("Reporting  page should be opened");
+                        }
+                    }
+			    })
+        })
     });
+*/
 }
 
 /*
