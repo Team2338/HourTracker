@@ -4,6 +4,13 @@
     text-align:left;
 }
 
+.healthyDataMessage {
+    text-align: center;
+    color: #00FF00;
+    font-size: 18px;
+    visibility: hidden;
+}
+
 #tableBody {
 
 }

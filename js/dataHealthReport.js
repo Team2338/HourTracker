@@ -7,6 +7,7 @@ you are about to use javascript you may end up throwing your device out the wind
 import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
+const healthyDataMessage = $("#healthyDataMessage");
 
 function renderRowHTML(studentDoc, entryDoc) {
 
@@ -54,28 +55,39 @@ function setup(){
 
 	loadExternalHTML();
 
-    var errorFound = false;
+    document.getElementById('healthyDataMessage').innerHTML = "";
 
-	var i = 0;
+    var errorCount = 0;     // running count of errors
+    var reviewCounter = 0;  // running count of people reviewed
+    var peopleCount = 0;    // total number of people to be reviewed
+
 	people.get()
-	.then(function(querySnapshot) {
-		querySnapshot.forEach(function(studentDoc) {
+	.then((querySnapshot) => {
+	    peopleCount = querySnapshot.size;
+//	    console.log("people count " , peopleCount);
+		querySnapshot.forEach((studentDoc) => {
+//            console.log("index " , reviewCounter, " " , studentDoc.data().firstName);
+
 			people.doc(studentDoc.id).collection('logs').get()
-			.then(function(queryLog){
-				queryLog.forEach(function(logDoc){
-                    if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99){
+			.then((queryLog) => {
+                reviewCounter++;
+				queryLog.forEach((logDoc) => {
+                    if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99) {
                         renderRowHTML(studentDoc,logDoc);
-                        errorFound = true;
+                        errorCount++;
                     }
-				});
-				i += 1;
-				if(i >= querySnapshot.size){
-				    if(!errorFound){
-				        alert("Data is healthy!");
-				    }
-				}
-			});
-		});
+                })
+            }).then((notifyIfZeroErrors) => {
+//                console.log(reviewCounter , " " , peopleCount , " " , errorCount)
+                if( reviewCounter == peopleCount ) { // only notify on the last student
+                    if( errorCount == 0 ) { // only notify if there were no errors
+//                        alert("Data is healthy!");
+                        healthyDataMessage.css('visibility','visible');
+                        document.getElementById('healthyDataMessage').innerHTML = "Data is healthy!";
+                    }
+                }
+            })
+		})
 	}).catch(function(error) {
         checkPermissions(error, function(err){
             console.error(err);
