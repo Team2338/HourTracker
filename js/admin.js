@@ -885,6 +885,51 @@ function refreshRealTime(snapshot){
         notAuthorizedBox.css('display', 'block');
     });
 }
+
+function dataHealthReport(){
+
+    open('./html/dataHealthReport.html');
+
+    return;
+
+    // The following works but requires a full read of the database just
+    // to determine if there is a single error in the database. Given our
+    // account has a quota, it is too costly to run this here and then
+    // again on the report page.
+    // Kept it here to show the usage of the 'where' clause and limit()
+
+/*
+    var count = 0;
+    var peopleCount = 0;
+    var dataSize = 0;
+
+	people.get()
+	.then( (querySnapshot) => {
+	    dataSize = querySnapshot.size;
+	    console.log("datasize " , dataSize );
+		querySnapshot.forEach((studentDoc) => {
+			var missingIn = people.doc(studentDoc.id).collection('logs').where("clockInHour", "==", 99).limit(1);
+			missingIn.get()
+                .then((querySnapshot) => {
+                    if( querySnapshot.size > 0){
+                        count++;
+                    }
+                    peopleCount++;
+                    console.log("index " , peopleCount , " " , querySnapshot.size);
+                }).then((alertIfZero) => {
+                    if( peopleCount == dataSize ) {
+                        if( count == 0 ) {
+                            alert("Database is healthy");
+                        } else {
+                            alert("Reporting  page should be opened");
+                        }
+                    }
+			    })
+        })
+    });
+*/
+}
+
 /*
 function createAdmin(email,password){
 
