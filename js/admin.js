@@ -210,25 +210,31 @@ function updateDeleteRecord(){
     var selectedID    = document.getElementById("selectIDList").value;
     var updateDate    = document.getElementById("selectDate").value;
 
-    // get individual fields to find record
-    var updateYear  = updateDate.substring(0,4); // 0 based
-    var updateMonth = updateDate.substring(5,7);// 0 based
-    var updateDay   = updateDate.substring(8); // 0 based
-    var docName = updateMonth + updateDay + updateYear;
+    admins.get().then(function(){
+        // get individual fields to find record
+        var updateYear  = updateDate.substring(0,4); // 0 based
+        var updateMonth = updateDate.substring(5,7);// 0 based
+        var updateDay   = updateDate.substring(8); // 0 based
+        var docName = updateMonth + updateDay + updateYear;
 
-    // update database
-    var docRefStudent = people.doc(selectedID);
-    var docRefLog = docRefStudent.collection("logs").doc(docName);
+        // update database
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
 
-    docRefStudent.get().then(function(Studentdoc){
-        if(Studentdoc.exists){
-            docRefLog.delete();
+        docRefStudent.get().then(function(Studentdoc){
+            if(Studentdoc.exists){
+                docRefLog.delete();
 
-            updateStudentInfoFromRecord();
-            successCheckmarkItem.css('visibility','visible');
-        }else{
-            alert("Database Error: Student does not exist.");
-        }
+                updateStudentInfoFromRecord();
+                successCheckmarkItem.css('visibility','visible');
+            }else{
+                alert("Database Error: Student does not exist.");
+            }
+        });
+    }).catch(function(error) {
+        checkPermissions(error, function(err){
+        console.error(err);
+        });
     });
 }
 
