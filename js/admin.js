@@ -32,6 +32,7 @@ const updateStudentNameSelected = $('#selectNameList');
 const updateStudentSubmitButton = $('#updateStudentSubmit');
 const updateTimeInField  = $('#selectTimeIn');
 const updateTimeOutField = $('#selectTimeOut');
+const updateDeleteRecordButton = $('#deleteRecordButton');
 const timeInActual = $("#timeInActual");
 const timeOutActual = $("#timeOutActual");
 const successCheckmarkItem = $("#successCheckmark");
@@ -201,6 +202,33 @@ function deleteStudent(){
         checkPermissions(error, function(err){
           console.error(err);
         });
+    });
+}
+
+function updateDeleteRecord(){
+    // get values from screen
+    var selectedID    = document.getElementById("selectIDList").value;
+    var updateDate    = document.getElementById("selectDate").value;
+
+    // get individual fields to find record
+    var updateYear  = updateDate.substring(0,4); // 0 based
+    var updateMonth = updateDate.substring(5,7);// 0 based
+    var updateDay   = updateDate.substring(8); // 0 based
+    var docName = updateMonth + updateDay + updateYear;
+
+    // update database
+    var docRefStudent = people.doc(selectedID);
+    var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+    docRefStudent.get().then(function(Studentdoc){
+        if(Studentdoc.exists){
+            docRefLog.delete();
+
+            updateStudentInfoFromRecord();
+            successCheckmarkItem.css('visibility','visible');
+        }else{
+            alert("Database Error: Student does not exist.");
+        }
     });
 }
 
@@ -975,6 +1003,7 @@ function setup(){
     updateStudentNameSelected.change(updateStudentIDFromName);
 	updateTimeInField.change(updateTimeIn);
 	updateTimeOutField.change(updateTimeOut);
+    updateDeleteRecordButton.click(updateDeleteRecord);
     updateStudentSubmitButton.click(updateStudentSubmit);
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
