@@ -51,6 +51,7 @@
 				<th align="left">Student ID <button type = "button" class="sortButton" id = "sortIDButton">sort</button></th>
 				<th align="left">Name <button type = "button" class="sortButton" id = "sortNameButton">sort</button></th>
 				<th>Date</th>
+				<th>Weekday</th>
 				<th>In</th>
 				<th>Out</th>
 				<tr>
@@ -67,13 +68,14 @@
 						</select>
 					</td>
 					<td><input type="date" id="selectDate" name="selectDate"></td>
+					<td align="center" id="selectDoW"></td>
 					<td><input type="time" id="selectTimeIn" name="selectTimeIn"></td>
 					<td><input type="time" id="selectTimeOut" name="selectTimeOut"></td>
 					<td><input type="submit" class="selectSubmit" id="updateStudentSubmit"></td>
 					<td class="successCheckmark" id="successCheckmark">&#10004</td>
 				</tr>
 				<tr>
-					<td class="updateStudentName" id="updateStudentName" colspan="3">Name goes here</td>
+					<td class="updateStudentName" id="updateStudentName" colspan="4">Name goes here</td>
 					<td class="timeActual" id="timeInActual">actual</td>
 					<td class="timeActual" id="timeOutActual">actual</td>
 				</tr>

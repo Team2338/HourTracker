@@ -30,17 +30,19 @@ function renderRowHTML(studentDoc, entryDoc) {
 	row.appendChild(tableLastName);
 
 	var tableDate = document.createElement('td');
-	tableDate.innerHTML = entryDoc.id;
+	var monthEntry = Number(entryDoc.id.substring(0,2)) < 10 ? entryDoc.id.substring(1,2) : entryDoc.id.substring(0,2);
+	var dayEntry   = Number(entryDoc.id.substring(2,4)) < 10 ? entryDoc.id.substring(3,4) : entryDoc.id.substring(2,4);
+	tableDate.innerHTML = monthEntry + "/" + dayEntry + "/" + entryDoc.id.substring(4,8);
 	row.appendChild(tableDate);
 
-	var tableDate = document.createElement('td');
+	var tableDoW = document.createElement('td');
 	var date = new Date();
     var week = ['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'];
     date.setHours(12,0,0);
     date.setMonth(Number(entryDoc.id.substring(0,2))-1,Number(entryDoc.id.substring(2,4))); // months are zero based
     date.setYear(Number(entryDoc.id.substring(4,8)));
-    tableDate.innerHTML = week[date.getDay()];
-	row.appendChild(tableDate);
+    tableDoW.innerHTML = week[date.getDay()];
+	row.appendChild(tableDoW);
 
 	var tableClockIn = document.createElement('td');
 	if(entryDoc.data().clockInHour == 99){
