@@ -195,6 +195,14 @@ export function today(){
 }
 
 /*
+*   returns local date in Date format
+*/
+export function todayDate(){
+    let utcDate = new Date();
+    return utcDate;
+}
+
+/*
 function sleep(milliseconds) {
 	const date = Date.now();
 	let currentDate = null;

@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today} from './Scripts.js';
+import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
 
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
@@ -27,6 +27,7 @@ const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
 const notAuthorizedBox = $('#notAuthorizedBox');
 const updateSelectDate = $('#selectDate');
+const updateDoW = $('#selectDoW');
 const updateStudentIDSelected = $('#selectIDList');
 const updateStudentNameSelected = $('#selectNameList');
 const updateStudentSubmitButton = $('#updateStudentSubmit');
@@ -563,12 +564,19 @@ function removeAllChildren(thing){
 	}
 }
 
+function getDoW(d){
+    var week = ['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'];
+    return week[d.getDay()];
+}
+
 function prepareUpdateFields(){
     // set initial, max, and min dates
     document.getElementById('selectDate').setAttribute("min", '2022-01-08');
     document.getElementById('selectDate').setAttribute("max", today());
 
     document.getElementById('selectDate').setAttribute("value", today());
+
+    document.getElementById('selectDoW').innerHTML = getDoW(todayDate());
 
     // set Time In to a common start time
     document.getElementById('selectTimeIn').setAttribute("value", "18:00");
@@ -667,6 +675,13 @@ function updateStudentInfoFromRecord(){
             return;
         }
 
+        // update Weekday field
+        var date = new Date();
+        date.setMonth(updateMonth-1,updateDay); // months are zero based, also sets date
+        date.setYear(updateYear);
+        date.setHours(12,0,0);
+        document.getElementById('selectDoW').innerHTML = getDoW(date);
+
         // read database and populate in and out times
         var docRefStudent = people.doc(selectedID);
         var docRefLog = docRefStudent.collection("logs").doc(docName);
@@ -731,8 +746,17 @@ function updateStudentInfoFromRecord(){
 function resetUpdateFields(){
     // reset all the fields (leaving the date field alone for now)
     document.getElementById('selectNameList').value = document.getElementById('selectIDList').value;
-    document.getElementById('selectTimeIn').value = "18:00";
+
+    var updateDateElement = document.getElementById("selectDate").value;
+    var date = new Date();
+    date.setMonth(Number(updateDateElement.substring(5,7))-1,Number(updateDateElement.substring(8,10))); // months are zero based, also sets date
+    date.setYear(Number(updateDateElement.substring(0,4)));
+    date.setHours(12,0,0);
+    var startTime = date.getDay() == 6 ? "10:00" : "18:00";
+    document.getElementById('selectTimeIn').value = startTime;
+
     document.getElementById('selectTimeOut').value = "";
+    document.getElementById('selectDoW').innerHTML = getDoW(date);
     timeInActual.css('visibility', 'hidden');
     timeOutActual.css('visibility', 'hidden');
     successCheckmarkItem.css('visibility','hidden');
