@@ -10,6 +10,7 @@ const dataTableBody = $('#tableBody');
 const healthyDataMessage = $("#healthyDataMessage");
 const updateDataButton = $('#updateDataButton');
 const updateMap = new Map();
+const deleteMap = new Map();
 
 function renderRowHTML(studentDoc, entryDoc) {
 
@@ -99,6 +100,18 @@ function renderRowHTML(studentDoc, entryDoc) {
         row.appendChild(tableClockOut);
     }
 
+    var tableDeleteEntryCheckBox = document.createElement('td');
+	tableDeleteEntryCheckBox.innerHTML = "<input type=checkbox>";
+    tableDeleteEntryCheckBox.style.textAlign = "center";
+    tableDeleteEntryCheckBox.addEventListener("change", (e) => {
+        if( e.target.checked ) {
+            deleteMap.set(studentDoc.id + "." + entryDoc.id,"r"); // need something but just the existence indicates remove
+        } else {
+            deleteMap.delete(studentDoc.id + "." + entryDoc.id);
+        }
+    })
+    row.appendChild(tableDeleteEntryCheckBox);
+
 	dataTableBody.append(row);
 }
 
@@ -128,6 +141,21 @@ function updateData(){
             });
         }
     }
+
+    // delete any entries marked for deletion
+    for (let [key, value] of deleteMap) {
+        // split the key up into its appropriate sections
+        const myArray = key.split(".");
+        var selectedID = myArray[0];
+        var docName = myArray[1];
+
+        // update database
+        var docRefStudent = people.doc(selectedID);
+        var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+        docRefLog.delete();
+    }
+
     alert("Database updated");
 }
 
