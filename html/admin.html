@@ -42,7 +42,8 @@
 		<button type="button" class="toolsCollapsible">Tools</button>
         <div class = "toolsContent" id ="top" >
 			<h2>Reporting</h2>
-			<button type = "button" id = "downloadButton">Download Raw</button>
+			<button type = "button" id = "downloadButton">Download CSV</button> from
+			<input type="date" id="downloadDate" name="downloadDate"> (leave blank for all dates) <br><br>
 			<button type = "button" id = "healthButton">Data Health</button>
 
 			<h2>Update Student Record</h2>
@@ -83,6 +84,7 @@
 			</table>
 
 			<h2>Import CSV</h2>
+			ID, FirstName, LastName, Team [, Date, HourIn, MinuteIn, HourOut, MinuteOut, Type]<br>
 			<button type = "button" id = "importButton">Import</button>
 			<input type="file" id="importFile">
 		</div>
