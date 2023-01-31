@@ -210,6 +210,8 @@ function setup(){
 
 	loadExternalHTML();
 
+    //ToDo reject or redirect non-authorized user
+    
 	IDinput.select();
 
 	//reselects input so you dont have to click it after changing check in/out or shop/service
