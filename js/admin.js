@@ -6,6 +6,8 @@ you are about to use javascript you may end up throwing your device out the wind
 
 import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
 
+const toolsSection = $('#toolsSection');
+const studentEditSection = $('#studentEditSection');
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
 const firstNameBox = $('#firstNameBox');
@@ -759,10 +761,11 @@ function updateStudentInfoFromRecord(){
             }
         });
 
-    }).catch(function(error) {
-        checkPermissions(error, function(err){
-        console.error(err);
-        });
+    }).catch(function() {
+//    }).catch(function(error) {
+//        checkPermissions(error, function(err){
+//        console.error(err);
+//        });
     });
 }
 
@@ -933,7 +936,7 @@ function refreshRealTime(snapshot){
 	
 	var peopleList = snapshot.val().here;
 
-	admins.get().then(function(){
+//	admins.get().then(function(){
         peopleList.forEach(function(element){
 
             if(element[0] === "null"){
@@ -961,11 +964,11 @@ function refreshRealTime(snapshot){
                 hereTableBody.append(row);
             }
         });
-	}).catch(function(error) {
-        hereTable.css('display', 'none');
-        noOneHereBox.css('display', 'none');
-        notAuthorizedBox.css('display', 'block');
-    });
+//	}).catch(function(error) {
+//        hereTable.css('display', 'none');
+//        noOneHereBox.css('display', 'none');
+//        notAuthorizedBox.css('display', 'block');
+//    });
 }
 
 function dataHealthReport(){
@@ -1058,6 +1061,11 @@ function setup(){
 	updateTimeOutField.change(updateTimeOut);
     updateDeleteRecordButton.click(updateDeleteRecord);
     updateStudentSubmitButton.click(updateStudentSubmit);
+
+	admins.get().then(function() {
+        toolsSection.css('display', 'block');
+        studentEditSection.css('display','block');
+    }).catch(function(){});
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);

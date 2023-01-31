@@ -4,8 +4,10 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {firestore, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
+import {admins, firestore, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
 
+const peopleTable = $('#peopleData');
+const permWarning = $('#permWarning');
 const dataTableBody = $('#tableBody');
 const emailBox = $('#emailBox');
 const nameBox = $('#nameBox');
@@ -171,15 +173,18 @@ function save(){}
 
 function setup(){
 	
-	console.log('admin.js loaded');
-
 	initFirebaseAuth();
 
 	loadExternalHTML();
 
+	admins.get().then(function() {
+        peopleTable.css('display','block');
+    }).catch(function(){
+        permWarning.css('display','block')
+    });
+
 	searchButton.click(search);
 	saveButton.click(save);
-
 }
 
 setup();
