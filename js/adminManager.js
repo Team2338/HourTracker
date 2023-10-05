@@ -191,10 +191,10 @@ function setup(){
             if(doc.data().admin) // this is the admin field in the document
                 peopleTable.css('display','block');
             else
-                permWarning.css('display','block')
+                permWarning.css('display','block');
 		});
     }).catch(function(){
-        permWarning.css('display','block')
+        permWarning.css('display','block');
     });
 }
 

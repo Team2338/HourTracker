@@ -7,7 +7,9 @@ you are about to use javascript you may end up throwing your device out the wind
 import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
 
 const toolsSection = $('#toolsSection');
+const usersPresentSection = $('#usersPresentSection');
 const studentEditSection = $('#studentEditSection');
+const permWarning = $('#permWarning');
 const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
 const firstNameBox = $('#firstNameBox');
@@ -1063,9 +1065,17 @@ function setup(){
     updateStudentSubmitButton.click(updateStudentSubmit);
 
 	admins.get().then(function() {
-        toolsSection.css('display', 'block');
-        studentEditSection.css('display','block');
-    }).catch(function(){});
+	    usersPresentSection.css('display', 'block');
+		admins.doc(firebase.auth().currentUser.uid).get().then(function(doc){
+		    // by default, the sections are hidden, so this shows the appropriate section
+            if(doc.data().admin) { // this is the admin field in the document
+                toolsSection.css('display', 'block');
+                studentEditSection.css('display','block');
+            }
+        })
+    }).catch(function(){
+        permWarning.css('display','block');
+    });
 
 	realTimeDataBase.ref('users/').on('value', (snapshot) => {
 		refreshRealTime(snapshot);

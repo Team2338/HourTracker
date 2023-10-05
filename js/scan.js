@@ -1,5 +1,5 @@
 //JS for scanIn.html
-import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep, isFullAdmin} from './Scripts.js';
+import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep} from './Scripts.js';
 
 export var authenticatedUsers = firestore.collection("googleSignIn");
 
@@ -253,15 +253,15 @@ function setup(){
 	IDinput.on('input', updateValue);
 
     authenticatedUsers.get().then(function(){
-        isFullAdmin();
+        //isFullAdmin();
         pageLayout.css('display', 'block'); // block/none
         permWarning.css('display','none'); // block/none
     }).catch(function(error){
         console.log("error message: " + error.message);
         pageLayout.css('display', 'none'); // block/none
         permWarning.css('display','block'); // block/none
-        alert('You do not have permissions to view this page and will be logged out.')
-                isFullAdmin();
+        //alert('You do not have permissions to view this page and will be logged out.')
+        //        isFullAdmin();
                 // works firebase.auth().signOut();
     });
 //	admins.get().then(function() {

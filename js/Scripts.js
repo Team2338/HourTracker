@@ -138,12 +138,6 @@ export function checkPermissions(error,after){
 	
 }
 
-export function isFullAdmin(){
-    console.log( "google name: " + getUserName());
-    console.log( "google id: " + firebase.auth().currentUser.uid);
-    console.log( "user: " + user);
-}
-
 function verify(){
 	
 	if (user) {
