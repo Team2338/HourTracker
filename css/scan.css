@@ -51,6 +51,11 @@ h1{
     color: grey;
     opacity: 0.2;
 }
+
+.permWarning {
+    font-size: 20px;
+}
+
 /*
 #topBody{
 	font-size: 20px;

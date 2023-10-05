@@ -38,12 +38,11 @@ export function signOut(){
 
 // Initiate firebase auth.
 export function initFirebaseAuth() {
-	
-	console.log("<---------------initFirebaseAuth-------------------->>>");
+	console.log("<---------------initFirebaseAuth--------------->>>");
 
 	firebase.auth().onAuthStateChanged((user) => {
 
-		console.log("<-------------------AuthState Change---------------->>>");
+		console.log("<--------------AuthState Change---------------->>>");
 		var profilePicUrl;
 		var userName;
 	
@@ -59,6 +58,8 @@ export function initFirebaseAuth() {
 			profilePicUrl = getProfilePicUrl();
 			$('#profilePic').attr('src',profilePicUrl);
 
+            console.log(userName);
+            console.log( "google ID: " + user.uid ); // returns the 32+character google id string
 		} else {
 			verify();
 			// signed out
@@ -111,13 +112,14 @@ export function checkPermissions(error,after){
 			console.log('get');
 			if(doc.exists){
 				console.log('exists');
+				console.log(doc.data().name);
 				sleep(2000);
 				//alert('Cannot create new student, Student exists');
 			}else{
 				docRef.set({
 					email: firebase.auth().currentUser.email,
 					Name: firebase.auth().currentUser.displayName,
-					admin: "false"
+					admin: false
 				});
 				console.log('fileWrite');
 			}
@@ -134,6 +136,12 @@ export function checkPermissions(error,after){
 		after(error);
 	}
 	
+}
+
+export function isFullAdmin(){
+    console.log( "google name: " + getUserName());
+    console.log( "google id: " + firebase.auth().currentUser.uid);
+    console.log( "user: " + user);
 }
 
 function verify(){

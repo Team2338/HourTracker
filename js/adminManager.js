@@ -51,7 +51,7 @@ function renderRowHTML(doc) {
 	$(
 	"<span class = \"switchBox\">"+
 		"<label class=\"switch\">"+
-			"<input class = \"fancyToggle\" id = "+doc.id+" type = \"checkbox\" value =\""+doc.data().admin +"\""+(doc.data().admin?"checked":"") +">"+
+			"<input class = \"fancyToggle\" id = "+doc.id+" type = \"checkbox\" value =\""+doc.data().admin +"\""+(doc.data().admin==true?"checked":"") +">"+
 			"<span class = \"slider round\"></span>"+
 		"</label>"+
 	"</span>").appendTo(row);
@@ -135,8 +135,10 @@ function search(){
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,
 								name: doc.data().name,
-								admin:"false"
+								admin:false
 							});
+						} else {
+						    location.reload();
 						}
 					} else {
 						if(confirm("You are about to make "+doc.data().name+" an admin")){
@@ -144,9 +146,11 @@ function search(){
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,
 								name: doc.data().name,
-								admin:"true"
+								admin:true
 							});
 						
+						} else {
+						    location.reload();
 						}
 					}
 
@@ -166,7 +170,6 @@ function search(){
 	} else {
 		alert('invalid ID');
 	}
-
 }
 
 function save(){}

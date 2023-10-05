@@ -1,7 +1,11 @@
 //JS for scanIn.html
-import {people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions,} from './Scripts.js';
+import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep, isFullAdmin, getUserName} from './Scripts.js';
+
+export var authenticatedUsers = firestore.collection("googleSignIn");
 
 /** html docrefs */
+const pageLayout = $('#pageLayout');
+const permWarning = $('#permWarning');
 const resultBox = $('#result');
 const toggle = $('#checkInSwitchToggle');
 const typeToggle = $('#typeSwitchToggle');
@@ -26,7 +30,7 @@ function onFoundBarcode(IdNumber){
 	var time = new Date();
 	scanBlock = true;
 
-	console.log('Id number found '+ IdNumber +' at: ');
+	console.log('Id number detected '+ IdNumber +' at: ');
 	console.log(time);
 	
 	var year = String(time.getFullYear());
@@ -46,12 +50,12 @@ function onFoundBarcode(IdNumber){
 	var checkOut = toggle.is(':checked');
 
 	console.log(type);
-	console.log(checkOut);
+	console.log(checkOut ? "Checkout" : "Checkin");
 
 	var docName = month + day + year;
 	var docRefStudent = people.doc(studentID);
 	var docRefLog = docRefStudent.collection("logs").doc(docName);
-	
+
 	docRefStudent.get().then(function(Studentdoc){
 
 		if(Studentdoc.exists){
@@ -206,12 +210,11 @@ function setup(){
 
 	console.log('handHeldScanner.js loaded');
 
-	initFirebaseAuth();
+    initFirebaseAuth();
 
 	loadExternalHTML();
 
-    //ToDo reject or redirect non-authorized user
-    
+
 	IDinput.select();
 
 	//reselects input so you dont have to click it after changing check in/out or shop/service
@@ -248,7 +251,26 @@ function setup(){
 	}
 
 	IDinput.on('input', updateValue);
-	
+
+    authenticatedUsers.get().then(function(){
+        isFullAdmin();
+        pageLayout.css('display', 'block'); // block/none
+        permWarning.css('display','none'); // block/none
+    }).catch(function(error){
+        console.log("error message: " + error.message);
+        pageLayout.css('display', 'none'); // block/none
+        permWarning.css('display','block'); // block/none
+        alert('You do not have permissions to view this page and will be logged out.')
+                isFullAdmin();
+                // works firebase.auth().signOut();
+    });
+//	admins.get().then(function() {
+//        pageLayout.css('display', 'block'); // block/none
+//        permWarning.css('display','none'); // block/none
+//    }).catch(function(){
+//        pageLayout.css('display', 'none'); // block/none
+//        permWarning.css('display','block'); // block/none
+//    });
 }
 
 setup();
