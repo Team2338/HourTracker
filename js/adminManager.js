@@ -180,14 +180,22 @@ function setup(){
 
 	loadExternalHTML();
 
+	searchButton.click(search);
+	saveButton.click(save);
+
+    // allows access to the elements on the page
+    // must be an admin to access this page (i.e. admin field for this logged in user is set to true)
 	admins.get().then(function() {
-        peopleTable.css('display','block');
+		admins.doc(firebase.auth().currentUser.uid).get().then(function(doc){
+		    // by default, the sections are hidden, so this shows the appropriate section
+            if(doc.data().admin) // this is the admin field in the document
+                peopleTable.css('display','block');
+            else
+                permWarning.css('display','block')
+		});
     }).catch(function(){
         permWarning.css('display','block')
     });
-
-	searchButton.click(search);
-	saveButton.click(save);
 }
 
 setup();

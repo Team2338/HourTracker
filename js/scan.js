@@ -1,5 +1,5 @@
 //JS for scanIn.html
-import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep, isFullAdmin, getUserName} from './Scripts.js';
+import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep, isFullAdmin} from './Scripts.js';
 
 export var authenticatedUsers = firestore.collection("googleSignIn");
 
