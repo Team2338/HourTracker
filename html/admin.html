@@ -39,6 +39,7 @@
 
 		<h1>Admin</h1>
 
+		<div id="toolsSection" style="display:none">
 		<button type="button" class="toolsCollapsible">Tools</button>
         <div class = "toolsContent" id ="top" >
 			<h2>Reporting</h2>
@@ -88,9 +89,10 @@
 			<button type = "button" id = "importButton">Import</button>
 			<input type="file" id="importFile">
 		</div>
+		</div>
 
-		<div class = "showOnSignIn" id = "middle">
-			<h2>Users present</h2>
+		<div class = "showOnSignIn" id = "usersPresentSection" style="display:none">
+			<h2>Students Present</h2>
 			<span id = "noOneHereBox">
 				no one is present
 			</span>
@@ -111,7 +113,8 @@
 			</table>
 		</div>
 
-		<div class = "showOnSignIn" id = "bottom">
+		<div class = "showOnSignIn" id = "studentEditSection" style="display:none">
+			<h2>Student Edit</h2>
 			<table>
 				<tr>
 					<td ><input type = "text" id = "studentIdBox" placeholder= "student ID"></td>
@@ -157,6 +160,8 @@
 			</table>
 
 		</div>
+
+		<h4 id="permWarning" style="display:none"> Insufficient permissions</h4>
 
 		<span></span>
 

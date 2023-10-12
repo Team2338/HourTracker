@@ -4,8 +4,10 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {firestore, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
+import {admins, firestore, loadExternalHTML, initFirebaseAuth, checkPermissions} from './Scripts.js';
 
+const peopleTable = $('#peopleData');
+const permWarning = $('#permWarning');
 const dataTableBody = $('#tableBody');
 const emailBox = $('#emailBox');
 const nameBox = $('#nameBox');
@@ -49,7 +51,7 @@ function renderRowHTML(doc) {
 	$(
 	"<span class = \"switchBox\">"+
 		"<label class=\"switch\">"+
-			"<input class = \"fancyToggle\" id = "+doc.id+" type = \"checkbox\" value =\""+doc.data().admin +"\""+(doc.data().admin?"checked":"") +">"+
+			"<input class = \"fancyToggle\" id = "+doc.id+" type = \"checkbox\" value =\""+doc.data().admin +"\""+(doc.data().admin==true?"checked":"") +">"+
 			"<span class = \"slider round\"></span>"+
 		"</label>"+
 	"</span>").appendTo(row);
@@ -133,8 +135,10 @@ function search(){
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,
 								name: doc.data().name,
-								admin:"false"
+								admin:false
 							});
+						} else {
+						    location.reload();
 						}
 					} else {
 						if(confirm("You are about to make "+doc.data().name+" an admin")){
@@ -142,9 +146,11 @@ function search(){
 							firestore.collection("googleSignIn").doc(adminID).set({
 								email: doc.data().email,
 								name: doc.data().name,
-								admin:"true"
+								admin:true
 							});
 						
+						} else {
+						    location.reload();
 						}
 					}
 
@@ -164,15 +170,12 @@ function search(){
 	} else {
 		alert('invalid ID');
 	}
-
 }
 
 function save(){}
 
 function setup(){
 	
-	console.log('admin.js loaded');
-
 	initFirebaseAuth();
 
 	loadExternalHTML();
@@ -180,6 +183,19 @@ function setup(){
 	searchButton.click(search);
 	saveButton.click(save);
 
+    // allows access to the elements on the page
+    // must be an admin to access this page (i.e. admin field for this logged in user is set to true)
+	admins.get().then(function() {
+		admins.doc(firebase.auth().currentUser.uid).get().then(function(doc){
+		    // by default, the sections are hidden, so this shows the appropriate section
+            if(doc.data().admin) // this is the admin field in the document
+                peopleTable.css('display','block');
+            else
+                permWarning.css('display','block');
+		});
+    }).catch(function(){
+        permWarning.css('display','block');
+    });
 }
 
 setup();
