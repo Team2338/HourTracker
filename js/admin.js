@@ -14,6 +14,7 @@ const dataTableBody = $('#tableBody');
 const IDBox = $('#studentIdBox');
 const firstNameBox = $('#firstNameBox');
 const lastNameBox = $('#lastNameBox');
+const searchActiveCheckbox = $('#searchActiveCheckbox');
 const teamSelect = $('#teamSelect');
 const searchButton = $('#searchButton');
 const newButton = $('#newButton');
@@ -22,12 +23,13 @@ const deleteButton = $('#deleteButton');
 const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
-const downloadDate = $('#downloadDate')
+const downloadDate = $('#downloadDate');
+const downloadActiveStudents = $('#downloadActiveStudents');
 const dataHealthButton = $('#healthButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
-const checkoutTimeField = $('checkoutTime')
+const checkoutTimeField = $('checkoutTime');
 const hereTable = $('#hereTable');
 const noOneHereBox = $('#noOneHereBox');
 const notAuthorizedBox = $('#notAuthorizedBox');
@@ -76,6 +78,7 @@ function newStudent() {
                 }else{
                     alert('New Student Created');
                     docRef.set({
+                        active: true,
                         firstName: selectedFirstName,
                         lastName: selectedLastName,
                         teamNumber:"2338", //selectedTeam,
@@ -112,6 +115,7 @@ function editStudent() {
         var selectedFirstName = firstNameBox.val();
         var selectedLastName = lastNameBox.val();
         var selectedTeam = teamSelect.val();
+        var selectedActive = document.getElementById("searchActiveCheckbox").checked;
 
         if (selectedID.length == 8){
 
@@ -123,6 +127,7 @@ function editStudent() {
                     var newFirstName;
                     var newLastName;
                     var newTeamNumber;
+                    var newActive = selectedActive;
 
                     if(selectedFirstName.length >0){
                         newFirstName = selectedFirstName;
@@ -143,6 +148,7 @@ function editStudent() {
                     }
 
                     docRef.set({
+                        active: newActive,
                         firstName: newFirstName,
                         lastName: newLastName,
                         teamNumber: newTeamNumber,
@@ -337,6 +343,8 @@ function downloadCSV(){
     // Get selected date from screen (used to filter old records)
     var selectedDateUI = document.getElementById("downloadDate").value;
     var selectedDate = new Date();
+    var selectedActive = document.getElementById("downloadActiveStudents").checked;
+
     selectedDate.setHours(12,0,0);
     selectedDate.setMonth(Number(selectedDateUI.substring(5,7))-1,Number(selectedDateUI.substring(8)));
     selectedDate.setYear(Number(selectedDateUI.substring(0,4)));
@@ -351,54 +359,58 @@ function downloadCSV(){
 				
 				queryLog.forEach(function(logDoc){
 
-                    // logDoc.ID contains the date of the record
-                    // only export data since UI selected date
-                    // convert ID to date and compare
-                    var idDate = new Date();
-                    idDate.setHours(12,0,1);
-                    idDate.setMonth(Number(logDoc.id.substring(0,2))-1,Number(logDoc.id.substring(2,4))); // months are zero based
-                    idDate.setYear(Number(logDoc.id.substring(4,8)));
+                    if( selectedActive == false || studentDoc.data().active == true ){ // second condition implies selectedActive==true
+                        // logDoc.ID contains the date of the record
+                        // only export data since UI selected date
+                        // convert ID to date and compare
+                        var idDate = new Date();
+                        idDate.setHours(12,0,1);
+                        idDate.setMonth(Number(logDoc.id.substring(0,2))-1,Number(logDoc.id.substring(2,4))); // months are zero based
+                        idDate.setYear(Number(logDoc.id.substring(4,8)));
 
-                    if(idDate > selectedDate){
-                        var startDate = new Date();
-                        var endDate = new Date();
-                        var elapsed = 0;
+                        if(idDate > selectedDate){
+                            var startDate = new Date();
+                            var endDate = new Date();
+                            var elapsed = 0;
 
-                        startDate.setHours(logDoc.data().clockInHour);
-                        startDate.setMinutes(logDoc.data().clockInMinute);
-                        endDate.setHours(logDoc.data().clockOutHour);
-                        endDate.setMinutes(logDoc.data().clockOutMinute);
+                            startDate.setHours(logDoc.data().clockInHour);
+                            startDate.setMinutes(logDoc.data().clockInMinute);
+                            endDate.setHours(logDoc.data().clockOutHour);
+                            endDate.setMinutes(logDoc.data().clockOutMinute);
 
-                        if(  logDoc.data().clockInHour    != 99 &&
-                             logDoc.data().clockInMinute  != 99 &&
-                             logDoc.data().clockOutHour   != 99 &&
-                             logDoc.data().clockOutMinute != 99 ){
-                            elapsed = ( endDate - startDate ) / 60000;
-                        } else {
-                            elapsed = 0;
+                            if(  logDoc.data().clockInHour    != 99 &&
+                                 logDoc.data().clockInMinute  != 99 &&
+                                 logDoc.data().clockOutHour   != 99 &&
+                                 logDoc.data().clockOutMinute != 99 ){
+                                elapsed = ( endDate - startDate ) / 60000;
+                            } else {
+                                elapsed = 0;
+                            }
+
+
+                            var logString = studentDoc.id + ','
+                            + studentDoc.data().firstName
+                            + ',' + studentDoc.data().lastName
+                            + ',' + studentDoc.data().teamNumber
+                            + ',' + logDoc.id
+                            + ',' + logDoc.data().clockInHour
+                            + ',' + logDoc.data().clockInMinute
+                            + ',' + logDoc.data().clockOutHour
+                            + ',' + logDoc.data().clockOutMinute
+                            + ',' + logDoc.data().hourType
+                            + ',' + elapsed
+                            + '\r\n';
+                            saveString += logString;
                         }
-
-
-                        var logString = studentDoc.id + ','
-                        + studentDoc.data().firstName
-                        + ',' + studentDoc.data().lastName
-                        + ',' + studentDoc.data().teamNumber
-                        + ',' + logDoc.id
-                        + ',' + logDoc.data().clockInHour
-                        + ',' + logDoc.data().clockInMinute
-                        + ',' + logDoc.data().clockOutHour
-                        + ',' + logDoc.data().clockOutMinute
-                        + ',' + logDoc.data().hourType
-                        + ',' + elapsed
-                        + '\r\n';
-                        saveString += logString;
                     }
 				});
+
+				// when we have finished with the last record, save the string
 				i += 1;
 				if(i >= querySnapshot.size){
 					save(saveString);
 				}
-				
+
 			});		
 			
 		});		
@@ -500,7 +512,16 @@ function renderRowHTML(doc) {
 	var tableTeamNumber = document.createElement('td');
 	tableTeamNumber.innerHTML = doc.data().teamNumber;
 	row.appendChild(tableTeamNumber);
-	
+
+	var tableActive = document.createElement('td');
+	tableActive.align="middle";
+	if( doc.data().active ) {
+	    tableActive.innerHTML = "Active";
+	} else {
+    	tableActive.innerHTML = "No";
+	}
+	row.appendChild(tableActive);
+
 	/*
 	var tableButton = document.createElement('button');
 	var tableButtonData = document.createElement('td');
@@ -797,13 +818,15 @@ function search(){
 	var selectedFirstName = firstNameBox.val();
 	var selectedLastName = lastNameBox.val();
 	var selectedTeam = teamSelect.val();
+	var selectedActive = document.getElementById("searchActiveCheckbox").checked;
 	
 	var filteredPeople;
 
-	console.log(selectedID);
-	console.log(selectedLastName);
-	console.log(selectedLastName);
-	console.log(selectedTeam);
+//	console.log(selectedID);
+//	console.log(selectedLastName);
+//	console.log(selectedLastName);
+//	console.log(selectedTeam);
+//	console.log(selectedActive);
 
     // make sure we're an admin to perform this function
 	admins.get().then(function(){
@@ -838,12 +861,15 @@ function search(){
             if(selectedTeam != "none"){
                 filteredPeople = filteredPeople.where("teamNumber","==", selectedTeam);
             }
+            if(selectedActive){
+                filteredPeople = filteredPeople.where("active","==", true);
+            }
 
             filteredPeople.get()
             .then(function(querySnapshot) {
                 //dataTableHTML = '';
                 querySnapshot.forEach(function(doc) {
-                    console.log(doc.id, " => ", doc.data());
+                    //console.log(doc.id, " => ", doc.data());
                     if(doc.id.length === 8){// filters out admins which use UIDs that are greater than 8 chars
                         renderRowHTML(doc);
                     }
