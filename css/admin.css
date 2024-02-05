@@ -84,6 +84,16 @@ h2{
     text-align:left;
 }
 
+.userTableTeam{
+    width:70px;
+    text-align:left;
+}
+
+.userTableActive{
+    width:70px;
+    text-align:middle;
+}
+
 #tableBody {
 
 }
