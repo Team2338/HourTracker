@@ -458,6 +458,7 @@ function importCSV(){
                                 firstName:    entryRecord[1],
                                 lastName:     entryRecord[2],
                                 teamNumber:   entryRecord[3],
+                                active:       true,
                                 shopHours:    0,
                                 serviceHours: 0
                             });
