@@ -24,7 +24,8 @@ const hourTable = $('#personData');
 const clearButton = $('#clearButton');
 const downloadButton = $('#downloadButton');
 const downloadDate = $('#downloadDate');
-const downloadActiveStudents = $('#downloadActiveStudents');
+const downloadActiveStudentsFlag = $('#downloadActiveStudentsFlag');
+const downloadStudentListButton = $('#downloadStudentListButton');
 const dataHealthButton = $('#healthButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
@@ -333,6 +334,44 @@ function updateTimeOut(){
     successCheckmarkItem.css('visibility','hidden');
 }
 
+function downloadStudentList(){
+	var titleString ="ID,First Name,Last Name,Team,Active\r\n";
+	var saveString = titleString;
+
+	var i = 0;
+
+    people.get()
+	.then(function(querySnapshot) {
+		querySnapshot.forEach(function(studentDoc) {
+            var logString = studentDoc.id + ','
+            + studentDoc.data().firstName + ','
+            + studentDoc.data().lastName + ','
+            + studentDoc.data().teamNumber + ','
+            + studentDoc.data().active
+            + '\r\n';
+            saveString += logString;
+
+            // when we have finished with the last record, save the string
+            i += 1;
+            if(i >= querySnapshot.size){
+                save(saveString);
+            }
+        });
+	}).catch(function(error) {
+        checkPermissions(error, function(err){
+            console.error(err);
+        });
+    });
+
+	function save(myString){
+		var blob = new Blob([myString], { type: 'text/plain' });
+        var todayDate = new Date();
+        var month = todayDate.getMonth()+1;
+        var filename = "Hour Tracker Student List " + todayDate.getFullYear() + " " + month.toString().padStart(2, '0') + " " + todayDate.getDate().toString().padStart(2, '0') + ".csv";
+		saveAs(blob, filename);
+	}
+}
+
 function downloadCSV(){
 	var titleString ="ID,First Name,Last Name,Team,Date,HourIn,MinuteIn,HourOut,MinuteOut,Type,Elapsed\r\n";
 	var saveString = titleString;
@@ -343,7 +382,7 @@ function downloadCSV(){
     // Get selected date from screen (used to filter old records)
     var selectedDateUI = document.getElementById("downloadDate").value;
     var selectedDate = new Date();
-    var selectedActive = document.getElementById("downloadActiveStudents").checked;
+    var selectedActive = document.getElementById("downloadActiveStudentsFlag").checked;
 
     selectedDate.setHours(12,0,0);
     selectedDate.setMonth(Number(selectedDateUI.substring(5,7))-1,Number(selectedDateUI.substring(8)));
@@ -1077,6 +1116,7 @@ function setup(){
 	deleteButton.click(deleteStudent);
 	clearButton.click(clearTextBoxes);
 	downloadButton.click(downloadCSV);
+	downloadStudentListButton.click(downloadStudentList);
 	dataHealthButton.click(dataHealthReport);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
