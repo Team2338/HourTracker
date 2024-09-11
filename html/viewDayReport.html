@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+ 	
+	<head>
+		<title>HourLogger | View Day Report</title>
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+		<base href = "../">
+		
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/admin.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/viewDayReport.css">
+
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+
+		<script type = "module" src = "js/viewDayReport.js"></script>
+		
+	</head>
+
+    <body id = "background">
+		
+		<div data-includeHTML = "html/HTMLImports/header.html"></div>
+
+		<h1>View Day Report</h1>
+		<input type="date" id="selectViewDate" name="selectViewDate">
+		<button type = "button" id = "runReportButton">Run Report</button>
+
+		<div class = "showOnSignIn" id = "bottom">
+			<table id = "peopleData">
+				<thead id= "tableHead">
+
+				<tr>
+					<th class="userTable">ID</th>
+					<th class="userTable">First name</th>
+					<th class="userTable">Last name</th>
+					<th class="userTable">Clock In</th>
+					<th class="userTable">Clock Out</th>
+				</tr>
+				</thead>
+				
+				<tbody id = "tableBody">
+				</tbody>
+
+			</table>
+		</div>
+
+		<span></span>
+
+		<span ><br><br></span>
+
+		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
+	</body>
+</html>

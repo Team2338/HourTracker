@@ -27,6 +27,7 @@ const downloadDate = $('#downloadDate');
 const downloadActiveStudentsFlag = $('#downloadActiveStudentsFlag');
 const downloadStudentListButton = $('#downloadStudentListButton');
 const dataHealthButton = $('#healthButton');
+const viewDayReportButton = $('#viewDayReportButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
@@ -703,14 +704,16 @@ function createStudentList(){
         people.get()
         .then(function(querySnapshot) {
             querySnapshot.forEach(function(doc) {
-                if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
-                    studentList.push([
-                        doc.id,
-                        doc.data().firstName + " " + doc.data().lastName]);
+                if(doc.data().active == true) {
+                    if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
+                        studentList.push([
+                            doc.id,
+                            doc.data().firstName + " " + doc.data().lastName]);
                     };
-                });
-                prepareUpdateFields();
+                };
             });
+            prepareUpdateFields();
+        });
 
     }).catch(function(error) {
         // do not show user list if not signed in as an admin
@@ -1083,6 +1086,11 @@ function dataHealthReport(){
 */
 }
 
+function viewDayReport(){
+    open('./html/viewDayReport.html');
+    return;
+}
+
 /*
 function createAdmin(email,password){
 
@@ -1118,6 +1126,7 @@ function setup(){
 	downloadButton.click(downloadCSV);
 	downloadStudentListButton.click(downloadStudentList);
 	dataHealthButton.click(dataHealthReport);
+	viewDayReportButton.click(viewDayReport);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 	sortIDButton.click(sortStudentListID);
