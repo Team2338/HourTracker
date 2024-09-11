@@ -189,11 +189,12 @@ function verify(){
 
 /*
 *   returns local date in YYYY-MM-DD format
+*   can take in a value of days to offset (neg indicates past, positive future
 */
-export function today(){
+export function today(days=0){
     // need to convert to local time
     let utcDate = new Date();
-    var yourDate = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset()*60*1000));
+    var yourDate = new Date(utcDate.getTime() - (utcDate.getTimezoneOffset()*60*1000) + days*24*60*60*1000);
     return yourDate.toISOString().split('T')[0];
 }
 
