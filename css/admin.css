@@ -118,7 +118,7 @@ h2{
 }
 
 /* Add background color to the button if it is clicked, and on mouse over (hover) */
-.active, .toolsCollapsible:hover {
+.toolsCollapsible.active, .toolsCollapsible:hover {
   background-color: #ccc;
 }
 
@@ -138,6 +138,46 @@ h2{
   margin-left: 5px;
 }
 
-.active:after {
+.toolsCollapsible.active:after {
+  content: "\2796"; /* Unicode character for "minus" sign (-) */
+}
+
+/****************************/
+/* CSS for collapsible import area */
+/****************************/
+.importCollapsible {
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 4px;
+  width: 15%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Add background color to the button if it is clicked, and on mouse over (hover) */
+.importCollapsible.active, .importCollapsible:hover {
+  background-color: #ccc;
+}
+
+/* Style the collapsible content. Note: hidden by default */
+.importContent {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #02243E;
+}
+
+.importCollapsible:after {
+  content: '\02795'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: white;
+  float: right;
+  margin-left: 5px;
+}
+
+.importCollapsible.active:after {
   content: "\2796"; /* Unicode character for "minus" sign (-) */
 }

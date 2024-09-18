@@ -89,7 +89,18 @@
 			</table>
 
 			<h2>Import CSV</h2>
-			ID, FirstName, LastName, Team [, Date, HourIn, MinuteIn, HourOut, MinuteOut, Type]<br>
+			<div id="importSection" style="display:none">
+				<button type="button" class="importCollapsible">Formats</button>
+				<div class = "importContent" id ="top" >
+				<br>
+				ID, FirstName, LastName, Team [, Date, HourIn, MinuteIn, HourOut, MinuteOut [, Type=shop]]<br>
+				ID, , , , Date, HourIn, MinuteIn, HourOut, MinuteOut [, Type=shop]<br>
+				<br>
+				Date format: MMDDYYYY with leading 0 <br>
+				Type: shop | service <br>
+				</div>
+			</div>
+			<br>
 			<button type = "button" id = "importButton">Import</button>
 			<input type="file" id="importFile">
 		</div>
@@ -180,6 +191,20 @@
 
 			for (i = 0; i < coll.length; i++) {
 			  coll[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				var content = this.nextElementSibling;
+				if (content.style.display === "block") {
+				  content.style.display = "none";
+				} else {
+				  content.style.display = "block";
+				}
+			  });
+			}
+
+			var importColl = document.getElementsByClassName("importCollapsible");
+
+			for (i = 0; i < importColl.length; i++) {
+			  importColl[i].addEventListener("click", function() {
 				this.classList.toggle("active");
 				var content = this.nextElementSibling;
 				if (content.style.display === "block") {

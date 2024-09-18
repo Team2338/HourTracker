@@ -7,6 +7,7 @@ you are about to use javascript you may end up throwing your device out the wind
 import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
 
 const toolsSection = $('#toolsSection');
+const importSection = $('#importSection');
 const usersPresentSection = $('#usersPresentSection');
 const studentEditSection = $('#studentEditSection');
 const permWarning = $('#permWarning');
@@ -490,31 +491,35 @@ function importCSV(){
                 entryArray.forEach( function (entryLine){
                     var entryRecord = entryLine.split(",");
 
-                    if(entryRecord[0] != "ID" && entryRecord[0] != ""){
+                    if(entryRecord[0] != "ID" && entryRecord[0] != ""){ // excludes title row if exists
                         recordCount++;
                         var docRefStudent = firestore.collection("Users").doc(entryRecord[0]);
                         docRefStudent.get().then(function(doc){
-                            docRefStudent.set({
-                                firstName:    entryRecord[1],
-                                lastName:     entryRecord[2],
-                                teamNumber:   entryRecord[3],
-                                active:       true,
-                                shopHours:    0,
-                                serviceHours: 0
-                            });
+                            if (entryRecord[1] != "") { // option 1 record - includes names and team
+                                docRefStudent.set({
+                                    firstName:    entryRecord[1],
+                                    lastName:     entryRecord[2],
+                                    teamNumber:   entryRecord[3],
+                                    active:       true,
+                                    shopHours:    0,
+                                    serviceHours: 0
+                                });
+                            }
 
                             docRefStudent.collection("logs").doc("init").set({
                                 thing: "empty"
                             });
 
-                            if(entryRecord.length > 4 && entryRecord[4] != "init"){
+                            // option 1 and 2 - includes hours
+                            if (entryRecord.length > 4 && entryRecord[4] != "init") {
+                                var hrType = (entryRecord.length == 9) ? "shop" : entryRecord[9];
 
                                 docRefStudent.collection("logs").doc(entryRecord[4]).set({
                                     clockInHour:    Number(entryRecord[5]),
                                     clockInMinute:  Number(entryRecord[6]),
                                     clockOutHour:   Number(entryRecord[7]),
                                     clockOutMinute: Number(entryRecord[8]),
-                                    hourType:       entryRecord[9]
+                                    hourType:       (entryRecord.length == 9) ? "shop" : entryRecord[9]
                                 });
                             }
                         })
@@ -1146,6 +1151,7 @@ function setup(){
 		    // by default, the sections are hidden, so this shows the appropriate section
             if(doc.data().admin) { // this is the admin field in the document
                 toolsSection.css('display', 'block');
+                importSection.css('display', 'block');
                 studentEditSection.css('display','block');
             }
         })
