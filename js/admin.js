@@ -29,6 +29,7 @@ const downloadActiveStudentsFlag = $('#downloadActiveStudentsFlag');
 const downloadStudentListButton = $('#downloadStudentListButton');
 const dataHealthButton = $('#healthButton');
 const viewDayReportButton = $('#viewDayReportButton');
+const viewStudentReportButton = $('#viewStudentReportButton');
 const importButton = $('#importButton');
 const hereTableBody = $('#hereTableBody');
 const checkoutAllButton = $('#checkOutAll');
@@ -1096,6 +1097,11 @@ function viewDayReport(){
     return;
 }
 
+function viewStudentReport(){
+    open('./html/viewStudentReport.html');
+    return;
+}
+
 /*
 function createAdmin(email,password){
 
@@ -1132,6 +1138,7 @@ function setup(){
 	downloadStudentListButton.click(downloadStudentList);
 	dataHealthButton.click(dataHealthReport);
 	viewDayReportButton.click(viewDayReport);
+	viewStudentReportButton.click(viewStudentReport);
     importButton.click(importCSV);
 	checkoutAllButton.click(checkoutAll);
 	sortIDButton.click(sortStudentListID);
