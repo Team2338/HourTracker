@@ -134,7 +134,7 @@ function RunReport(){
 
     people.doc(document.getElementById('selectIDList').value).collection('logs').get()
     .then((queryLog) => {
-            entryList.length = 0;
+//            entryList.length = 0;
             queryLog.forEach((logDoc) => {
             if (logDoc.id != "init") {
                 renderRowHTML(logDoc);
