@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+ 	
+	<head>
+		<title>HourLogger | View Student Report</title>
+		<meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+		<base href = "../">
+		
+		<link rel = "stylesheet" type = "text/css" href = "css/styles.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/admin.css">
+		<link rel = "stylesheet" type = "text/css" href = "css/viewStudentReport.css">
+
+		<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-firestore.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+		<script src = "https://www.gstatic.com/firebasejs/8.8.1/firebase-auth.js"></script>
+
+		<script src = "js/sorttable.js"></script>
+		<script type = "module" src = "js/viewStudentReport.js"></script>
+		
+	</head>
+
+    <body id = "background">
+		
+		<div data-includeHTML = "html/HTMLImports/header.html"></div>
+
+		<h1>View Student Report</h1>
+		<table id="studentSelection" style="display:none">
+			<th align="left">Student ID <button type = "button" class="sortButton" id = "sortIDButton">sort</button></th>
+			<th align="left">Name <button type = "button" class="sortButton" id = "sortNameButton">sort</button></th>
+			<tr>
+				<td>
+					<div>
+						<select class="selectID" id="selectIDList">
+							<option></option>
+						</select>
+					</div>
+				</td>
+				<td>
+					<select class="selectName" id="selectNameList">
+						<option></option>
+					</select>
+				</td>
+			</tr>
+		</table>
+
+		<div class = "showOnSignIn" id = "bottom">
+			<table id = "peopleData" style="display:none" class="sortable">
+				<thead id= "tableHead">
+
+				<tr>
+					<th class="userTable">Date</th>
+					<th class="userTable">DoW</th>
+					<th class="userTable">Clock In</th>
+					<th class="userTable">Clock Out</th>
+				</tr>
+				</thead>
+				
+				<tbody id = "tableBody">
+				</tbody>
+
+			</table>
+		</div>
+
+		<h4 id="permWarning" style="display:none"> Insufficient permissions</h4>
+
+		<span></span>
+
+		<span ><br><br></span>
+
+		<div id = "footer" data-includeHTML = "html/HTMLImports/footer.html"></div>
+	</body>
+</html>
