@@ -8,6 +8,9 @@ import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, ch
 
 const dataTableBody = $('#tableBody');
 const runReportButton = $('#runReportButton');
+const permWarning = $('#permWarning');
+const dateSelection = $('#dateSelection');
+const peopleData = $('#peopleData');
 
 function renderRowHTML(studentDoc,entryDoc) {
 
@@ -69,7 +72,7 @@ function renderRowHTML(studentDoc,entryDoc) {
 	dataTableBody.append(row);
 }
 
-function runReport(){
+async function runReport(){
     var updateDate = document.getElementById("selectViewDate").value;
 
     var updateYear  = updateDate.substring(0,4); // 0 based
@@ -80,23 +83,40 @@ function runReport(){
     // clear the table
     $("#tableBody > tr").remove();
 
-    admins.get().then(function(){
-        people.get()
-        .then(function(querySnapshot) {
-            querySnapshot.forEach(function(docRefStudent) {
-                if(docRefStudent.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
-                    var docRefLog = people.doc(docRefStudent.id).collection('logs').doc(docName);
-                    docRefLog.get().then(function(logDoc){
-                        if(logDoc.exists){
-                            renderRowHTML(docRefStudent,logDoc);
-                        }
-                    });
-                };
+
+/*
+    // Works but gets the subcollection document and no reference to the parent document
+    // therefore the student info is not returned
+    const querySnapshot = await firestore.collectionGroup('logs').where('clockInHour','==',6).get();
+    querySnapshot.forEach((doc) => {
+        console.log(doc);
+    });
+*/
+
+    const queryResult = await people.where("active","==",true).get();
+    queryResult.forEach(docRefStudent => {
+         var docRefLog = people.doc(docRefStudent.id).collection('logs').doc(docName);
+         docRefLog.get().then(logDoc => {
+             if(logDoc.exists){
+                 renderRowHTML(docRefStudent,logDoc);
+             }
+         });
+     });
+
+/*    people.get()
+    .then(function(querySnapshot) {
+        querySnapshot.forEach(function(docRefStudent) {
+            var docRefLog = people.doc(docRefStudent.id).collection('logs').doc(docName);
+            docRefLog.get().then(function(logDoc){
+                if(logDoc.exists){
+                    renderRowHTML(docRefStudent,logDoc);
+                }
             });
         });
     }).catch(function(error) {
         // do not show user list if not signed in as an admin
     });
+*/
 }
 
 function prepareViewDayDate(){
@@ -117,8 +137,24 @@ function setup(){
 
     runReportButton.click(runReport);
 
-    // run the initial report using the day set in prepareViewDayDate
-    runReport();
+    // allows access to the elements on the page
+    // must be an admin to access this page (i.e. admin field for this logged in user is set to true)
+    admins.get().then(function() {
+        admins.doc(firebase.auth().currentUser.uid).get().then(doc => {
+            // by default, the sections are hidden, so this shows the appropriate section
+            if(doc.data().admin) {// this is the admin field in the document
+                dateSelection.css('display','block');
+                peopleData.css('display','block');
+
+                // run the initial report using the day set in prepareViewDayDate
+                runReport();
+            } else {
+                permWarning.css('display','block');
+            }
+        });
+    }).catch(function(){
+        permWarning.css('display','block');
+    });
 }
 
 setup();

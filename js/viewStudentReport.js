@@ -129,23 +129,15 @@ function renderRowHTML(entryDoc) {
 //        entryDoc.data().clockInHour]);
 //}
 
-function RunReport(){
+async function RunReport(){
     $("#tableBody > tr").remove();
 
-    people.doc(document.getElementById('selectIDList').value).collection('logs').get()
-    .then((queryLog) => {
-//            entryList.length = 0;
-            queryLog.forEach((logDoc) => {
-            if (logDoc.id != "init") {
-                renderRowHTML(logDoc);
-//                addToEntryList(logDoc);
-            }
-        })
-    }).catch(function(error) {
-        checkPermissions(error, function(err){
-            console.error(err);
-        });
-    });
+    const queryResult = await people.doc(document.getElementById('selectIDList').value).collection('logs').get();
+    queryResult.forEach(logDoc => {
+        if (logDoc.id != "init") {
+            renderRowHTML(logDoc);
+        }
+    })
 }
 
 function updateStudentNameFromID(){
@@ -165,51 +157,44 @@ function resetUpdateFields(){
 
 function prepareUpdateFields(){
     // load list of IDs to dropdown
-    var select = document.getElementById('selectIDList');
-    var selectName = document.getElementById('selectNameList');
+    var dropdownID = document.getElementById('selectIDList');
+    var dropdownName = document.getElementById('selectNameList');
 
     // clear the drop down list (except for the first blank entry)
-    select.length=1;
-    selectName.length=1;
+    dropdownID.length=1;
+    dropdownName.length=1;
 
     studentList.forEach(student => {
         var opt = document.createElement('option');
         opt.value = student[0];
         opt.innerHTML = student[0];
-        select.appendChild(opt);
+        dropdownID.appendChild(opt);
 
         var optName = document.createElement('option');
         optName.value = student[0];
         optName.innerHTML = student[1];
-        selectName.appendChild(optName);
+        dropdownName.appendChild(optName);
     });
 }
 
 // Creates the student list from the DB (and populates the dropdown fields initially)
-// The querySnapshot utilizes a callback function so
-// in order to populate the student list to the dropdown
-// fields when the page first loads, need to also call
-// the prepareUpdateFields function from within the callback function
-function createStudentList(){
-    admins.get().then(function(){
-        people.get()
-        .then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
-                if(doc.data().active == true) {
-                    if(doc.id.length === 8){ // filters out admins which use UIDs that are greater than 8 chars
-                        studentList.push([
-                            doc.id,
-                            doc.data().firstName + " " + doc.data().lastName]);
-                    };
-                };
-            });
-            prepareUpdateFields();
-        });
-
-    }).catch(function(error) {
-        // do not show user list if not signed in as an admin
+async function createStudentList(){
+    /*
+    * This is the better way to:
+    *    1) wait on the result of the promise (i.e. db query)
+    *    2) get filtered data
+    *    3) remove .then
+    *    4) remove keyword function
+    * Note: In order to use await, this function starts with async
+    * Consider this the example <= keyword to search on for reference
+    */
+    const queryResult = await people.where("active","==",true).get();
+    queryResult.forEach(doc => {
+        studentList.push([
+            doc.id,
+            doc.data().firstName + " " + doc.data().lastName]);
     });
-
+    prepareUpdateFields();
 }
 
 function sortStudentListName(){
@@ -240,7 +225,7 @@ function setup(){
     // allows access to the elements on the page
     // must be an admin to access this page (i.e. admin field for this logged in user is set to true)
     admins.get().then(function() {
-        admins.doc(firebase.auth().currentUser.uid).get().then(function(doc){
+        admins.doc(firebase.auth().currentUser.uid).get().then(doc => {
             // by default, the sections are hidden, so this shows the appropriate section
             if(doc.data().admin) {// this is the admin field in the document
                 peopleTable.css('display','block');
@@ -252,7 +237,6 @@ function setup(){
     }).catch(function(){
         permWarning.css('display','block');
     });
-
 }
 
 setup();
