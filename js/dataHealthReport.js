@@ -169,35 +169,46 @@ function setup(){
 
     document.getElementById('healthyDataMessage').innerHTML = "";
 
-    var errorCount = 0;     // running count of errors
     var reviewCounter = 0;  // running count of people reviewed
     var peopleCount = 0;    // total number of people to be reviewed
+    var dirty = false;      // flag to indicate if a bad record was found
 
-	people.get()
-	.then((querySnapshot) => {
+	people.where("active","==",true).get()
+	.then( querySnapshot => {
 	    peopleCount = querySnapshot.size;
-		querySnapshot.forEach((studentDoc) => {
-			people.doc(studentDoc.id).collection('logs').get()
-			.then((queryLog) => {
-                reviewCounter++;
-				queryLog.forEach((logDoc) => {
-                    if( logDoc.data().clockInHour == 99 || logDoc.data().clockOutHour == 99) {
+
+		querySnapshot.forEach(async function(studentDoc){
+		    const logData = people.doc(studentDoc.id).collection('logs');
+
+            // couldn't get the Filter.Or to work so instead getting
+            // the bad records for clockInHour and clockOutHour separately
+            await logData.where("clockInHour","==",99).get()
+                .then(async function(queryLog) {
+                    queryLog.forEach(logDoc => {
                         renderRowHTML(studentDoc,logDoc);
-                        errorCount++;
+                        dirty = true;
+                    })
+                }).then(
+                    await logData.where("clockOutHour","==",99).get()
+                    .then(queryLog => {
+                        queryLog.forEach(logDoc => {
+                            renderRowHTML(studentDoc,logDoc);
+                            dirty = true;
+                        })
+                    })
+                ).then((notifyIfZeroErrors) => {
+                    reviewCounter++;
+                    if (reviewCounter == peopleCount) { // only check when we are at the last person
+                        if (dirty == false) {
+                            healthyDataMessage.css('visibility','visible');
+                            document.getElementById('healthyDataMessage').innerHTML = "Data is healthy!";
+                        }
                     }
                 })
-            }).then((notifyIfZeroErrors) => {
-                if( reviewCounter == peopleCount ) { // only notify on the last student
-                    if( errorCount == 0 ) { // only notify if there were no errors
-                        healthyDataMessage.css('visibility','visible');
-                        document.getElementById('healthyDataMessage').innerHTML = "Data is healthy!";
-                    }
-                }
-            })
-		})
-	}).catch(function(error) {
-        checkPermissions(error, function(err){
-            console.error(err);
+		    })
+	    }).catch(function(error) {
+            checkPermissions(error, function(err){
+                console.error(err);
         });
     });
 

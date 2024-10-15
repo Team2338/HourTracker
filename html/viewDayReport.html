@@ -27,11 +27,15 @@
 		<div data-includeHTML = "html/HTMLImports/header.html"></div>
 
 		<h1>View Day Report</h1>
-		<input type="date" id="selectViewDate" name="selectViewDate">
-		<button type = "button" id = "runReportButton">Run Report</button>
-
+		<table id="dateSelection" style="display:none">
+			<th align="left"><input type="date" id="selectViewDate" name="selectViewDate"> </th>
+			<th align="left"><button type = "button" id = "runReportButton">Run Report</button></th>
+		</table>
+<!--			<input type="date" id="selectViewDate" name="selectViewDate" style="display:none">
+		<button type = "button" id = "runReportButton" style="display:none">Run Report</button>
+-->
 		<div class = "showOnSignIn" id = "bottom">
-			<table id = "peopleData">
+			<table id = "peopleData" style="display:none">
 				<thead id= "tableHead">
 
 				<tr>
@@ -48,6 +52,8 @@
 
 			</table>
 		</div>
+
+		<h4 id="permWarning" style="display:none"> Insufficient permissions</h4>
 
 		<span></span>
 
