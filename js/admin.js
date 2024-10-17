@@ -375,7 +375,7 @@ function downloadStudentList(){
 	}
 }
 
-function downloadCSV(){
+async function downloadCSV(){
 	var titleString ="ID,First Name,Last Name,Team,Date,HourIn,MinuteIn,HourOut,MinuteOut,Type,Elapsed\r\n";
 	var saveString = titleString;
 
@@ -386,78 +386,85 @@ function downloadCSV(){
     var selectedDateUI = document.getElementById("downloadDate").value;
     var selectedDate = new Date();
     var selectedActive = document.getElementById("downloadActiveStudentsFlag").checked;
+    var querySnapshot;
 
     selectedDate.setHours(12,0,0);
     selectedDate.setMonth(Number(selectedDateUI.substring(5,7))-1,Number(selectedDateUI.substring(8)));
     selectedDate.setYear(Number(selectedDateUI.substring(0,4)));
 
-    people.get()
-	.then(function(querySnapshot) {
+    if (selectedActive == false) {
+        querySnapshot = await people.get();
+    } else {
+        querySnapshot = await people.where("active","==",true).get();
+    }
 
-		querySnapshot.forEach(function(studentDoc) {
-			
-			people.doc(studentDoc.id).collection('logs').get()
-			.then(function(queryLog){
-				
-				queryLog.forEach(function(logDoc){
+//    people.get()
+//    .then(querySnapshot.forEach(function(studentDoc) {
+//    .then(function(querySnapshot) {
+// throws an error an empty - need to fix
+    querySnapshot.forEach(function(studentDoc) {
+        people.doc(studentDoc.id).collection('logs').get()
+        .then(function(queryLog){
 
-                    if( selectedActive == false || studentDoc.data().active == true ){ // second condition implies selectedActive==true
-                        // logDoc.ID contains the date of the record
-                        // only export data since UI selected date
-                        // convert ID to date and compare
-                        var idDate = new Date();
-                        idDate.setHours(12,0,1);
-                        idDate.setMonth(Number(logDoc.id.substring(0,2))-1,Number(logDoc.id.substring(2,4))); // months are zero based
-                        idDate.setYear(Number(logDoc.id.substring(4,8)));
+            queryLog.forEach(function(logDoc){
 
-                        if(idDate > selectedDate){
-                            var startDate = new Date();
-                            var endDate = new Date();
-                            var elapsed = 0;
+//                if( selectedActive == false || studentDoc.data().active == true ){ // second condition implies selectedActive==true
+                    // logDoc.ID contains the date of the record
+                    // only export data since UI selected date
+                    // convert ID to date and compare
+                    var idDate = new Date();
+                    idDate.setHours(12,0,1);
+                    idDate.setMonth(Number(logDoc.id.substring(0,2))-1,Number(logDoc.id.substring(2,4))); // months are zero based
+                    idDate.setYear(Number(logDoc.id.substring(4,8)));
 
-                            startDate.setHours(logDoc.data().clockInHour);
-                            startDate.setMinutes(logDoc.data().clockInMinute);
-                            endDate.setHours(logDoc.data().clockOutHour);
-                            endDate.setMinutes(logDoc.data().clockOutMinute);
+                    if(idDate > selectedDate){
+                        var startDate = new Date();
+                        var endDate = new Date();
+                        var elapsed = 0;
 
-                            if(  logDoc.data().clockInHour    != 99 &&
-                                 logDoc.data().clockInMinute  != 99 &&
-                                 logDoc.data().clockOutHour   != 99 &&
-                                 logDoc.data().clockOutMinute != 99 ){
-                                elapsed = ( endDate - startDate ) / 60000;
-                            } else {
-                                elapsed = 0;
-                            }
+                        startDate.setHours(logDoc.data().clockInHour);
+                        startDate.setMinutes(logDoc.data().clockInMinute);
+                        endDate.setHours(logDoc.data().clockOutHour);
+                        endDate.setMinutes(logDoc.data().clockOutMinute);
 
-
-                            var logString = studentDoc.id + ','
-                            + studentDoc.data().firstName
-                            + ',' + studentDoc.data().lastName
-                            + ',' + studentDoc.data().teamNumber
-                            + ',' + logDoc.id
-                            + ',' + logDoc.data().clockInHour
-                            + ',' + logDoc.data().clockInMinute
-                            + ',' + logDoc.data().clockOutHour
-                            + ',' + logDoc.data().clockOutMinute
-                            + ',' + logDoc.data().hourType
-                            + ',' + elapsed
-                            + '\r\n';
-                            saveString += logString;
+                        if(  logDoc.data().clockInHour    != 99 &&
+                             logDoc.data().clockInMinute  != 99 &&
+                             logDoc.data().clockOutHour   != 99 &&
+                             logDoc.data().clockOutMinute != 99 ){
+                            elapsed = ( endDate - startDate ) / 60000;
+                        } else {
+                            elapsed = 0;
                         }
+
+
+                        var logString = studentDoc.id + ','
+                        + studentDoc.data().firstName
+                        + ',' + studentDoc.data().lastName
+                        + ',' + studentDoc.data().teamNumber
+                        + ',' + logDoc.id
+                        + ',' + logDoc.data().clockInHour
+                        + ',' + logDoc.data().clockInMinute
+                        + ',' + logDoc.data().clockOutHour
+                        + ',' + logDoc.data().clockOutMinute
+                        + ',' + logDoc.data().hourType
+                        + ',' + elapsed
+                        + '\r\n';
+                        saveString += logString;
                     }
-				});
+//                }
+            });
 
-				// when we have finished with the last record, save the string
-				i += 1;
-				if(i >= querySnapshot.size){
-					save(saveString);
-				}
+            // when we have finished with the last record, save the string
+            i += 1;
+            if(i >= querySnapshot.size){
+                save(saveString);
+            }
 
-			});		
-			
-		});		
+//        });
 
-	}).catch(function(error) {
+        });
+
+    }).catch(function(error) {
         checkPermissions(error, function(err){
             console.error(err);
         });
