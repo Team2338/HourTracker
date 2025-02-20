@@ -198,7 +198,7 @@ function onFoundBarcode(IdNumber){
 
 function reset(){
 	setTimeout(function(){
-		resultBox.html('<em>Scanning ...</em>');
+    	resultBox.html('<em>Scanning ...</em>');
 		greenBox.css('visibility', 'hidden');
 		yellowBox.css('visibility', 'hidden');
 		redBox.css('visibility', 'hidden');
@@ -229,11 +229,13 @@ function setup(){
 		    checkInText.css('opacity','0.3');
 		    checkOutText.css('color', '#FFFF00');
 		    checkOutText.css('opacity','1.0');
+		    resultBox.html('<em>Scanning Out ...</em>');
 		}else{
 		    checkInText.css('color', '#00FF00');
 		    checkInText.css('opacity','1.0');
 		    checkOutText.css('color', 'grey');
 		    checkOutText.css('opacity','0.3');
+            resultBox.html('<em>Scanning In ...</em>');
         }
         IDinput.select();
 	});

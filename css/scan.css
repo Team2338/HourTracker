@@ -36,6 +36,7 @@ orange = #FE5000
 .switchBox{
 	display: flex;
 	padding-bottom: 15px;
+	align-items: center; /* Vertically center the switch box */
 }
 
 h1{
@@ -45,11 +46,13 @@ h1{
 .checkInSelected{
     color: #00FF00;
     opacity: 1.0;
+    font-size:40px;
 }
 
 .checkOutSelected{
     color: grey;
     opacity: 0.2;
+    font-size:40px;
 }
 
 .permWarning {
