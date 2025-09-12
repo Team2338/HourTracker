@@ -5,6 +5,7 @@ firebase.initializeApp(firebaseConfig);
 export var firestore = firebase.firestore();
 export var people = firestore.collection("Users"); // .orderBy("studentID"); would need to add studentID field to each doc
 export var admins = firestore.collection("googleSignIn");
+export var configuration = firestore.collection("Configuration");
 export var user = firebase.auth().currentUser;
 
 export var auth = firebase.auth();

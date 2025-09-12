@@ -4,7 +4,7 @@
 you are about to use javascript you may end up throwing your device out the window
 */
 
-import {admins, people, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
+import {admins, people, configuration, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, firestore, today, todayDate} from './Scripts.js';
 
 const toolsSection = $('#toolsSection');
 const importSection = $('#importSection');
@@ -50,6 +50,7 @@ const timeOutActual = $("#timeOutActual");
 const successCheckmarkItem = $("#successCheckmark");
 const sortIDButton = $('#sortIDButton');
 const sortNameButton = $('#sortNameButton');
+const smartCheckInCheckBox = $('#smartCheckInCheckBox');
 
 var rowTemp;
 
@@ -1121,6 +1122,13 @@ function createAdmin(email,password){
 */
 
 
+function updateSmartCheckIn(){
+    configuration.doc("settings").set({
+        smartCheckInOut: document.getElementById("smartCheckInCheckBox").checked
+    });
+    return;
+}
+
 function setup(){
 	
 	initFirebaseAuth();
@@ -1151,6 +1159,14 @@ function setup(){
 	updateTimeOutField.change(updateTimeOut);
     updateDeleteRecordButton.click(updateDeleteRecord);
     updateStudentSubmitButton.click(updateStudentSubmit);
+    smartCheckInCheckBox.change(updateSmartCheckIn);
+
+    configuration.doc("settings").get().then(function(doc){
+        var state = doc.data().smartCheckInOut;
+        console.log(state);
+//        document.getElementById("smartCheckInCheckBox").checked = state;
+        smartCheckInCheckBox.prop('checked',state);
+    });
 
 	admins.get().then(function() {
 	    usersPresentSection.css('display', 'block');
