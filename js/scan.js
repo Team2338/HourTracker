@@ -1,5 +1,5 @@
 //JS for scanIn.html
-import {people, firestore, admins, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep} from './Scripts.js';
+import {people, firestore, admins, configuration, realTimeDataBase, loadExternalHTML, initFirebaseAuth, checkPermissions, sleep} from './Scripts.js';
 
 export var authenticatedUsers = firestore.collection("googleSignIn");
 
@@ -16,6 +16,8 @@ const redBox = $('#redBox');
 const IDinput = $('#IDselect');
 const checkInText = $('#checkInSelected');
 const checkOutText = $('#checkOutSelected');
+
+var isSmartCheckInOutOn = true;
 
 /** scanning */
 var codeReader;
@@ -49,7 +51,45 @@ function onFoundBarcode(IdNumber){
 	var type = typeToggle.is(':checked')? "service" : "shop" ;
 	var checkOut = toggle.is(':checked');
 
-	console.log(type);
+    // start of smart checkin / checkout functionality
+    if( isSmartCheckInOutOn ) {
+        console.log("Smart Checkin Enabled");
+        var checkInTime;
+        var checkOutTime;
+
+        // Check local time vs expected checkin/out
+        if( time.getDay() == 6 ){ // saturday
+            checkInTime = 10; // 10:00 AM
+            checkOutTime = 16; // 4:00 PM
+        } else { // any other day of the week
+            checkInTime = 18; // 6:00 PM
+            checkOutTime = 21; // 9:00 PM
+        }
+        var response;
+
+        if( checkOut == true && (HOUR >= (checkInTime - 1) && HOUR <= (checkInTime + 1) )) { // toggle is set to Check Out but during Check in hours
+            response = confirm("You are trying to check out during check in hours.\nSelect OK to check out or CANCEL to check in");
+            if( response == false){
+                toggle.prop('checked',false);
+                toggle.change();
+                checkOut = false;
+            }
+        } else {
+            if( checkOut == false && (HOUR >= (checkOutTime -1) && HOUR <= checkOutTime + 1 )) { // toggle is set to Check In but during Check out hours
+                response = confirm("You are trying to check in during check out hours.\nSelect OK to check in or CANCEL to check out");
+                if( response == false){
+                    toggle.prop('checked',true);
+                    toggle.change();
+                    checkOut = true;
+                }
+            }
+        }
+    } else {
+        console.log("Smart Checkin Disabled");
+    }
+    // end of smart checkin / checkout functionality
+
+//	console.log(type);
 	console.log(checkOut ? "Checkout" : "Checkin");
 
 	var docName = month + day + year;
@@ -204,6 +244,11 @@ function reset(){
 		redBox.css('visibility', 'hidden');
 		scanBlock = false;
 	}, greenBoxVisibilityDelay);
+
+    // update the Smart Check In button in case it has changed
+    configuration.doc("settings").get().then(function(doc){
+        isSmartCheckInOutOn = doc.data().smartCheckInOut;
+    });
 }
 
 function setup(){
@@ -253,6 +298,11 @@ function setup(){
 	}
 
 	IDinput.on('input', updateValue);
+
+    // setup the Smart Check In button according to the database record
+    configuration.doc("settings").get().then(function(doc){
+        isSmartCheckInOutOn = doc.data().smartCheckInOut;
+    });
 
     authenticatedUsers.get().then(function(){
         //isFullAdmin();
