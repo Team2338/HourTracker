@@ -51,6 +51,9 @@ const successCheckmarkItem = $("#successCheckmark");
 const sortIDButton = $('#sortIDButton');
 const sortNameButton = $('#sortNameButton');
 const smartCheckInCheckBox = $('#smartCheckInCheckBox');
+const smartCheckInOverrideCheckBox = $('#smartCheckInOverrideCheckBox');
+const smartCheckInOverrideHourIn = $('#HourIn');
+const smartCheckInOverrideHourOut = $('#HourOut');
 
 var rowTemp;
 
@@ -1123,8 +1126,29 @@ function createAdmin(email,password){
 
 
 function updateSmartCheckIn(){
-    configuration.doc("settings").set({
+    configuration.doc("settings").update({
         smartCheckInOut: document.getElementById("smartCheckInCheckBox").checked
+    });
+    return;
+}
+
+function updateSmartCheckInOverride(){
+    configuration.doc("settings").update({
+        smartCheckInOverride: document.getElementById("smartCheckInOverrideCheckBox").checked
+    });
+    return;
+}
+
+function updateSmartCheckInHourIn(){
+    configuration.doc("settings").update({
+     smartCheckInOverrideHourIn: Number(document.getElementById("HourIn").value)
+    });
+    return;
+}
+
+function updateSmartCheckInHourOut(){
+    configuration.doc("settings").update({
+      smartCheckInOverrideHourOut: Number(document.getElementById("HourOut").value)
     });
     return;
 }
@@ -1160,12 +1184,27 @@ function setup(){
     updateDeleteRecordButton.click(updateDeleteRecord);
     updateStudentSubmitButton.click(updateStudentSubmit);
     smartCheckInCheckBox.change(updateSmartCheckIn);
+    smartCheckInOverrideCheckBox.change(updateSmartCheckInOverride);
+    smartCheckInOverrideHourIn.change(updateSmartCheckInHourIn);
+    smartCheckInOverrideHourOut.change(updateSmartCheckInHourOut);
+
 
     configuration.doc("settings").get().then(function(doc){
         var state = doc.data().smartCheckInOut;
-        console.log(state);
 //        document.getElementById("smartCheckInCheckBox").checked = state;
         smartCheckInCheckBox.prop('checked',state);
+    });
+
+    configuration.doc("settings").get().then(function(doc){
+        smartCheckInOverrideCheckBox.prop('checked',doc.data().smartCheckInOverride);
+    });
+
+    configuration.doc("settings").get().then(function(doc){
+        document.getElementById("HourIn").value = doc.data().smartCheckInOverrideHourIn;
+    });
+
+    configuration.doc("settings").get().then(function(doc){
+        document.getElementById("HourOut").value = doc.data().smartCheckInOverrideHourOut;
     });
 
 	admins.get().then(function() {
