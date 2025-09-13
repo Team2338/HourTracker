@@ -31,7 +31,7 @@ const studentIDLength = 8;
 const greenBoxVisibilityDelay = 3000;
 var scanBlock = false;
 
-function onFoundBarcode(IdNumber){
+async function onFoundBarcode(IdNumber){
 	var time = new Date();
 	scanBlock = true;
 
@@ -53,6 +53,13 @@ function onFoundBarcode(IdNumber){
 	
 	var type = typeToggle.is(':checked')? "service" : "shop" ;
 	var checkOut = toggle.is(':checked');
+
+    // update the Smart Check In settings in case they have changed
+    const doc = await configuration.doc("settings").get();
+    isSmartCheckInOutOn = doc.data().smartCheckInOut;
+    isSmartCheckInOverride = doc.data().smartCheckInOverride;
+    smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
+    smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
 
     // start of smart checkin / checkout functionality
     if( isSmartCheckInOutOn ) {
@@ -246,7 +253,7 @@ function onFoundBarcode(IdNumber){
 	});
 }
 
-function reset(){
+async function reset(){
 	setTimeout(function(){
     	resultBox.html('<em>Scanning ...</em>');
 		greenBox.css('visibility', 'hidden');
@@ -255,16 +262,15 @@ function reset(){
 		scanBlock = false;
 	}, greenBoxVisibilityDelay);
 
-    // update the Smart Check In button in case it has changed
-    configuration.doc("settings").get().then(function(doc){
-        isSmartCheckInOutOn = doc.data().smartCheckInOut;
-        isSmartCheckInOverride = doc.data().smartCheckInOverride;
-        smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
-        smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
-    });
+    // update the Smart Check In settings in case they have changed
+    const doc = await configuration.doc("settings").get();
+    isSmartCheckInOutOn = doc.data().smartCheckInOut;
+    isSmartCheckInOverride = doc.data().smartCheckInOverride;
+    smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
+    smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
 }
 
-function setup(){
+async function setup(){
 
 	console.log('handHeldScanner.js loaded');
 
@@ -312,13 +318,12 @@ function setup(){
 
 	IDinput.on('input', updateValue);
 
-    // setup the Smart Check In button according to the database record
-    configuration.doc("settings").get().then(function(doc){
-        isSmartCheckInOutOn = doc.data().smartCheckInOut;
-        isSmartCheckInOverride = doc.data().smartCheckInOverride;
-        smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
-        smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
-    });
+    // setup the Smart Check In settings according to the database record
+    const doc = await configuration.doc("settings").get();
+    isSmartCheckInOutOn = doc.data().smartCheckInOut;
+    isSmartCheckInOverride = doc.data().smartCheckInOverride;
+    smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
+    smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
 
     authenticatedUsers.get().then(function(){
         //isFullAdmin();
