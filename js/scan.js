@@ -18,6 +18,9 @@ const checkInText = $('#checkInSelected');
 const checkOutText = $('#checkOutSelected');
 
 var isSmartCheckInOutOn = true;
+var isSmartCheckInOverride = false;
+var smartCheckInOverrideHourIn = 10;
+var smartCheckInOverrideHourOut = 16;
 
 /** scanning */
 var codeReader;
@@ -58,16 +61,23 @@ function onFoundBarcode(IdNumber){
         var checkOutTime;
 
         // Check local time vs expected checkin/out
-        if( time.getDay() == 6 ){ // saturday
-            checkInTime = 10; // 10:00 AM
-            checkOutTime = 16; // 4:00 PM
-        } else { // any other day of the week
-            checkInTime = 18; // 6:00 PM
-            checkOutTime = 21; // 9:00 PM
+        if( isSmartCheckInOverride ) { // checkin override is enabled. Use values from DB
+            checkInTime = smartCheckInOverrideHourIn;
+            checkOutTime = smartCheckInOverrideHourOut;
+            console.log("Smart Checkin Override Enabled -- In: " + checkInTime + " Out: " + checkOutTime);
+        } else { // checkin override is disabled. Use values depending on date
+            // Check local time vs expected checkin/out
+            if( time.getDay() == 6 ){ // saturday
+                checkInTime = 10; // 10:00 AM
+                checkOutTime = 16; // 4:00 PM
+            } else { // any other day of the week
+                checkInTime = 18; // 6:00 PM
+                checkOutTime = 21; // 9:00 PM
+            }
         }
         var response;
 
-        if( checkOut == true && (HOUR >= (checkInTime - 1) && HOUR <= (checkInTime + 1) )) { // toggle is set to Check Out but during Check in hours
+        if( checkOut == true && (HOUR >= (checkInTime - 1) && HOUR <= checkInTime )) { // toggle is set to Check Out but during Check in hours
             response = confirm("You are trying to check out during check in hours.\nSelect OK to check out or CANCEL to check in");
             if( response == false){
                 toggle.prop('checked',false);
@@ -75,7 +85,7 @@ function onFoundBarcode(IdNumber){
                 checkOut = false;
             }
         } else {
-            if( checkOut == false && (HOUR >= (checkOutTime -1) && HOUR <= checkOutTime + 1 )) { // toggle is set to Check In but during Check out hours
+            if( checkOut == false && (HOUR >= (checkOutTime -1) && HOUR <= checkOutTime )) { // toggle is set to Check In but during Check out hours
                 response = confirm("You are trying to check in during check out hours.\nSelect OK to check in or CANCEL to check out");
                 if( response == false){
                     toggle.prop('checked',true);
@@ -248,6 +258,9 @@ function reset(){
     // update the Smart Check In button in case it has changed
     configuration.doc("settings").get().then(function(doc){
         isSmartCheckInOutOn = doc.data().smartCheckInOut;
+        isSmartCheckInOverride = doc.data().smartCheckInOverride;
+        smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
+        smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
     });
 }
 
@@ -302,6 +315,9 @@ function setup(){
     // setup the Smart Check In button according to the database record
     configuration.doc("settings").get().then(function(doc){
         isSmartCheckInOutOn = doc.data().smartCheckInOut;
+        isSmartCheckInOverride = doc.data().smartCheckInOverride;
+        smartCheckInOverrideHourIn = doc.data().smartCheckInOverrideHourIn;
+        smartCheckInOverrideHourOut = doc.data().smartCheckInOverrideHourOut;
     });
 
     authenticatedUsers.get().then(function(){
