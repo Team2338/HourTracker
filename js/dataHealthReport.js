@@ -11,6 +11,7 @@ const healthyDataMessage = $("#healthyDataMessage");
 const updateDataButton = $('#updateDataButton');
 const updateMap = new Map();
 const deleteMap = new Map();
+const skipMap = new Map();
 
 function renderRowHTML(studentDoc, entryDoc) {
 
@@ -114,6 +115,18 @@ function renderRowHTML(studentDoc, entryDoc) {
     })
     row.appendChild(tableDeleteEntryCheckBox);
 
+    var tableSkipEntryCheckBox = document.createElement('td');
+	tableSkipEntryCheckBox.innerHTML = "<input type=checkbox>";
+    tableSkipEntryCheckBox.style.textAlign = "center";
+    tableSkipEntryCheckBox.addEventListener("change", (e) => {
+        if( e.target.checked ) {
+            skipMap.set(studentDoc.id + "." + entryDoc.id + ".skip",true);
+        } else {
+            skipMap.set(studentDoc.id + "." + entryDoc.id + ".skip",false);
+        }
+    })
+    row.appendChild(tableSkipEntryCheckBox);
+
 	dataTableBody.append(row);
 }
 
@@ -126,21 +139,26 @@ function updateData(){
         var docName = myArray[1];
         var inOut = myArray[2];
 
-        // update database
-        var docRefStudent = people.doc(selectedID);
-        var docRefLog = docRefStudent.collection("logs").doc(docName);
+        const baseKey = key.substring(0, key.lastIndexOf('.'));
+        const skipKey = `${baseKey}.skip`;
 
-        // update clockIn or clockOut
-        if( inOut == "in" ){
-            docRefLog.update({
-                clockInHour:    Number(value.substring(0,2)), // value format is HH:MM
-                clockInMinute:  Number(value.substring(3,5))
-            });
-        } else {
-            docRefLog.update({
-                clockOutHour:    Number(value.substring(0,2)),
-                clockOutMinute:  Number(value.substring(3,5))
-            });
+        if (skipMap.get(skipKey) !== true) {
+            // update database
+            var docRefStudent = people.doc(selectedID);
+            var docRefLog = docRefStudent.collection("logs").doc(docName);
+
+            // update clockIn or clockOut
+            if( inOut == "in" ){
+                docRefLog.update({
+                    clockInHour:    Number(value.substring(0,2)), // value format is HH:MM
+                    clockInMinute:  Number(value.substring(3,5))
+                });
+            } else {
+                docRefLog.update({
+                    clockOutHour:    Number(value.substring(0,2)),
+                    clockOutMinute:  Number(value.substring(3,5))
+                });
+            }
         }
     }
 
