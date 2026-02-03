@@ -11,7 +11,6 @@ const healthyDataMessage = $("#healthyDataMessage");
 const updateDataButton = $('#updateDataButton');
 const updateMap = new Map();
 const deleteMap = new Map();
-//const skipMap = new Map();
 
 function renderRowHTML(studentDoc, entryDoc) {
 
