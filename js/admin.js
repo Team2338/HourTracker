@@ -1191,20 +1191,14 @@ function setup(){
 
     configuration.doc("settings").get().then(function(doc){
         var state = doc.data().smartCheckInOut;
-//        document.getElementById("smartCheckInCheckBox").checked = state;
         smartCheckInCheckBox.prop('checked',state);
-    });
-
-    configuration.doc("settings").get().then(function(doc){
         smartCheckInOverrideCheckBox.prop('checked',doc.data().smartCheckInOverride);
-    });
-
-    configuration.doc("settings").get().then(function(doc){
         document.getElementById("HourIn").value = doc.data().smartCheckInOverrideHourIn;
-    });
-
-    configuration.doc("settings").get().then(function(doc){
         document.getElementById("HourOut").value = doc.data().smartCheckInOverrideHourOut;
+        document.getElementById("SmartInIn").innerHTML = doc.data().smartCheckInInIn;
+        document.getElementById("SmartInOut").innerHTML = doc.data().smartCheckInInOut;
+        document.getElementById("SmartOutIn").innerHTML = doc.data().smartCheckInOutIn;
+        document.getElementById("SmartOutOut").innerHTML = doc.data().smartCheckInOutOut;
     });
 
 	admins.get().then(function() {

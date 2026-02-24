@@ -51,7 +51,20 @@
 			<button type = "button" id = "viewDayReportButton">View Day</button>
 			<button type = "button" id = "viewStudentReportButton">View Student</button><br><br>
 
-			<input id = "smartCheckInCheckBox" type = "checkbox"> Smart Check In Enabled<br><br>
+			<table>
+				<th><input id = "smartCheckInCheckBox" type = "checkbox"> Smart Check In Enabled</th>
+				<th>| In->In</th>
+				<th>| In->Out</th>
+				<th>| Out->In</th>
+				<th>| Out->Out</th>
+				<tr>
+					<td align="right"> Occurrences</td>
+					<td align="center" id="SmartInIn"></td>
+					<td align="center" id="SmartInOut"></td>
+					<td align="center" id="SmartOutIn"></td>
+					<td align="center" id="SmartOutOut"></td>
+				</tr>
+			</table>
 			<input id = "smartCheckInOverrideCheckBox" type = "checkbox"> Smart Check In Override <br>
 			<label for="HourIn">Hour In:</label>
 			<select id="HourIn" name="hourIn">
@@ -63,7 +76,7 @@
 				<option value=6>6</option>
 				<option value=7>7</option>
 				<option value=8>8</option>
-				<option value=0>9</option>
+				<option value=9>9</option>
 				<option value=10>10</option>
 				<option value=11>11</option>
 				<option value=12>12</option>
@@ -89,7 +102,7 @@
 				<option value=6>6</option>
 				<option value=7>7</option>
 				<option value=8>8</option>
-				<option value=0>9</option>
+				<option value=9>9</option>
 				<option value=10>10</option>
 				<option value=11>11</option>
 				<option value=12>12</option>
